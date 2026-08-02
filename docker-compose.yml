@@ -1,3 +1,5 @@
+name: rag_staging
+
 services:
   fastapi-backend:
     build:
