@@ -4,6 +4,9 @@ on:
   push:
     branches: [ main ]
 
+env:
+  PATH: /opt/homebrew/bin:/usr/local/bin:/usr/bin:/bin:/usr/sbin:/sbin
+
 jobs:
   deploy:
     runs-on: self-hosted
