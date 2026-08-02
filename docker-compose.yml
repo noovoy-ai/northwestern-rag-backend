@@ -1,0 +1,23 @@
+services:
+  fastapi-backend:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: rag_staging_backend
+    ports:
+      - "${HOST_PORT:-8005}:8000"
+    env_file:
+      - .env
+    environment:
+      - OLLAMA_BASE_URL=${OLLAMA_BASE_URL:-http://host.docker.internal:11434}
+      - DB_DIR=${DB_DIR:-/app/chroma_db}
+    volumes:
+      - ./chroma_db:/app/chroma_db
+      - ./handbook_vectordb_ready.md:/app/handbook_vectordb_ready.md
+    extra_hosts:
+      - "host.docker.internal:host-gateway"
+    deploy:
+      resources:
+        limits:
+          memory: 1.5G
+    restart: unless-stopped
