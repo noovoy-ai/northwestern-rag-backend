@@ -11,6 +11,8 @@ services:
     environment:
       - OLLAMA_BASE_URL=${OLLAMA_BASE_URL:-http://host.docker.internal:11434}
       - DB_DIR=${DB_DIR:-/app/chroma_db}
+      - ADMIN_PASSWORD=${ADMIN_PASSWORD:-admin*123!}
+      - STAFF_PASSWORD=${STAFF_PASSWORD:-nu2026pass}
     volumes:
       - ./chroma_db:/app/chroma_db
       - ./handbook_vectordb_ready.md:/app/handbook_vectordb_ready.md
