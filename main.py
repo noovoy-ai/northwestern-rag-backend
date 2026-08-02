@@ -33,10 +33,10 @@ app.add_middleware(
 
 security = HTTPBearer()
 
-# Demo Kullanıcı Veritabanı
+# Kullanıcı Veritabanı (Ortam Değişkenlerinden Okuma)
 USERS_DB = {
-    "admin": "northwestern2026",
-    "staff": "nu2026pass"
+    "admin": os.getenv("ADMIN_PASSWORD", "admin*123!"),
+    "staff": os.getenv("STAFF_PASSWORD", "nu2026pass")
 }
 
 class LoginRequest(BaseModel):
