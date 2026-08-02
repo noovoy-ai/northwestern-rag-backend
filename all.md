@@ -28,7 +28,7 @@ Soru-Cevap servisi ve test arayüzü şu anda canlıda ve yerel ortamda aktif ol
 * 🌐 **[Yerel Swagger UI Test Arayüzü](http://localhost:8005/docs)** -> Teknik API test alanı ve Swagger dokümantasyonu (`http://localhost:8005/docs`)
 * 📑 **[Yerel ReDoc Dokümantasyonu](http://localhost:8005/redoc)** -> Detaylı API dokümantasyonu (`http://localhost:8005/redoc`)
 * 💚 **[Servis Sağlık Kontrolü (Healthcheck)](http://localhost:8005/health)** -> Servis çalışma durumu (`http://localhost:8005/health`)
-* 🌐 **[Canlı Cloudflare Tünel Arayüzü](https://viruses-aud-fashion-quest.trycloudflare.com/)** -> Dış internet test adresi (Not: Quick Tunnel URL'leri sunucu yeniden başlatıldığında değişebilir).
+* 🌐 **[Canlı Cloudflare Tünel Arayüzü](https://ronald-cotton-eos-explicitly.trycloudflare.com/)** -> Dış internetten doğrudan erişilebilen canlı sohbet arayüzü (`https://ronald-cotton-eos-explicitly.trycloudflare.com/`).
 
 ---
 
