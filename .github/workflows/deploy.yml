@@ -6,6 +6,7 @@ on:
 
 env:
   PATH: /opt/homebrew/bin:/usr/local/bin:/usr/bin:/bin:/usr/sbin:/sbin
+  HOME: /Users/mini
 
 jobs:
   deploy:
@@ -14,20 +15,11 @@ jobs:
       - name: Checkout Code
         uses: actions/checkout@v4
 
-      - name: Ensure Environment File
+      - name: Deploy Staging Container
         run: |
           if [ ! -f .env ]; then
             cp .env.example .env
           fi
-
-      - name: Build Docker Image
-        run: |
           docker compose build
-
-      - name: Deploy Container
-        run: |
           docker compose up -d --force-recreate --remove-orphans
-
-      - name: Cleanup Unused Docker Images
-        run: |
           docker system prune -f
