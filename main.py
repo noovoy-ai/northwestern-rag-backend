@@ -69,7 +69,8 @@ def get_vector_store():
     return Chroma(
         persist_directory=DB_DIR,
         embedding_function=embeddings,
-        collection_name=COLLECTION_NAME
+        collection_name=COLLECTION_NAME,
+        collection_metadata={"hnsw:space": "cosine"}
     )
 
 vector_store = get_vector_store()
@@ -129,8 +130,7 @@ def chat_endpoint(request: QueryRequest, user_data: dict = Depends(verify_jwt_to
     if not user_query:
         raise HTTPException(status_code=400, detail="Question cannot be empty.")
 
-    search_query = f"search_query: {user_query}"
-    results = vector_store.similarity_search_with_score(search_query, k=5)
+    results = vector_store.similarity_search_with_score(user_query, k=7)
     
     COSINE_THRESHOLD = 0.65
     filtered_results = [doc for doc, score in results if score <= COSINE_THRESHOLD]
@@ -142,19 +142,19 @@ def chat_endpoint(request: QueryRequest, user_data: dict = Depends(verify_jwt_to
             "section": None
         }
 
-    context_blocks = [doc.page_content.replace("search_document: ", "") for doc in filtered_results]
+    context_blocks = [doc.page_content for doc in filtered_results]
     context_text = "\n\n---\n\n".join(context_blocks)
     first_doc_meta = filtered_results[0].metadata
     matched_section = first_doc_meta.get("subsection_title") or first_doc_meta.get("section_title") or "General"
 
-    system_prompt = f"""You are the Northwestern University Staff Handbook Assistant.
-Below is the 'CONTEXT TEXT' extracted from the official staff handbook.
+    system_prompt = f"""You are the official Northwestern University Staff Handbook AI Assistant.
+Below is the 'CONTEXT TEXT' extracted from the official Northwestern Staff Handbook.
 
 STRICT RULES TO FOLLOW:
-1. Answer the user's question based ONLY on the provided 'CONTEXT TEXT'.
-2. Do NOT use any outside knowledge, assumptions, or extrapolations not present in the context text.
-3. If the answer is NOT explicitly stated in the context text, respond ONLY with: "This information is not available in the staff handbook."
-4. Provide a clear, professional, concise, and grammatically correct response in English.
+1. Answer the user's question accurately and thoroughly based ONLY on the provided 'CONTEXT TEXT'.
+2. Do NOT use outside knowledge, assumptions, or unverified claims not stated in the context text.
+3. If the answer is NOT present in the provided context text, respond strictly with: "This information is not available in the staff handbook."
+4. Provide a clear, helpful, professional, and well-structured response in English.
 
 CONTEXT TEXT:
 {context_text}
@@ -171,7 +171,7 @@ USER QUESTION:
     }
 
     try:
-        response = requests.post(ollama_generate_url, json=payload, timeout=60)
+        response = requests.post(ollama_generate_url, json=payload, timeout=180)
         bot_response = response.json().get("response", "No response received.")
         
         return {

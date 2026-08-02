@@ -46,9 +46,16 @@ def load_and_split_enriched_markdown(file_path: str):
         extracted_meta = parse_metadata_from_text(doc.page_content)
         combined_meta = {**doc.metadata, **extracted_meta}
         
+        headers = [combined_meta.get(k) for k in ["section_title", "subsection_title", "topic_title"] if combined_meta.get(k)]
+        header_prefix = " > ".join(headers) if headers else ""
+        keywords = combined_meta.get("keywords_en", "")
+        prefix_text = f"Context: [{header_prefix}] ({keywords})\n" if header_prefix else ""
+        
+        enriched_content = f"{prefix_text}{doc.page_content}"
+        
         enriched_docs.append(
             Document(
-                page_content=doc.page_content,
+                page_content=enriched_content,
                 metadata=combined_meta
             )
         )
@@ -80,7 +87,8 @@ def rebuild_vector_db():
     vector_store = Chroma(
         persist_directory=db_dir,
         embedding_function=embeddings,
-        collection_name=collection_name
+        collection_name=collection_name,
+        collection_metadata={"hnsw:space": "cosine"}
     )
     
     try:
@@ -92,7 +100,8 @@ def rebuild_vector_db():
     vector_store = Chroma(
         persist_directory=db_dir,
         embedding_function=embeddings,
-        collection_name=collection_name
+        collection_name=collection_name,
+        collection_metadata={"hnsw:space": "cosine"}
     )
     vector_store.add_documents(chunks)
     

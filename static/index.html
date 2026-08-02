@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="tr">
+<html lang="en">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -541,22 +541,22 @@
                 <div class="logo-icon">🎓</div>
                 <div class="brand-text">
                     <h1>Northwestern Staff Handbook AI</h1>
-                    <p>RAG Destekli Personel El Kitabı Asistanı</p>
+                    <p>RAG-Powered Staff Handbook Assistant</p>
                 </div>
             </div>
             <div class="header-actions">
                 <div class="badge badge-status">
                     <span class="status-dot"></span>
-                    <span>Canlı API (v0.1.0)</span>
+                    <span>Live API (v0.1.0)</span>
                 </div>
                 <button id="btnAdminIngest" class="btn-secondary btn-admin-ingest" style="display: none;" onclick="triggerIngest()">
-                    ⚡ Veritabanını Yenile
+                    ⚡ Rebuild DB
                 </button>
                 <a href="/docs" target="_blank" class="btn-secondary">
                     📑 Swagger UI
                 </a>
                 <button class="btn-secondary" onclick="logout()">
-                    🚪 Çıkış
+                    🚪 Logout
                 </button>
             </div>
         </header>
@@ -564,13 +564,13 @@
         <!-- Chat Container -->
         <div class="chat-container" id="chatContainer">
             <div class="welcome-card">
-                <h2>👋 Northwestern El Kitabı Asistanına Hoş Geldiniz</h2>
-                <p>Northwestern University personel el kitabı ile ilgili izin politikaları, çalışma saatleri, haklar ve prosedürler hakkında soru sorabilirsiniz.</p>
+                <h2>👋 Welcome to Northwestern Staff Handbook AI</h2>
+                <p>Ask any question regarding vacation policies, sick leave, employee benefits, remote work strategies, or university guidelines.</p>
                 <div class="quick-queries">
-                    <div class="chip" onclick="sendQuickQuery('What is the vacation policy for full-time staff?')">🏖️ Tatil & İzin Politikası</div>
-                    <div class="chip" onclick="sendQuickQuery('What are the rules regarding remote work?')">🏠 Uzaktan Çalışma Kuralları</div>
-                    <div class="chip" onclick="sendQuickQuery('How do employee health and benefits work?')">🏥 Sağlık ve Personel Hakları</div>
-                    <div class="chip" onclick="sendQuickQuery('What are the official university holidays?')">📅 Resmi Tatil Günleri</div>
+                    <div class="chip" onclick="sendQuickQuery('What is the vacation policy for full-time staff?')">🏖️ Vacation Policy</div>
+                    <div class="chip" onclick="sendQuickQuery('What are the rules regarding remote work?')">🏠 Remote Work Policy</div>
+                    <div class="chip" onclick="sendQuickQuery('How do employee health and benefits work?')">🏥 Health & Benefits</div>
+                    <div class="chip" onclick="sendQuickQuery('What are the official university holidays?')">📅 University Holidays</div>
                 </div>
             </div>
         </div>
@@ -582,11 +582,11 @@
                     type="text" 
                     id="userInput" 
                     class="chat-input" 
-                    placeholder="Personel el kitabı hakkında bir soru yazın... (Örn: What is the sick leave policy?)" 
+                    placeholder="Ask a question about the staff handbook... (e.g. What is the sick leave policy?)" 
                     autocomplete="off"
                 >
                 <button type="submit" class="btn-send" id="sendBtn">
-                    <span>Gönder</span>
+                    <span>Send</span>
                     <span>➔</span>
                 </button>
             </form>
@@ -596,26 +596,26 @@
         <div class="modal-overlay" id="loginModal">
             <div class="login-card">
                 <div class="login-icon">🔒</div>
-                <h2>Giriş Yapın</h2>
-                <p>Sohbet asistanını kullanabilmek için lütfen kimliğinizi doğrulayın.</p>
+                <h2>Sign In</h2>
+                <p>Please authenticate to access the staff handbook assistant.</p>
                 
-                <div style="margin-bottom: 12px; font-size: 0.78rem; color: #94a3b8;">Hızlı Doldur:</div>
+                <div style="margin-bottom: 12px; font-size: 0.78rem; color: #94a3b8;">Quick Fill:</div>
                 <div class="preset-buttons">
-                    <button type="button" class="preset-btn" onclick="fillCredentials('staff', 'nu2026pass')">👤 Staff Kullanıcısı</button>
-                    <button type="button" class="preset-btn" onclick="fillCredentials('admin', 'admin*123!')">⚡ Admin Kullanıcısı</button>
+                    <button type="button" class="preset-btn" onclick="fillCredentials('staff', 'nu2026pass')">👤 Staff User</button>
+                    <button type="button" class="preset-btn" onclick="fillCredentials('admin', 'admin*123!')">⚡ Admin User</button>
                 </div>
 
                 <form onsubmit="handleLogin(event)">
                     <div class="form-group">
-                        <label for="username">Kullanıcı Adı</label>
-                        <input type="text" id="username" class="form-control" placeholder="admin veya staff" required>
+                        <label for="username">Username</label>
+                        <input type="text" id="username" class="form-control" placeholder="admin or staff" required>
                     </div>
                     <div class="form-group">
-                        <label for="password">Şifre</label>
-                        <input type="password" id="password" class="form-control" placeholder="Şifrenizi girin" required>
+                        <label for="password">Password</label>
+                        <input type="password" id="password" class="form-control" placeholder="Enter your password" required>
                     </div>
-                    <button type="submit" class="btn-login">Giriş Yap ve Başla</button>
-                    <div class="error-message" id="loginError">Kullanıcı adı veya şifre hatalı!</div>
+                    <button type="submit" class="btn-login">Sign In & Start</button>
+                    <div class="error-message" id="loginError">Invalid username or password!</div>
                 </form>
             </div>
         </div>
@@ -671,7 +671,7 @@
                     body: JSON.stringify({ username: u, password: p })
                 });
 
-                if (!res.ok) throw new Error('Giriş başarısız.');
+                if (!res.ok) throw new Error('Authentication failed.');
 
                 const data = await res.json();
                 authToken = data.access_token;
@@ -683,7 +683,7 @@
                 hideLoginModal();
                 checkUserRole();
             } catch (err) {
-                errorDiv.innerText = err.message || 'Giriş yapılamadı.';
+                errorDiv.innerText = err.message || 'Login failed.';
                 errorDiv.style.display = 'block';
             }
         }
@@ -734,13 +734,13 @@
 
                 if (res.status === 401) {
                     logout();
-                    alert('Oturum süreniz doldu, lütfen tekrar giriş yapın.');
+                    alert('Session expired. Please log in again.');
                     return;
                 }
 
                 if (!res.ok) {
                     const errData = await res.json();
-                    appendBotMessage(`⚠️ Hata: ${errData.detail || 'Cevap alınamadı.'}`, false, null);
+                    appendBotMessage(`⚠️ Error: ${errData.detail || 'Failed to get answer.'}`, false, null);
                     return;
                 }
 
@@ -750,7 +750,7 @@
             } catch (err) {
                 typingElem.remove();
                 sendBtn.disabled = false;
-                appendBotMessage(`⚠️ Bağlantı hatası: Sunucuya ulaşılamadı.`, false, null);
+                appendBotMessage(`⚠️ Connection error: Server unreachable.`, false, null);
             }
         }
 
@@ -806,7 +806,7 @@
         }
 
         async function triggerIngest() {
-            if (!confirm("Vektör veritabanını yenilemek istediğinize emin misiniz?")) return;
+            if (!confirm("Are you sure you want to rebuild the vector database?")) return;
             try {
                 const res = await fetch('/api/admin/ingest', {
                     method: 'POST',
@@ -814,12 +814,12 @@
                 });
                 const data = await res.json();
                 if (res.ok) {
-                    alert(`Başarılı: ${data.message} (Toplam ${data.total_chunks} chunk)`);
+                    alert(`Success: ${data.message} (Total ${data.total_chunks} chunks)`);
                 } else {
-                    alert(`Hata: ${data.detail}`);
+                    alert(`Error: ${data.detail}`);
                 }
             } catch (err) {
-                alert("İşlem sırasında hata oluştu: " + err);
+                alert("An error occurred during ingestion: " + err);
             }
         }
 
