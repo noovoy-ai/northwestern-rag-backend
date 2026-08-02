@@ -3,6 +3,8 @@ import requests
 from fastapi import FastAPI, HTTPException, Depends, Security
 from fastapi.security import HTTPBearer, HTTPAuthorizationCredentials
 from fastapi.middleware.cors import CORSMiddleware
+from fastapi.staticfiles import StaticFiles
+from fastapi.responses import FileResponse, HTMLResponse
 from pydantic import BaseModel
 from langchain_community.vectorstores import Chroma
 from langchain_community.embeddings import OllamaEmbeddings
@@ -11,6 +13,10 @@ from ingest import rebuild_vector_db
 
 # Northwestern Staff Handbook RAG API - Staging Environment
 app = FastAPI(title="Northwestern Staff Handbook RAG API")
+
+if os.path.exists("static"):
+    app.mount("/static", StaticFiles(directory="static"), name="static")
+
 
 # Ortam Değişkenleri Yapılandırması
 OLLAMA_BASE_URL = os.getenv("OLLAMA_BASE_URL", "http://localhost:11434")
@@ -67,6 +73,14 @@ def get_vector_store():
     )
 
 vector_store = get_vector_store()
+
+@app.get("/", response_class=FileResponse)
+def read_root():
+    """Görsel Yapay Zeka Sohbet Arayüzü (Chat UI)."""
+    index_path = "static/index.html"
+    if os.path.exists(index_path):
+        return FileResponse(index_path)
+    return {"message": "Northwestern Staff Handbook RAG API running. Access /docs for Swagger UI."}
 
 @app.get("/health")
 def healthcheck():

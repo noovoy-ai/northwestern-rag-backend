@@ -1,0 +1,837 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Northwestern Staff Handbook AI Assistant</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --bg-gradient: linear-gradient(135deg, #0f172a 0%, #1e1b4b 50%, #0f172a 100%);
+            --panel-bg: rgba(30, 41, 59, 0.7);
+            --panel-border: rgba(255, 255, 255, 0.1);
+            --primary: #4f46e5;
+            --primary-hover: #4338ca;
+            --primary-light: #818cf8;
+            --purple-accent: #7c3aed;
+            --text-main: #f8fafc;
+            --text-muted: #94a3b8;
+            --user-bubble: linear-gradient(135deg, #4f46e5 0%, #7c3aed 100%);
+            --bot-bubble: rgba(51, 65, 85, 0.8);
+            --success: #10b981;
+            --warning: #f59e0b;
+            --danger: #ef4444;
+        }
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+        }
+
+        body {
+            background: var(--bg-gradient);
+            color: var(--text-main);
+            height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            overflow: hidden;
+        }
+
+        .app-container {
+            width: 100%;
+            max-width: 1100px;
+            height: 92vh;
+            background: var(--panel-bg);
+            backdrop-filter: blur(16px);
+            -webkit-backdrop-filter: blur(16px);
+            border: 1px solid var(--panel-border);
+            border-radius: 24px;
+            box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.5);
+            display: flex;
+            flex-direction: column;
+            overflow: hidden;
+            position: relative;
+        }
+
+        /* Header */
+        header {
+            padding: 18px 28px;
+            border-bottom: 1px solid var(--panel-border);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            background: rgba(15, 23, 42, 0.6);
+        }
+
+        .brand-info {
+            display: flex;
+            align-items: center;
+            gap: 14px;
+        }
+
+        .logo-icon {
+            width: 42px;
+            height: 42px;
+            background: linear-gradient(135deg, #4f46e5, #9333ea);
+            border-radius: 12px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            font-size: 22px;
+            box-shadow: 0 4px 12px rgba(79, 70, 229, 0.4);
+        }
+
+        .brand-text h1 {
+            font-size: 1.15rem;
+            font-weight: 700;
+            background: linear-gradient(90deg, #ffffff, #c7d2fe);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+
+        .brand-text p {
+            font-size: 0.78rem;
+            color: var(--text-muted);
+        }
+
+        .header-actions {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .badge {
+            padding: 6px 12px;
+            border-radius: 20px;
+            font-size: 0.75rem;
+            font-weight: 600;
+            display: flex;
+            align-items: center;
+            gap: 6px;
+        }
+
+        .badge-status {
+            background: rgba(16, 185, 129, 0.15);
+            color: #34d399;
+            border: 1px solid rgba(52, 211, 153, 0.3);
+        }
+
+        .status-dot {
+            width: 8px;
+            height: 8px;
+            background-color: #34d399;
+            border-radius: 50%;
+            box-shadow: 0 0 8px #34d399;
+        }
+
+        .btn-secondary {
+            background: rgba(255, 255, 255, 0.08);
+            border: 1px solid var(--panel-border);
+            color: var(--text-main);
+            padding: 8px 16px;
+            border-radius: 10px;
+            font-size: 0.82rem;
+            font-weight: 500;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            text-decoration: none;
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+        }
+
+        .btn-secondary:hover {
+            background: rgba(255, 255, 255, 0.15);
+            transform: translateY(-1px);
+        }
+
+        .btn-admin-ingest {
+            background: rgba(124, 58, 237, 0.2);
+            border: 1px solid rgba(167, 139, 250, 0.4);
+            color: #c4b5fd;
+        }
+
+        .btn-admin-ingest:hover {
+            background: rgba(124, 58, 237, 0.35);
+        }
+
+        /* Main Chat Area */
+        .chat-container {
+            flex: 1;
+            padding: 24px;
+            overflow-y: auto;
+            display: flex;
+            flex-direction: column;
+            gap: 20px;
+            scroll-behavior: smooth;
+        }
+
+        .chat-container::-webkit-scrollbar {
+            width: 6px;
+        }
+
+        .chat-container::-webkit-scrollbar-thumb {
+            background: rgba(255, 255, 255, 0.15);
+            border-radius: 10px;
+        }
+
+        /* Welcome Card */
+        .welcome-card {
+            background: rgba(15, 23, 42, 0.4);
+            border: 1px dashed rgba(255, 255, 255, 0.15);
+            border-radius: 16px;
+            padding: 24px;
+            text-align: center;
+            margin-bottom: 10px;
+        }
+
+        .welcome-card h2 {
+            font-size: 1.3rem;
+            margin-bottom: 8px;
+            color: #e2e8f0;
+        }
+
+        .welcome-card p {
+            font-size: 0.9rem;
+            color: var(--text-muted);
+            max-width: 650px;
+            margin: 0 auto 16px auto;
+        }
+
+        .quick-queries {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 10px;
+            justify-content: center;
+        }
+
+        .chip {
+            background: rgba(79, 70, 229, 0.15);
+            border: 1px solid rgba(129, 140, 248, 0.3);
+            color: #a5b4fc;
+            padding: 8px 14px;
+            border-radius: 20px;
+            font-size: 0.82rem;
+            cursor: pointer;
+            transition: all 0.2s ease;
+        }
+
+        .chip:hover {
+            background: rgba(79, 70, 229, 0.3);
+            color: #ffffff;
+            transform: translateY(-2px);
+        }
+
+        /* Message Bubbles */
+        .message-row {
+            display: flex;
+            gap: 14px;
+            max-width: 85%;
+            animation: fadeIn 0.3s ease-in-out;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(8px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        .message-row.user {
+            align-self: flex-end;
+            flex-direction: row-reverse;
+        }
+
+        .message-row.bot {
+            align-self: flex-start;
+        }
+
+        .avatar {
+            width: 38px;
+            height: 38px;
+            border-radius: 10px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            font-size: 18px;
+            flex-shrink: 0;
+        }
+
+        .message-row.user .avatar {
+            background: linear-gradient(135deg, #6366f1, #8b5cf6);
+        }
+
+        .message-row.bot .avatar {
+            background: linear-gradient(135deg, #0ea5e9, #2563eb);
+        }
+
+        .message-content {
+            display: flex;
+            flex-direction: column;
+            gap: 6px;
+        }
+
+        .bubble {
+            padding: 14px 18px;
+            border-radius: 18px;
+            font-size: 0.93rem;
+            line-height: 1.55;
+            white-space: pre-wrap;
+        }
+
+        .message-row.user .bubble {
+            background: var(--user-bubble);
+            color: #ffffff;
+            border-bottom-right-radius: 4px;
+            box-shadow: 0 4px 14px rgba(79, 70, 229, 0.3);
+        }
+
+        .message-row.bot .bubble {
+            background: var(--bot-bubble);
+            color: #f1f5f9;
+            border: 1px solid var(--panel-border);
+            border-bottom-left-radius: 4px;
+        }
+
+        .message-meta {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            font-size: 0.72rem;
+            color: var(--text-muted);
+            padding: 0 4px;
+        }
+
+        .message-row.user .message-meta {
+            justify-content: flex-end;
+        }
+
+        .section-tag {
+            background: rgba(59, 130, 246, 0.15);
+            color: #60a5fa;
+            padding: 3px 8px;
+            border-radius: 6px;
+            border: 1px solid rgba(96, 165, 250, 0.2);
+            font-weight: 500;
+        }
+
+        /* Typing Indicator */
+        .typing-indicator {
+            display: flex;
+            align-items: center;
+            gap: 5px;
+            padding: 12px 18px;
+            background: var(--bot-bubble);
+            border-radius: 18px;
+            width: fit-content;
+        }
+
+        .typing-indicator span {
+            width: 8px;
+            height: 8px;
+            background: #94a3b8;
+            border-radius: 50%;
+            animation: bounce 1.4s infinite ease-in-out both;
+        }
+
+        .typing-indicator span:nth-child(1) { animation-delay: -0.32s; }
+        .typing-indicator span:nth-child(2) { animation-delay: -0.16s; }
+
+        @keyframes bounce {
+            0%, 80%, 100% { transform: scale(0); }
+            40% { transform: scale(1); }
+        }
+
+        /* Footer Input */
+        footer {
+            padding: 16px 24px;
+            background: rgba(15, 23, 42, 0.7);
+            border-top: 1px solid var(--panel-border);
+        }
+
+        .input-form {
+            display: flex;
+            gap: 12px;
+            align-items: center;
+            position: relative;
+        }
+
+        .chat-input {
+            flex: 1;
+            background: rgba(30, 41, 59, 0.8);
+            border: 1px solid var(--panel-border);
+            border-radius: 14px;
+            padding: 14px 18px;
+            color: var(--text-main);
+            font-size: 0.95rem;
+            outline: none;
+            transition: all 0.2s ease;
+        }
+
+        .chat-input:focus {
+            border-color: var(--primary-light);
+            box-shadow: 0 0 0 3px rgba(99, 102, 241, 0.25);
+            background: rgba(30, 41, 59, 1);
+        }
+
+        .chat-input::placeholder {
+            color: #64748b;
+        }
+
+        .btn-send {
+            background: linear-gradient(135deg, #4f46e5, #7c3aed);
+            border: none;
+            color: white;
+            padding: 14px 22px;
+            border-radius: 14px;
+            font-size: 0.95rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            box-shadow: 0 4px 14px rgba(79, 70, 229, 0.4);
+        }
+
+        .btn-send:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 20px rgba(79, 70, 229, 0.6);
+        }
+
+        .btn-send:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+            transform: none;
+        }
+
+        /* Login Modal Overlay */
+        .modal-overlay {
+            position: absolute;
+            inset: 0;
+            background: rgba(15, 23, 42, 0.85);
+            backdrop-filter: blur(12px);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            z-index: 100;
+            animation: fadeIn 0.2s ease;
+        }
+
+        .login-card {
+            background: #1e293b;
+            border: 1px solid var(--panel-border);
+            border-radius: 20px;
+            padding: 32px;
+            width: 100%;
+            max-width: 420px;
+            box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.5);
+            text-align: center;
+        }
+
+        .login-icon {
+            width: 56px;
+            height: 56px;
+            background: linear-gradient(135deg, #4f46e5, #7c3aed);
+            border-radius: 16px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            font-size: 28px;
+            margin: 0 auto 16px auto;
+        }
+
+        .login-card h2 {
+            font-size: 1.4rem;
+            margin-bottom: 6px;
+        }
+
+        .login-card p {
+            font-size: 0.85rem;
+            color: var(--text-muted);
+            margin-bottom: 24px;
+        }
+
+        .form-group {
+            text-align: left;
+            margin-bottom: 16px;
+        }
+
+        .form-group label {
+            display: block;
+            font-size: 0.8rem;
+            font-weight: 500;
+            margin-bottom: 6px;
+            color: #cbd5e1;
+        }
+
+        .form-control {
+            width: 100%;
+            background: #0f172a;
+            border: 1px solid var(--panel-border);
+            border-radius: 10px;
+            padding: 12px 14px;
+            color: white;
+            font-size: 0.9rem;
+            outline: none;
+        }
+
+        .form-control:focus {
+            border-color: var(--primary-light);
+        }
+
+        .preset-buttons {
+            display: flex;
+            gap: 10px;
+            margin-bottom: 20px;
+        }
+
+        .preset-btn {
+            flex: 1;
+            padding: 8px;
+            border-radius: 8px;
+            border: 1px solid rgba(255,255,255,0.1);
+            background: rgba(255,255,255,0.05);
+            color: #cbd5e1;
+            font-size: 0.78rem;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+
+        .preset-btn:hover {
+            background: rgba(79, 70, 229, 0.2);
+            border-color: var(--primary-light);
+            color: white;
+        }
+
+        .btn-login {
+            width: 100%;
+            padding: 12px;
+            border-radius: 10px;
+            border: none;
+            background: linear-gradient(135deg, #4f46e5, #7c3aed);
+            color: white;
+            font-weight: 600;
+            font-size: 0.95rem;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+
+        .btn-login:hover {
+            opacity: 0.95;
+        }
+
+        .error-message {
+            color: #f87171;
+            font-size: 0.8rem;
+            margin-top: 12px;
+            display: none;
+        }
+    </style>
+</head>
+<body>
+
+    <div class="app-container">
+        <!-- Header -->
+        <header>
+            <div class="brand-info">
+                <div class="logo-icon">🎓</div>
+                <div class="brand-text">
+                    <h1>Northwestern Staff Handbook AI</h1>
+                    <p>RAG Destekli Personel El Kitabı Asistanı</p>
+                </div>
+            </div>
+            <div class="header-actions">
+                <div class="badge badge-status">
+                    <span class="status-dot"></span>
+                    <span>Canlı API (v0.1.0)</span>
+                </div>
+                <button id="btnAdminIngest" class="btn-secondary btn-admin-ingest" style="display: none;" onclick="triggerIngest()">
+                    ⚡ Veritabanını Yenile
+                </button>
+                <a href="/docs" target="_blank" class="btn-secondary">
+                    📑 Swagger UI
+                </a>
+                <button class="btn-secondary" onclick="logout()">
+                    🚪 Çıkış
+                </button>
+            </div>
+        </header>
+
+        <!-- Chat Container -->
+        <div class="chat-container" id="chatContainer">
+            <div class="welcome-card">
+                <h2>👋 Northwestern El Kitabı Asistanına Hoş Geldiniz</h2>
+                <p>Northwestern University personel el kitabı ile ilgili izin politikaları, çalışma saatleri, haklar ve prosedürler hakkında soru sorabilirsiniz.</p>
+                <div class="quick-queries">
+                    <div class="chip" onclick="sendQuickQuery('What is the vacation policy for full-time staff?')">🏖️ Tatil & İzin Politikası</div>
+                    <div class="chip" onclick="sendQuickQuery('What are the rules regarding remote work?')">🏠 Uzaktan Çalışma Kuralları</div>
+                    <div class="chip" onclick="sendQuickQuery('How do employee health and benefits work?')">🏥 Sağlık ve Personel Hakları</div>
+                    <div class="chip" onclick="sendQuickQuery('What are the official university holidays?')">📅 Resmi Tatil Günleri</div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Footer Form -->
+        <footer>
+            <form class="input-form" id="chatForm" onsubmit="handleSend(event)">
+                <input 
+                    type="text" 
+                    id="userInput" 
+                    class="chat-input" 
+                    placeholder="Personel el kitabı hakkında bir soru yazın... (Örn: What is the sick leave policy?)" 
+                    autocomplete="off"
+                >
+                <button type="submit" class="btn-send" id="sendBtn">
+                    <span>Gönder</span>
+                    <span>➔</span>
+                </button>
+            </form>
+        </footer>
+
+        <!-- Login Modal -->
+        <div class="modal-overlay" id="loginModal">
+            <div class="login-card">
+                <div class="login-icon">🔒</div>
+                <h2>Giriş Yapın</h2>
+                <p>Sohbet asistanını kullanabilmek için lütfen kimliğinizi doğrulayın.</p>
+                
+                <div style="margin-bottom: 12px; font-size: 0.78rem; color: #94a3b8;">Hızlı Doldur:</div>
+                <div class="preset-buttons">
+                    <button type="button" class="preset-btn" onclick="fillCredentials('staff', 'nu2026pass')">👤 Staff Kullanıcısı</button>
+                    <button type="button" class="preset-btn" onclick="fillCredentials('admin', 'admin*123!')">⚡ Admin Kullanıcısı</button>
+                </div>
+
+                <form onsubmit="handleLogin(event)">
+                    <div class="form-group">
+                        <label for="username">Kullanıcı Adı</label>
+                        <input type="text" id="username" class="form-control" placeholder="admin veya staff" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="password">Şifre</label>
+                        <input type="password" id="password" class="form-control" placeholder="Şifrenizi girin" required>
+                    </div>
+                    <button type="submit" class="btn-login">Giriş Yap ve Başla</button>
+                    <div class="error-message" id="loginError">Kullanıcı adı veya şifre hatalı!</div>
+                </form>
+            </div>
+        </div>
+
+    </div>
+
+    <script>
+        let authToken = localStorage.getItem('rag_token') || null;
+        let userRole = localStorage.getItem('rag_role') || null;
+
+        document.addEventListener('DOMContentLoaded', () => {
+            if (authToken) {
+                hideLoginModal();
+                checkUserRole();
+            } else {
+                showLoginModal();
+            }
+        });
+
+        function showLoginModal() {
+            document.getElementById('loginModal').style.display = 'flex';
+        }
+
+        function hideLoginModal() {
+            document.getElementById('loginModal').style.display = 'none';
+        }
+
+        function fillCredentials(user, pass) {
+            document.getElementById('username').value = user;
+            document.getElementById('password').value = pass;
+        }
+
+        function checkUserRole() {
+            if (userRole === 'admin') {
+                document.getElementById('btnAdminIngest').style.display = 'inline-flex';
+            } else {
+                document.getElementById('btnAdminIngest').style.display = 'none';
+            }
+        }
+
+        async function handleLogin(e) {
+            e.preventDefault();
+            const u = document.getElementById('username').value.trim();
+            const p = document.getElementById('password').value.trim();
+            const errorDiv = document.getElementById('loginError');
+
+            errorDiv.style.display = 'none';
+
+            try {
+                const res = await fetch('/api/login', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ username: u, password: p })
+                });
+
+                if (!res.ok) throw new Error('Giriş başarısız.');
+
+                const data = await res.json();
+                authToken = data.access_token;
+                userRole = u === 'admin' ? 'admin' : 'user';
+
+                localStorage.setItem('rag_token', authToken);
+                localStorage.setItem('rag_role', userRole);
+
+                hideLoginModal();
+                checkUserRole();
+            } catch (err) {
+                errorDiv.innerText = err.message || 'Giriş yapılamadı.';
+                errorDiv.style.display = 'block';
+            }
+        }
+
+        function logout() {
+            localStorage.removeItem('rag_token');
+            localStorage.removeItem('rag_role');
+            authToken = null;
+            userRole = null;
+            showLoginModal();
+        }
+
+        function sendQuickQuery(text) {
+            document.getElementById('userInput').value = text;
+            handleSend(new Event('submit'));
+        }
+
+        async function handleSend(e) {
+            if (e) e.preventDefault();
+            const input = document.getElementById('userInput');
+            const query = input.value.trim();
+            if (!query) return;
+
+            if (!authToken) {
+                showLoginModal();
+                return;
+            }
+
+            appendUserMessage(query);
+            input.value = '';
+
+            const typingElem = appendTypingIndicator();
+            const sendBtn = document.getElementById('sendBtn');
+            sendBtn.disabled = true;
+
+            try {
+                const res = await fetch('/api/chat', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'Authorization': `Bearer ${authToken}`
+                    },
+                    body: JSON.stringify({ question: query })
+                });
+
+                typingElem.remove();
+                sendBtn.disabled = false;
+
+                if (res.status === 401) {
+                    logout();
+                    alert('Oturum süreniz doldu, lütfen tekrar giriş yapın.');
+                    return;
+                }
+
+                if (!res.ok) {
+                    const errData = await res.json();
+                    appendBotMessage(`⚠️ Hata: ${errData.detail || 'Cevap alınamadı.'}`, false, null);
+                    return;
+                }
+
+                const data = await res.json();
+                appendBotMessage(data.answer, data.source_found, data.section);
+
+            } catch (err) {
+                typingElem.remove();
+                sendBtn.disabled = false;
+                appendBotMessage(`⚠️ Bağlantı hatası: Sunucuya ulaşılamadı.`, false, null);
+            }
+        }
+
+        function appendUserMessage(text) {
+            const container = document.getElementById('chatContainer');
+            const row = document.createElement('div');
+            row.className = 'message-row user';
+            row.innerHTML = `
+                <div class="avatar">👤</div>
+                <div class="message-content">
+                    <div class="bubble">${escapeHtml(text)}</div>
+                    <div class="message-meta">${new Date().toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'})}</div>
+                </div>
+            `;
+            container.appendChild(row);
+            container.scrollTop = container.scrollHeight;
+        }
+
+        function appendBotMessage(text, sourceFound, section) {
+            const container = document.getElementById('chatContainer');
+            const row = document.createElement('div');
+            row.className = 'message-row bot';
+
+            let metaInfo = new Date().toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'});
+            if (sourceFound && section) {
+                metaInfo += ` • <span class="section-tag">📌 ${escapeHtml(section)}</span>`;
+            }
+
+            row.innerHTML = `
+                <div class="avatar">🤖</div>
+                <div class="message-content">
+                    <div class="bubble">${escapeHtml(text)}</div>
+                    <div class="message-meta">${metaInfo}</div>
+                </div>
+            `;
+            container.appendChild(row);
+            container.scrollTop = container.scrollHeight;
+        }
+
+        function appendTypingIndicator() {
+            const container = document.getElementById('chatContainer');
+            const div = document.createElement('div');
+            div.className = 'message-row bot';
+            div.innerHTML = `
+                <div class="avatar">🤖</div>
+                <div class="typing-indicator">
+                    <span></span><span></span><span></span>
+                </div>
+            `;
+            container.appendChild(div);
+            container.scrollTop = container.scrollHeight;
+            return div;
+        }
+
+        async function triggerIngest() {
+            if (!confirm("Vektör veritabanını yenilemek istediğinize emin misiniz?")) return;
+            try {
+                const res = await fetch('/api/admin/ingest', {
+                    method: 'POST',
+                    headers: { 'Authorization': `Bearer ${authToken}` }
+                });
+                const data = await res.json();
+                if (res.ok) {
+                    alert(`Başarılı: ${data.message} (Toplam ${data.total_chunks} chunk)`);
+                } else {
+                    alert(`Hata: ${data.detail}`);
+                }
+            } catch (err) {
+                alert("İşlem sırasında hata oluştu: " + err);
+            }
+        }
+
+        function escapeHtml(str) {
+            return str.replace(/[&<>"']/g, (m) => ({
+                '&': '&amp;',
+                '<': '&lt;',
+                '>': '&gt;',
+                '"': '&quot;',
+                "'": '&#039;'
+            })[m]);
+        }
+    </script>
+</body>
+</html>

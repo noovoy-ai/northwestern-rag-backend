@@ -18,6 +18,7 @@ services:
     volumes:
       - ./chroma_db:/app/chroma_db
       - ./handbook_vectordb_ready.md:/app/handbook_vectordb_ready.md
+      - ./static:/app/static
     extra_hosts:
       - "host.docker.internal:host-gateway"
     deploy:
