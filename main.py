@@ -9,6 +9,7 @@ from langchain_community.embeddings import OllamaEmbeddings
 from jose import jwt, JWTError
 from ingest import rebuild_vector_db
 
+# Northwestern Staff Handbook RAG API - Staging Environment
 app = FastAPI(title="Northwestern Staff Handbook RAG API")
 
 # Ortam Değişkenleri Yapılandırması
