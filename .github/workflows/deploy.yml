@@ -11,13 +11,19 @@ jobs:
       - name: Checkout Code
         uses: actions/checkout@v4
 
+      - name: Ensure Environment File
+        run: |
+          if [ ! -f .env ]; then
+            cp .env.example .env
+          fi
+
       - name: Build Docker Image
         run: |
           docker compose build
 
       - name: Deploy Container
         run: |
-          docker compose up -d --remove-orphans
+          docker compose up -d --force-recreate --remove-orphans
 
       - name: Cleanup Unused Docker Images
         run: |
