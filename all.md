@@ -12,7 +12,8 @@ Bu doküman, **Northwestern University Staff Handbook RAG** projesinin mimarisin
 5. [Sistemi Sıfırdan Tekrar Kurma ve Çalıştırma Rehberi](#5-sistemi-sıfırdan-tekrar-kurma-ve-çalıştırma-rehberi)
 6. [Sistemin İşleyiş Mantığı ve Mimari Şemalar (Grafikler)](#6-sistemin-işleyiş-mantığı-ve-mimari-şemalar-grafikler)
 7. [Giriş Bilgileri, Admin Şifresi ve Güvenlik Mimarisi](#7-giriş-bilgileri-admin-şifresi-ve-güvenlik-mimarisi)
-8. [Ekip Çalışması ve GitHub CI/CD Otomasyonu](#8-ekip-çalışması-ve-github-cicd-otomasyonu)
+8. [Ekip Çalışması, Git İş Akışı ve GitHub CI/CD Otomasyonu](#8-ekip-çalışması-git-iş-akışı-ve-github-cicd-otomasyonu)
+9. [Yapay Zeka Ajanları Yönetimi ve AGENTS.md Rehberi](#9-yapay-zeka-ajanları-yönetimi-ve-agentsmd-rehberi)
 
 ---
 
@@ -210,8 +211,152 @@ sequenceDiagram
 
 ---
 
-## 8. Ekip Çalışması ve GitHub CI/CD Otomasyonu
+## 8. Ekip Çalışması, Git İş Akışı ve GitHub CI/CD Otomasyonu
 
-Proje deponuza push yapıldığında GitHub Actions self-hosted runner otomatik olarak `docker compose up -d --build` komutunu çalıştırarak sunucuyu günceller:
+Bu proje **GitHub** üzerinde iş birliği ile geliştirilmektedir. Depoda (Repository) ortak çalışan (Collaborator) olarak yer alan tüm ekip üyelerinin kod kalitesini koruması, canlıdaki sunucuyu (uzaktaki **Mac Mini 2**) bozmaması ve güvenli bir şekilde geliştirme yapması için aşağıdaki kuralları ve adımları uygulaması **zorunludur**.
+
 - **GitHub Repository:** [https://github.com/yunusemre-celik/northwestern-rag-backend](https://github.com/yunusemre-celik/northwestern-rag-backend)
-- **Branch:** `main`
+- **Canlı / Dağıtım Branch:** `main` (Mac Mini 2 üzerinde otomatik çalışan dal)
+
+---
+
+### 📘 8.1 Temel Git ve Ekip Çalışması Terimleri Rehberi
+
+Ekip içinde ortak bir dil konuşabilmek için kullanılan temel terimler ve anlamları:
+
+| Terim | Tanım ve Açıklama |
+| :--- | :--- |
+| **Repository (Repo)** | Projenin kaynak kodlarının, versiyon geçmişinin ve konfigürasyonlarının tutulduğu GitHub deposu. |
+| **Main Branch (Ana Dal)** | Canlı ortamda (Mac Mini 2 sunucusunda) çalışan, her zaman stabil ve test edilmiş kodları içeren ana üretim dalı. |
+| **Feature Branch (Özellik Dalı)** | Bir ekip üyesinin yeni bir özellik geliştirmek veya hata çözmek için `main` dalından ayırarak kendi bilgisayarında açtığı geçici çalışma dalı (örn: `feature/login-ui`, `fix/chat-timeout`). |
+| **Commit** | Yapılan kod değişikliklerinin anlamlı bir mesajla (`git commit -m "..."`) yerel versiyon geçmişine kaydedilmesi. |
+| **Push** | Yerel bilgisayarınızda yaptığınız commit'leri GitHub'daki uzak depoya yükleme işlemi (`git push origin <dal-adi>`). |
+| **Pull Request (PR)** | Kendi dalınızda tamamladığınız değişiklikleri incelemeleri ve `main` dalına dahil etmeleri için ekibe sunduğunuz "Kod Birleştirme Talebi". |
+| **Code Review (Kod İncelemesi)** | Açılan PR üzerindeki kodların diğer ekip üyeleri tarafından okunması, kontrol edilmesi ve onaylanması süreci. |
+| **Merge (Birleştirme)** | PR onaylandıktan ve testlerden geçtikten sonra, özellik dalındaki kodların `main` dalıyla resmi olarak birleştirilmesi. |
+| **Merge Conflict (Çakışma)** | İki geliştiricinin aynı dosyanın aynı satırlarını farklı şekilde değiştirmesi sonucu Git'in hangi kodu seçeceğine karar veremediği durum. |
+| **CI/CD & Self-Hosted Runner** | GitHub'a kod push edildiğinde, uzaktaki Mac Mini 2 sunucusunun otomatik olarak yeni kodu çekip Docker konteynırlarını baştan derleyerek (`docker compose up -d --build`) canlıya alması otomasyonu. |
+
+---
+
+### 🔄 8.2 Adım Adım Güvenli Geliştirme ve Test Akışı
+
+Bir ekip üyesi projeye yeni bir özellik ekleyeceğinde veya hata düzelteceğinde **kesinlikle** şu sırayı takip etmelidir:
+
+```mermaid
+graph TD
+    A[1. main Dalını Güncelle git pull] --> B[2. Yeni Feature Branch Aç feature/...]
+    B --> C[3. Yerelde Geliştirme & Test Et]
+    C --> D[4. Commit & Push Yap]
+    D --> E[5. GitHub üzerinde Pull Request PR Aç]
+    E --> F[6. Ekip Kod İncelemesi & Mac Mini 2 Testi]
+    F -->|Onaylandı| G[7. Merge to main & Otomatik CI/CD Canlı Deployment]
+    F -->|Revize Gerekli| C
+```
+
+#### 📌 Adım 1: Güncel Kodu Çekin
+Çalışmaya başlamadan önce her zaman yerelinizdeki `main` dalını güncelleyin:
+```bash
+git checkout main
+git pull origin main
+```
+
+#### 📌 Adım 2: Yeni Bir Özellik Dalı (Feature Branch) Oluşturun
+Doğrudan `main` dalı üzerinde **kesinlikle geliştirme yapmayın**. Yapacağınız işe uygun bir isimle yeni bir dal açın:
+```bash
+# Yeni özellik için:
+git checkout -b feature/eklenecek-ozellik-adi
+
+# Hata düzeltme için:
+git checkout -b fix/duzeltilecek-hata-adi
+```
+
+#### 📌 Adım 3: Yerel Bilgisayarınızda Geliştirin ve Test Edin
+- Değişikliklerinizi yapın.
+- Yerel Docker ortamınızda (`docker compose up -d --build`) veya yerel Python ortamınızda kodun hatasız çalıştığından ve servislerin ayağa kalktığından emin olun.
+
+#### 📌 Adım 4: Değişiklikleri Commit Edin ve Pushlayın
+Değişikliklerinizi açık ve anlaşılır mesajlarla kaydedin, ardından GitHub'a yükleyin:
+```bash
+git add .
+git commit -m "feat: Sohbet arayüzüne temizleme butonu eklendi"
+git push origin feature/eklenecek-ozellik-adi
+```
+
+#### 📌 Adım 5: GitHub Üzerinde Pull Request (PR) Oluşturun
+1. GitHub deposuna gidin ([yunusemre-celik/northwestern-rag-backend](https://github.com/yunusemre-celik/northwestern-rag-backend)).
+2. **"Compare & pull request"** butonuna tıklayın.
+3. Açılan PR şablonunda:
+   - Neleri değiştirdiğinizi kısa başlıklar halinde yazın.
+   - Varsa ekran görüntüsü veya test çıktısını ekleyin.
+   - İncelemesi için ekip arkadaşlarınıza yetki verin (Reviewers kısmından ekleyin).
+
+#### 📌 Adım 6: Uzaktaki Mac Mini 2 Sunucusunda Test ve Onay Alma
+- PR açıldığında, değişiklikler **henüz ana canlı ortama yansımaz**.
+- Ekip üyeleri kodu inceler ve gerekirse test etmek üzere ilgili dalı kendi bilgisayarlarına veya Mac Mini 2 üzerindeki staging ortamına çekerek doğrular.
+- Herhangi bir hata veya eksik tespit edilirse, geliştirici kendi dalına ek commit'ler atarak PR'ı günceller (`git push origin feature/...`).
+
+#### 📌 Adım 7: Merge (Birleştirme) ve Canlı Deployment
+- PR **en az 1 ekip üyesi tarafından onaylandıktan (Approve)** ve testler başarılı olduktan sonra PR sahibi veya proje yöneticisi **"Squash and merge"** veya **"Merge pull request"** butonuna basar.
+- **Otomatik Canlı Yayına Alma:** Kod `main` dalına birleştiği an, uzaktaki **Mac Mini 2** sunucusunda çalışan GitHub Actions Runner otomatik olarak tetiklenir:
+  1. Güncel kodu çeker (`git pull`).
+  2. `docker compose up -d --build` çalıştırarak canlı sistemi 0-downtime ile günceller.
+
+---
+
+### ⚠️ 8.3 Ekip Çalışmasında Altın Kurallar (Neler Yapılmalı & Yapılmamalı?)
+
+#### 🔴 KESİNLİKLE YAPILMAMASI GEREKENLER (DON'Ts):
+1. ❌ **`main` Dalına Doğrudan Push Yapmayın:** `git push origin main` komutunu doğrudan çalıştırmayın. Tüm kodlar PR ile girmelidir.
+2. ❌ **Hassas Verileri (Secret/Key/Password) Commit Etmeyin:** `.env` dosyalarını, şifreleri, API key'leri veya JWT SECRET dizilerini asla koda gömmeyin ve git'e eklemeyin. `.gitignore` dosyasını koruyun.
+3. ❌ **Test Edilmemiş/Kırık Kodu PR Yapmayın:** Kendi yerelinizde çalıştıramadığınız veya derlenmeyen kodu ekibin onayına sunmayın.
+4. ❌ **Çok Büyük / Devasa PR'lar Açmayın:** 50 dosyayı birden değiştiren devasa PR'lar yerine, küçük ve modüler parçalar (1-3 dosyalık odaklanmış PR'lar) açın. Kod incelemesini kolaylaştırın.
+5. ❌ **Gereksiz Büyük Dosyaları Depoya Ekleleyin:** `chroma_db/`, `.venv/`, `__pycache__/`, veya devasa model dosyalarını `.gitignore` dışına çıkarıp git'e pushlamayın.
+
+#### 🟢 MUTLAKA YAPILMASI GEREKENLER (DOs):
+1. ✅ **Her Çalışma Öncesi `git pull` Yapın:** Çakışma (conflict) yaşamamak için her yeni özelliğe başlamadan önce `main` dalını çekin.
+2. ✅ **Merge Conflict Yaşarsanız Sakince Çözün:** PR açmadan önce `main` dalını kendi dikeyinize çekip (`git merge main`), oluşan çakışmaları editörünüzde çözüp commit atın.
+3. ✅ **Anlamlı Commit Mesajları Kullanın:** `fix: bug` yerine `fix(auth): JWT token doğrulama zaman aşımı hatası düzeltildi` şeklinde açıklayıcı olun.
+4. ✅ **Kod İncelemelerine Katılın:** Arkadaşlarınızın açtığı PR'ları okuyun, soru sorun, yapıcı geri bildirimlerde bulunun.
+
+---
+
+## 9. Yapay Zeka Ajanları Yönetimi ve `AGENTS.md` Rehberi
+
+Bu projede birden fazla geliştirici **Antigravity IDE**, **Cursor**, **Windsurf**, **Claude Code** veya **GitHub Copilot** gibi Yapay Zeka Kodlama Ajanlarını kullanarak geliştirme yapmaktadır.
+
+Ajanların projeyi bozmasını, mimari dışına çıkmasını ve gereksiz kod değişiklikleri yapmasını engellemek amacıyla proje kök dizininde [`AGENTS.md`](file:///Users/mini/agent_1/AGENTS.md) dosyası oluşturulmuştur.
+
+---
+
+### 🤖 9.1 `AGENTS.md` Nedir ve Nasıl Çalışır?
+
+- **Projenin Anayasasıdır:** Modern AI IDE'leri ve Ajanları (Antigravity, Cursor, Claude Code vb.) bir projeyi açtığı anda kök dizindeki `AGENTS.md` dosyasını otomatik olarak okur.
+- **Disiplin Sağlar:** Ajanın projedeki var olan kütüphaneler dışına çıkmasını, tüm dosyayı gereksiz yere baştan yazmasını (diff patlaması) ve güvenlik açıklarına neden olmasını engeller.
+
+---
+
+### ⚙️ 9.2 Projemizdeki `AGENTS.md` Kuralları Özeti
+
+1. **Teknoloji Yığını Sınırlamaları:**
+   - Web: Sadece **FastAPI** (`main.py`)
+   - Vektör DB: Sadece **ChromaDB** (`./chroma_db` + SQLite3)
+   - LLM & Embedding: Sadece **Ollama** (`qwen2.5:7b` & `nomic-embed-text`)
+   - Frontend: Vanilla HTML/JS/CSS (Gerekmedikçe React/Vue eklenemez)
+2. **Kapsam Sınırı (Minimal Edits):** Ajan sadece istenen 1-2 satırı/fonksiyonu değiştirebilir. Dosyayı baştan yazamaz.
+3. **Güvenlik:** Gizli bilgiler (`.env`, `SECRET_KEY`) koda gömülemez (`os.getenv()` zorunlu).
+
+---
+
+### 🔄 9.3 Köklü Mimari Değişiklik veya `AGENTS.md` Güncelleme Süreci
+
+Ajan kuralları veya projenin ana mimarisi tek bir geliştirici veya yapay zeka ajanı tarafından **tek taraflı olarak DEĞİŞTİRİLEMEZ**.
+
+Köklü bir değişiklik gerektiğinde izlenecek adımlar:
+
+1. **Ekip İçi Görüşme:** Değişiklik ihtiyacı önce ekip kanallarında tartışılır.
+2. **Feature Branch Açma:** `feature/update-agent-rules` veya `feature/arch-redesign` adında bir dal açılır.
+3. **PR (Pull Request) Hazırlama:** Gerekçe ve yeni kurallar PR açıklamasında belirtilir.
+4. **Ekip Onayı (Review & Approve):** En az 1 ekip üyesi ve proje lideri onayladıktan sonra `main` dalına merge edilir.
+
+
