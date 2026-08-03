@@ -75,6 +75,21 @@ Sistemdeki doküman arama mekanizması **ChromaDB** ve **Ollama `nomic-embed-tex
 
 ---
 
+### 3.1 Veritabanı Mimarisi (SQL / NoSQL Yapısı ve Çalışma Prensibi)
+
+Projede kullanılan veritabanı **ChromaDB** tabanlı bir **Vektör Veritabanıdır (Vector Database)**. Yapısı ve altyapısı şu şekildedir:
+
+1. **Veritabanı Türü (NoSQL / SQL Hibrit Yapısı):**
+   - **Kullanım Katmanı (NoSQL / Vektör):** Kod seviyesinde klasik SQL tablo sorguları yazılmaz. Veriler metin parçaları (*chunks*), metadata etiketleri ve 768 boyutlu sayısal vektör dizileri (*embeddings*) olarak NoSQL / Vektör veri modelinde tutulur. Arama işlemi SQL `WHERE` koşulları yerine Kosinüs Benzerliği (Cosine Distance) ile yapılır.
+   - **Fiziksel Depolama (SQL - SQLite3):** ChromaDB tüm vektör indekslerini, koleksiyon tanımlarını (`collections`), metadata bilgilerini (`embedding_metadata`) ve metin kayıtlarını arka planda kalıcı olarak diske kaydetmek için **SQLite3** (`chroma_db/chroma.sqlite3`) ilişkisel veritabanını kullanır.
+
+2. **Veritabanının Çalışma Prensibi (Ingestion & RAG Flow):**
+   - **İşleme (Ingest - `ingest.py`):** Markdown dosyası başlıklarına göre parçalanır (1200 karakterlik chunk'lar), Ollama `nomic-embed-text` modeliyle sayısal vektörlere çevrilir ve SQLite3 / HNSW indeksine yazılır.
+   - **Sorgulama (RAG Query - `main.py`):** Kullanıcının sorduğu soru anında vektöre çevrilir. ChromaDB vektör indeksinde kosinüs benzerliği ile sorunun anlamına en yakın metin parçalarını milisaniyeler içinde arayıp bulur ve cevabı üretmesi için LLM'e (`qwen2.5:7b`) iletir.
+
+
+---
+
 ## 4. Hata Kodları ve Logları Nerede Bulabiliriz?
 
 Sistemde bir aksaklık yaşandığında hatanın sebebini bulmak için bakılacak yerler ve HTTP hata kodları:
