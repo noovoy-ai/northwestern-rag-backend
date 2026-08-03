@@ -15,6 +15,14 @@ jobs:
       - name: Checkout Code
         uses: actions/checkout@v4
 
+      - name: Fix Docker Credential Helper for Headless Runner
+        run: |
+          mkdir -p ~/.docker
+          if [ -f ~/.docker/config.json ]; then
+            sed -i '' 's/"credsStore": "desktop"//g' ~/.docker/config.json 2>/dev/null || true
+            sed -i '' 's/"credsStore": "osxkeychain"//g' ~/.docker/config.json 2>/dev/null || true
+          fi
+
       - name: Deploy Staging Container
         run: |
           if [ ! -f .env ]; then
@@ -24,3 +32,4 @@ jobs:
           docker rm -f rag_staging_backend || true
           docker compose up -d --remove-orphans
           docker system prune -f
+
