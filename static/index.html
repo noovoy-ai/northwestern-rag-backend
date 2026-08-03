@@ -563,14 +563,20 @@
 
         <!-- Chat Container -->
         <div class="chat-container" id="chatContainer">
-            <div class="welcome-card">
-                <h2>👋 Welcome to Northwestern Staff Handbook AI</h2>
-                <p>Ask any question regarding vacation policies, sick leave, employee benefits, remote work strategies, or university guidelines.</p>
-                <div class="quick-queries">
-                    <div class="chip" onclick="sendQuickQuery('What is the vacation policy for full-time staff?')">🏖️ Vacation Policy</div>
-                    <div class="chip" onclick="sendQuickQuery('What are the rules regarding remote work?')">🏠 Remote Work Policy</div>
-                    <div class="chip" onclick="sendQuickQuery('How do employee health and benefits work?')">🏥 Health & Benefits</div>
-                    <div class="chip" onclick="sendQuickQuery('What are the official university holidays?')">📅 University Holidays</div>
+            <div class="message-row bot">
+                <div class="avatar">🤖</div>
+                <div class="message-content">
+                    <div class="bubble">Hello! I am your AI Assistant for the Northwestern University Staff Handbook. You can ask me any question regarding staff policies, benefits, leave entitlements, or workplace guidelines.
+
+Here are a few options you can ask me to get started:</div>
+                    <div class="quick-queries" style="margin-top: 12px; justify-content: flex-start;">
+                        <div class="chip" onclick="sendQuickQuery('What is the vacation policy for full-time staff?')">🏖️ Vacation Policy</div>
+                        <div class="chip" onclick="sendQuickQuery('What are the rules regarding remote work?')">🏠 Remote Work Policy</div>
+                        <div class="chip" onclick="sendQuickQuery('How do employee health and benefits work?')">🏥 Health & Benefits</div>
+                        <div class="chip" onclick="sendQuickQuery('What are the official university holidays?')">📅 University Holidays</div>
+                        <div class="chip" onclick="sendQuickQuery('How does sick leave work?')">🤒 Sick Leave Policy</div>
+                    </div>
+                    <div class="message-meta">AI Assistant • Ready to help</div>
                 </div>
             </div>
         </div>
