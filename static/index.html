@@ -10,7 +10,7 @@
     <style>
         :root {
             --bg-gradient: linear-gradient(135deg, #0f172a 0%, #1e1b4b 50%, #0f172a 100%);
-            --panel-bg: rgba(30, 41, 59, 0.7);
+            --panel-bg: rgba(30, 41, 59, 0.75);
             --panel-border: rgba(255, 255, 255, 0.1);
             --primary: #4f46e5;
             --primary-hover: #4338ca;
@@ -19,7 +19,7 @@
             --text-main: #f8fafc;
             --text-muted: #94a3b8;
             --user-bubble: linear-gradient(135deg, #4f46e5 0%, #7c3aed 100%);
-            --bot-bubble: rgba(51, 65, 85, 0.8);
+            --bot-bubble: rgba(51, 65, 85, 0.85);
             --success: #10b981;
             --warning: #f59e0b;
             --danger: #ef4444;
@@ -45,7 +45,7 @@
         .app-container {
             width: 100%;
             max-width: 1100px;
-            height: 92vh;
+            height: 94vh;
             background: var(--panel-bg);
             backdrop-filter: blur(16px);
             -webkit-backdrop-filter: blur(16px);
@@ -58,36 +58,56 @@
             position: relative;
         }
 
+        /* SVG Utility */
+        .icon {
+            width: 20px;
+            height: 20px;
+            fill: none;
+            stroke: currentColor;
+            stroke-width: 2;
+            stroke-linecap: round;
+            stroke-linejoin: round;
+            display: inline-block;
+            vertical-align: middle;
+        }
+
+        .icon-lg {
+            width: 28px;
+            height: 28px;
+        }
+
         /* Header */
         header {
-            padding: 18px 28px;
+            padding: 16px 24px;
             border-bottom: 1px solid var(--panel-border);
             display: flex;
             justify-content: space-between;
             align-items: center;
-            background: rgba(15, 23, 42, 0.6);
+            background: rgba(15, 23, 42, 0.7);
+            flex-wrap: wrap;
+            gap: 12px;
         }
 
         .brand-info {
             display: flex;
             align-items: center;
-            gap: 14px;
+            gap: 12px;
         }
 
         .logo-icon {
-            width: 42px;
-            height: 42px;
+            width: 44px;
+            height: 44px;
             background: linear-gradient(135deg, #4f46e5, #9333ea);
-            border-radius: 12px;
+            border-radius: 14px;
             display: flex;
             justify-content: center;
             align-items: center;
-            font-size: 22px;
-            box-shadow: 0 4px 12px rgba(79, 70, 229, 0.4);
+            color: white;
+            box-shadow: 0 4px 14px rgba(79, 70, 229, 0.4);
         }
 
         .brand-text h1 {
-            font-size: 1.15rem;
+            font-size: 1.1rem;
             font-weight: 700;
             background: linear-gradient(90deg, #ffffff, #c7d2fe);
             -webkit-background-clip: text;
@@ -95,14 +115,15 @@
         }
 
         .brand-text p {
-            font-size: 0.78rem;
+            font-size: 0.76rem;
             color: var(--text-muted);
         }
 
         .header-actions {
             display: flex;
             align-items: center;
-            gap: 12px;
+            gap: 10px;
+            flex-wrap: wrap;
         }
 
         .badge {
@@ -133,7 +154,7 @@
             background: rgba(255, 255, 255, 0.08);
             border: 1px solid var(--panel-border);
             color: var(--text-main);
-            padding: 8px 16px;
+            padding: 8px 14px;
             border-radius: 10px;
             font-size: 0.82rem;
             font-weight: 500;
@@ -163,11 +184,11 @@
         /* Main Chat Area */
         .chat-container {
             flex: 1;
-            padding: 24px;
+            padding: 20px;
             overflow-y: auto;
             display: flex;
             flex-direction: column;
-            gap: 20px;
+            gap: 18px;
             scroll-behavior: smooth;
         }
 
@@ -180,34 +201,10 @@
             border-radius: 10px;
         }
 
-        /* Welcome Card */
-        .welcome-card {
-            background: rgba(15, 23, 42, 0.4);
-            border: 1px dashed rgba(255, 255, 255, 0.15);
-            border-radius: 16px;
-            padding: 24px;
-            text-align: center;
-            margin-bottom: 10px;
-        }
-
-        .welcome-card h2 {
-            font-size: 1.3rem;
-            margin-bottom: 8px;
-            color: #e2e8f0;
-        }
-
-        .welcome-card p {
-            font-size: 0.9rem;
-            color: var(--text-muted);
-            max-width: 650px;
-            margin: 0 auto 16px auto;
-        }
-
         .quick-queries {
             display: flex;
             flex-wrap: wrap;
-            gap: 10px;
-            justify-content: center;
+            gap: 8px;
         }
 
         .chip {
@@ -219,6 +216,9 @@
             font-size: 0.82rem;
             cursor: pointer;
             transition: all 0.2s ease;
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
         }
 
         .chip:hover {
@@ -230,13 +230,13 @@
         /* Message Bubbles */
         .message-row {
             display: flex;
-            gap: 14px;
-            max-width: 85%;
-            animation: fadeIn 0.3s ease-in-out;
+            gap: 12px;
+            max-width: 88%;
+            animation: fadeIn 0.25s ease-in-out;
         }
 
         @keyframes fadeIn {
-            from { opacity: 0; transform: translateY(8px); }
+            from { opacity: 0; transform: translateY(6px); }
             to { opacity: 1; transform: translateY(0); }
         }
 
@@ -250,13 +250,13 @@
         }
 
         .avatar {
-            width: 38px;
-            height: 38px;
+            width: 36px;
+            height: 36px;
             border-radius: 10px;
             display: flex;
             justify-content: center;
             align-items: center;
-            font-size: 18px;
+            color: white;
             flex-shrink: 0;
         }
 
@@ -272,14 +272,16 @@
             display: flex;
             flex-direction: column;
             gap: 6px;
+            width: 100%;
         }
 
         .bubble {
             padding: 14px 18px;
             border-radius: 18px;
-            font-size: 0.93rem;
+            font-size: 0.92rem;
             line-height: 1.55;
             white-space: pre-wrap;
+            word-break: break-word;
         }
 
         .message-row.user .bubble {
@@ -330,8 +332,8 @@
         }
 
         .typing-indicator span {
-            width: 8px;
-            height: 8px;
+            width: 7px;
+            height: 7px;
             background: #94a3b8;
             border-radius: 50%;
             animation: bounce 1.4s infinite ease-in-out both;
@@ -347,16 +349,15 @@
 
         /* Footer Input */
         footer {
-            padding: 16px 24px;
-            background: rgba(15, 23, 42, 0.7);
+            padding: 14px 20px;
+            background: rgba(15, 23, 42, 0.75);
             border-top: 1px solid var(--panel-border);
         }
 
         .input-form {
             display: flex;
-            gap: 12px;
+            gap: 10px;
             align-items: center;
-            position: relative;
         }
 
         .chat-input {
@@ -364,9 +365,9 @@
             background: rgba(30, 41, 59, 0.8);
             border: 1px solid var(--panel-border);
             border-radius: 14px;
-            padding: 14px 18px;
+            padding: 13px 18px;
             color: var(--text-main);
-            font-size: 0.95rem;
+            font-size: 0.92rem;
             outline: none;
             transition: all 0.2s ease;
         }
@@ -385,16 +386,17 @@
             background: linear-gradient(135deg, #4f46e5, #7c3aed);
             border: none;
             color: white;
-            padding: 14px 22px;
+            padding: 13px 20px;
             border-radius: 14px;
-            font-size: 0.95rem;
+            font-size: 0.92rem;
             font-weight: 600;
             cursor: pointer;
             transition: all 0.2s ease;
             display: flex;
             align-items: center;
-            gap: 8px;
+            gap: 6px;
             box-shadow: 0 4px 14px rgba(79, 70, 229, 0.4);
+            flex-shrink: 0;
         }
 
         .btn-send:hover {
@@ -412,13 +414,14 @@
         .modal-overlay {
             position: absolute;
             inset: 0;
-            background: rgba(15, 23, 42, 0.85);
-            backdrop-filter: blur(12px);
+            background: rgba(15, 23, 42, 0.88);
+            backdrop-filter: blur(14px);
+            -webkit-backdrop-filter: blur(14px);
             display: flex;
             justify-content: center;
             align-items: center;
             z-index: 100;
-            animation: fadeIn 0.2s ease;
+            padding: 16px;
         }
 
         .login-card {
@@ -427,7 +430,7 @@
             border-radius: 20px;
             padding: 32px;
             width: 100%;
-            max-width: 420px;
+            max-width: 400px;
             box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.5);
             text-align: center;
         }
@@ -440,17 +443,18 @@
             display: flex;
             justify-content: center;
             align-items: center;
-            font-size: 28px;
+            color: white;
             margin: 0 auto 16px auto;
+            box-shadow: 0 4px 14px rgba(79, 70, 229, 0.4);
         }
 
         .login-card h2 {
-            font-size: 1.4rem;
+            font-size: 1.35rem;
             margin-bottom: 6px;
         }
 
         .login-card p {
-            font-size: 0.85rem;
+            font-size: 0.84rem;
             color: var(--text-muted);
             margin-bottom: 24px;
         }
@@ -483,30 +487,6 @@
             border-color: var(--primary-light);
         }
 
-        .preset-buttons {
-            display: flex;
-            gap: 10px;
-            margin-bottom: 20px;
-        }
-
-        .preset-btn {
-            flex: 1;
-            padding: 8px;
-            border-radius: 8px;
-            border: 1px solid rgba(255,255,255,0.1);
-            background: rgba(255,255,255,0.05);
-            color: #cbd5e1;
-            font-size: 0.78rem;
-            cursor: pointer;
-            transition: all 0.2s;
-        }
-
-        .preset-btn:hover {
-            background: rgba(79, 70, 229, 0.2);
-            border-color: var(--primary-light);
-            color: white;
-        }
-
         .btn-login {
             width: 100%;
             padding: 12px;
@@ -518,6 +498,7 @@
             font-size: 0.95rem;
             cursor: pointer;
             transition: all 0.2s;
+            margin-top: 8px;
         }
 
         .btn-login:hover {
@@ -530,6 +511,76 @@
             margin-top: 12px;
             display: none;
         }
+
+        /* Mobile Responsiveness */
+        @media (max-width: 640px) {
+            body {
+                padding: 0;
+            }
+
+            .app-container {
+                height: 100vh;
+                border-radius: 0;
+                border: none;
+            }
+
+            header {
+                padding: 12px 16px;
+            }
+
+            .brand-text h1 {
+                font-size: 0.95rem;
+            }
+
+            .brand-text p {
+                font-size: 0.7rem;
+            }
+
+            .logo-icon {
+                width: 36px;
+                height: 36px;
+            }
+
+            .btn-secondary {
+                padding: 6px 10px;
+                font-size: 0.75rem;
+            }
+
+            .chat-container {
+                padding: 14px;
+                gap: 14px;
+            }
+
+            .message-row {
+                max-width: 94%;
+            }
+
+            .bubble {
+                padding: 12px 14px;
+                font-size: 0.88rem;
+            }
+
+            footer {
+                padding: 10px 14px;
+            }
+
+            .chat-input {
+                padding: 11px 14px;
+                font-size: 0.88rem;
+            }
+
+            .btn-send {
+                padding: 11px 14px;
+            }
+
+            .btn-send span:not(:last-child) {
+                display: none;
+            }
+
+            .login-card {
+                padding: 24px 20px;
+            }
+        }
     </style>
 </head>
 <body>
@@ -538,7 +589,9 @@
         <!-- Header -->
         <header>
             <div class="brand-info">
-                <div class="logo-icon">🎓</div>
+                <div class="logo-icon">
+                    <svg class="icon icon-lg" viewBox="0 0 24 24"><path d="M22 10v6M2 10l10-5 10 5-10 5z"/><path d="M6 12v5c3 3 9 3 12 0v-5"/></svg>
+                </div>
                 <div class="brand-text">
                     <h1>Northwestern Staff Handbook AI</h1>
                     <p>RAG-Powered Staff Handbook Assistant</p>
@@ -550,13 +603,16 @@
                     <span>Live API (v0.1.0)</span>
                 </div>
                 <button id="btnAdminIngest" class="btn-secondary btn-admin-ingest" style="display: none;" onclick="triggerIngest()">
-                    ⚡ Rebuild DB
+                    <svg class="icon" viewBox="0 0 24 24"><polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"/></svg>
+                    <span>Rebuild DB</span>
                 </button>
                 <a href="/docs" target="_blank" class="btn-secondary">
-                    📑 Swagger UI
+                    <svg class="icon" viewBox="0 0 24 24"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="16" y1="13" x2="8" y2="13"/><line x1="16" y1="17" x2="8" y2="17"/><polyline points="10 9 9 9 8 9"/></svg>
+                    <span>Swagger UI</span>
                 </a>
                 <button class="btn-secondary" onclick="logout()">
-                    🚪 Logout
+                    <svg class="icon" viewBox="0 0 24 24"><path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"/><polyline points="16 17 21 12 16 7"/><line x1="21" y1="12" x2="9" y2="12"/></svg>
+                    <span>Logout</span>
                 </button>
             </div>
         </header>
@@ -564,17 +620,34 @@
         <!-- Chat Container -->
         <div class="chat-container" id="chatContainer">
             <div class="message-row bot">
-                <div class="avatar">🤖</div>
+                <div class="avatar">
+                    <svg class="icon" viewBox="0 0 24 24"><rect x="3" y="11" width="18" height="10" rx="2"/><circle cx="12" cy="5" r="2"/><path d="M12 7v4"/><line x1="8" y1="16" x2="8" y2="16"/><line x1="16" y1="16" x2="16" y2="16"/></svg>
+                </div>
                 <div class="message-content">
                     <div class="bubble">Hello! I am your AI Assistant for the Northwestern University Staff Handbook. You can ask me any question regarding staff policies, benefits, leave entitlements, or workplace guidelines.
 
 Here are a few options you can ask me to get started:</div>
                     <div class="quick-queries" style="margin-top: 12px; justify-content: flex-start;">
-                        <div class="chip" onclick="sendQuickQuery('What is the vacation policy for full-time staff?')">🏖️ Vacation Policy</div>
-                        <div class="chip" onclick="sendQuickQuery('What are the rules regarding remote work?')">🏠 Remote Work Policy</div>
-                        <div class="chip" onclick="sendQuickQuery('How do employee health and benefits work?')">🏥 Health & Benefits</div>
-                        <div class="chip" onclick="sendQuickQuery('What are the official university holidays?')">📅 University Holidays</div>
-                        <div class="chip" onclick="sendQuickQuery('How does sick leave work?')">🤒 Sick Leave Policy</div>
+                        <div class="chip" onclick="sendQuickQuery('What is the vacation policy for full-time staff?')">
+                            <svg class="icon" viewBox="0 0 24 24"><circle cx="12" cy="12" r="5"/><line x1="12" y1="1" x2="12" y2="3"/><line x1="12" y1="21" x2="12" y2="23"/><line x1="4.22" y1="4.22" x2="5.64" y2="5.64"/><line x1="18.36" y1="18.36" x2="19.78" y2="19.78"/><line x1="1" y1="12" x2="3" y2="12"/><line x1="21" y1="12" x2="23" y2="12"/><line x1="4.22" y1="19.78" x2="5.64" y2="18.36"/><line x1="18.36" y1="5.64" x2="19.78" y2="4.22"/></svg>
+                            <span>Vacation Policy</span>
+                        </div>
+                        <div class="chip" onclick="sendQuickQuery('What are the rules regarding remote work?')">
+                            <svg class="icon" viewBox="0 0 24 24"><path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/><polyline points="9 22 9 12 15 12 15 22"/></svg>
+                            <span>Remote Work Policy</span>
+                        </div>
+                        <div class="chip" onclick="sendQuickQuery('How do employee health and benefits work?')">
+                            <svg class="icon" viewBox="0 0 24 24"><path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"/></svg>
+                            <span>Health & Benefits</span>
+                        </div>
+                        <div class="chip" onclick="sendQuickQuery('What are the official university holidays?')">
+                            <svg class="icon" viewBox="0 0 24 24"><rect x="3" y="4" width="18" height="18" rx="2" ry="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg>
+                            <span>University Holidays</span>
+                        </div>
+                        <div class="chip" onclick="sendQuickQuery('How does sick leave work?')">
+                            <svg class="icon" viewBox="0 0 24 24"><path d="M12 2v20M2 12h20"/></svg>
+                            <span>Sick Leave Policy</span>
+                        </div>
                     </div>
                     <div class="message-meta">AI Assistant • Ready to help</div>
                 </div>
@@ -593,7 +666,7 @@ Here are a few options you can ask me to get started:</div>
                 >
                 <button type="submit" class="btn-send" id="sendBtn">
                     <span>Send</span>
-                    <span>➔</span>
+                    <svg class="icon" viewBox="0 0 24 24"><line x1="22" y1="2" x2="11" y2="13"/><polygon points="22 2 15 22 11 13 2 9 22 2"/></svg>
                 </button>
             </form>
         </footer>
@@ -601,20 +674,16 @@ Here are a few options you can ask me to get started:</div>
         <!-- Login Modal -->
         <div class="modal-overlay" id="loginModal">
             <div class="login-card">
-                <div class="login-icon">🔒</div>
-                <h2>Sign In</h2>
-                <p>Please authenticate to access the staff handbook assistant.</p>
-                
-                <div style="margin-bottom: 12px; font-size: 0.78rem; color: #94a3b8;">Quick Fill:</div>
-                <div class="preset-buttons">
-                    <button type="button" class="preset-btn" onclick="fillCredentials('staff', 'nu2026pass')">👤 Staff User</button>
-                    <button type="button" class="preset-btn" onclick="fillCredentials('admin', 'admin*123!')">⚡ Admin User</button>
+                <div class="login-icon">
+                    <svg class="icon icon-lg" viewBox="0 0 24 24"><rect x="3" y="11" width="18" height="11" rx="2" ry="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg>
                 </div>
+                <h2>Sign In</h2>
+                <p>Please authenticate with your credentials to access the staff handbook assistant.</p>
 
                 <form onsubmit="handleLogin(event)">
                     <div class="form-group">
                         <label for="username">Username</label>
-                        <input type="text" id="username" class="form-control" placeholder="admin or staff" required>
+                        <input type="text" id="username" class="form-control" placeholder="Enter your username" required>
                     </div>
                     <div class="form-group">
                         <label for="password">Password</label>
@@ -647,11 +716,6 @@ Here are a few options you can ask me to get started:</div>
 
         function hideLoginModal() {
             document.getElementById('loginModal').style.display = 'none';
-        }
-
-        function fillCredentials(user, pass) {
-            document.getElementById('username').value = user;
-            document.getElementById('password').value = pass;
         }
 
         function checkUserRole() {
@@ -746,7 +810,7 @@ Here are a few options you can ask me to get started:</div>
 
                 if (!res.ok) {
                     const errData = await res.json();
-                    appendBotMessage(`⚠️ Error: ${errData.detail || 'Failed to get answer.'}`, false, null);
+                    appendBotMessage(`Error: ${errData.detail || 'Failed to get answer.'}`, false, null);
                     return;
                 }
 
@@ -756,7 +820,7 @@ Here are a few options you can ask me to get started:</div>
             } catch (err) {
                 typingElem.remove();
                 sendBtn.disabled = false;
-                appendBotMessage(`⚠️ Connection error: Server unreachable.`, false, null);
+                appendBotMessage(`Connection error: Server unreachable.`, false, null);
             }
         }
 
@@ -765,7 +829,9 @@ Here are a few options you can ask me to get started:</div>
             const row = document.createElement('div');
             row.className = 'message-row user';
             row.innerHTML = `
-                <div class="avatar">👤</div>
+                <div class="avatar">
+                    <svg class="icon" viewBox="0 0 24 24"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>
+                </div>
                 <div class="message-content">
                     <div class="bubble">${escapeHtml(text)}</div>
                     <div class="message-meta">${new Date().toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'})}</div>
@@ -782,11 +848,13 @@ Here are a few options you can ask me to get started:</div>
 
             let metaInfo = new Date().toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'});
             if (sourceFound && section) {
-                metaInfo += ` • <span class="section-tag">📌 ${escapeHtml(section)}</span>`;
+                metaInfo += ` • <span class="section-tag">Section: ${escapeHtml(section)}</span>`;
             }
 
             row.innerHTML = `
-                <div class="avatar">🤖</div>
+                <div class="avatar">
+                    <svg class="icon" viewBox="0 0 24 24"><rect x="3" y="11" width="18" height="10" rx="2"/><circle cx="12" cy="5" r="2"/><path d="M12 7v4"/><line x1="8" y1="16" x2="8" y2="16"/><line x1="16" y1="16" x2="16" y2="16"/></svg>
+                </div>
                 <div class="message-content">
                     <div class="bubble">${escapeHtml(text)}</div>
                     <div class="message-meta">${metaInfo}</div>
@@ -801,7 +869,9 @@ Here are a few options you can ask me to get started:</div>
             const div = document.createElement('div');
             div.className = 'message-row bot';
             div.innerHTML = `
-                <div class="avatar">🤖</div>
+                <div class="avatar">
+                    <svg class="icon" viewBox="0 0 24 24"><rect x="3" y="11" width="18" height="10" rx="2"/><circle cx="12" cy="5" r="2"/><path d="M12 7v4"/><line x1="8" y1="16" x2="8" y2="16"/><line x1="16" y1="16" x2="16" y2="16"/></svg>
+                </div>
                 <div class="typing-indicator">
                     <span></span><span></span><span></span>
                 </div>
