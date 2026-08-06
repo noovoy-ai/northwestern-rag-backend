@@ -54,6 +54,76 @@ class QueryRequest(BaseModel):
     question: str
     lang: str = "tr"  # "tr" or "en"
 
+def verify_jwt_token(credentials: HTTPAuthorizationCredentials = Security(security)):
+    token = credentials.credentials
+    try:
+        payload = jwt.decode(token, SECRET_KEY, algorithms=[ALGORITHM])
+        return payload
+    except JWTError:
+        raise HTTPException(status_code=401, detail="Invalid token.")
+
+def get_vector_store():
+    embeddings = OllamaEmbeddings(
+        model=EMBEDDING_MODEL_NAME,
+        base_url=OLLAMA_BASE_URL
+    )
+    return Chroma(
+        persist_directory=DB_DIR,
+        embedding_function=embeddings,
+        collection_name=COLLECTION_NAME,
+        collection_metadata={"hnsw:space": "cosine"}
+    )
+
+vector_store = get_vector_store()
+
+@app.get("/", response_class=FileResponse)
+def read_root():
+    """Görsel Yapay Zeka Sohbet Arayüzü (Chat UI)."""
+    index_path = "static/index.html"
+    if os.path.exists(index_path):
+        return FileResponse(index_path)
+    return {"message": "Northwestern Staff Handbook RAG API running. Access /docs for Swagger UI."}
+
+@app.get("/health")
+def healthcheck():
+    """Docker Healthcheck ve Liveness izleme endpoint'i."""
+    return {"status": "healthy", "service": "northwestern-rag-backend"}
+
+@app.post("/api/login")
+def login_endpoint(request: LoginRequest):
+    stored_password = USERS_DB.get(request.username)
+    if not stored_password or stored_password != request.password:
+        raise HTTPException(status_code=401, detail="Kullanıcı adı veya şifre hatalı.")
+    
+    payload = {"sub": request.username, "role": "admin" if request.username == "admin" else "user"}
+    token = jwt.encode(payload, SECRET_KEY, algorithm=ALGORITHM)
+    return {"access_token": token, "token_type": "bearer"}
+
+@app.post("/api/admin/ingest")
+def admin_ingest_endpoint(user_data: dict = Depends(verify_jwt_token)):
+    """Sadece Admin yetkisine sahip kullanıcıların vektör veritabanını güncelleyebileceği endpoint."""
+    if user_data.get("sub") != "admin":
+        raise HTTPException(status_code=403, detail="Bu işlem için Admin yetkisi gereklidir.")
+    
+    global vector_store
+    try:
+        if vector_store and hasattr(vector_store, "_client"):
+            try:
+                vector_store._client.close()
+            except Exception:
+                pass
+        
+        total_chunks = rebuild_vector_db()
+        vector_store = get_vector_store()
+        return {
+            "status": "success",
+            "message": "Vektör veritabanı başarıyla yeniden oluşturuldu.",
+            "total_chunks": total_chunks
+        }
+    except Exception as e:
+        vector_store = get_vector_store()
+        raise HTTPException(status_code=500, detail=f"Ingestion sırasında hata oluştu: {str(e)}")
+
 def detect_language(text: str, user_lang: str) -> str:
     """Detect language based on user preference or text content."""
     if user_lang in ["tr", "en"]:
@@ -61,7 +131,7 @@ def detect_language(text: str, user_lang: str) -> str:
     turkish_chars = set("çğıöşüÇĞİÖŞÜ")
     if any(c in turkish_chars for c in text):
         return "tr"
-    return "tr"  # default to Turkish if unspecified
+    return "tr"
 
 @app.post("/api/chat")
 def chat_endpoint(request: QueryRequest, user_data: dict = Depends(verify_jwt_token)):
@@ -71,7 +141,7 @@ def chat_endpoint(request: QueryRequest, user_data: dict = Depends(verify_jwt_to
     if not user_query:
         raise HTTPException(status_code=400, detail="Question cannot be empty." if user_lang == "en" else "Soru boş olamaz.")
 
-    # Primary vector search
+    # Vector search
     results = vector_store.similarity_search_with_score(user_query, k=7)
     
     COSINE_THRESHOLD = 0.72 if user_lang == "tr" else 0.65
@@ -146,4 +216,3 @@ USER QUESTION:
         }
     except Exception as e:
         raise HTTPException(status_code=500, detail=f"LLM connection error ({OLLAMA_BASE_URL}): {str(e)}")
-
