@@ -1,4 +1,5 @@
 import os
+import re
 import requests
 from fastapi import FastAPI, HTTPException, Depends, Security
 from fastapi.security import HTTPBearer, HTTPAuthorizationCredentials
@@ -73,7 +74,14 @@ def get_vector_store():
         collection_metadata={"hnsw:space": "cosine"}
     )
 
-vector_store = get_vector_store()
+vector_store = None
+
+def get_db():
+    global vector_store
+    if vector_store is None:
+        vector_store = get_vector_store()
+    return vector_store
+
 
 @app.get("/", response_class=FileResponse)
 def read_root():
@@ -123,6 +131,48 @@ def admin_ingest_endpoint(user_data: dict = Depends(verify_jwt_token)):
         vector_store = get_vector_store()
         raise HTTPException(status_code=500, detail=f"Ingestion sırasında hata oluştu: {str(e)}")
 
+import re
+
+def contains_chinese(text: str) -> bool:
+    return bool(re.search(r'[\u4e00-\u9fff]', text))
+
+def clean_markdown_wrappers(text: str) -> str:
+    if not text:
+        return ""
+    text = re.sub(r'^```(?:markdown)?\s*', '', text, flags=re.IGNORECASE)
+    text = re.sub(r'\s*```$', '', text)
+    text = re.sub(r'^markdown\s*\n', '', text, flags=re.IGNORECASE)
+    return text.strip()
+
+def is_turkish_text(text: str) -> bool:
+    tr_chars = set("çğıöşüÇĞİÖŞÜ")
+    if any(c in tr_chars for c in text):
+        return True
+    tr_words = {"merhaba", "nasılsın", "nasıl", "selam", "günaydın", "iyi", "bugün", "hastayım", "izin", "nedir", "veya", "var", "yok", "hakkında", "bilgi", "gideceğim", "gidemice", "yapmalıyım", "işe"}
+    words = set(re.findall(r'\w+', text.lower()))
+    if words.intersection(tr_words):
+        return True
+    return False
+
+def check_greeting(text: str):
+    cleaned = re.sub(r'[^\w\s]', '', text.lower()).strip()
+    tr_greetings = {"merhaba", "selam", "selamlar", "nasılsın", "nasıl gidiyor", "günaydın", "iyi günler", "iyi akşamlar", "naber", "merhabalarr", "nasilsin"}
+    en_greetings = {"hello", "hi", "hey", "how are you", "good morning", "good afternoon", "good evening"}
+    
+    words = cleaned.split()
+    if cleaned in tr_greetings or cleaned in ("bugun nasilsin", "nasilsin iyiyim", "merhaba nasilsin"):
+        return "TR", "Merhaba, iyiyim! Bugün sana nasıl yardımcı olabilirim?, Genel Karşılama"
+    if cleaned in en_greetings or cleaned in ("how are you today", "hello how are you"):
+        return "EN", "Hello, I am doing well! How can I help you today?, General Greeting"
+    
+    if len(words) <= 3:
+        if any(w in tr_greetings for w in words):
+            return "TR", "Merhaba, iyiyim! Bugün sana nasıl yardımcı olabilirim?, Genel Karşılama"
+        if any(w in en_greetings for w in words):
+            return "EN", "Hello, I am doing well! How can I help you today?, General Greeting"
+            
+    return None, None
+
 @app.post("/api/chat")
 def chat_endpoint(request: QueryRequest, user_data: dict = Depends(verify_jwt_token)):
     user_query = request.question.strip()
@@ -130,14 +180,29 @@ def chat_endpoint(request: QueryRequest, user_data: dict = Depends(verify_jwt_to
     if not user_query:
         raise HTTPException(status_code=400, detail="Question cannot be empty.")
 
-    results = vector_store.similarity_search_with_score(user_query, k=7)
+    # 1. Special greeting handler
+    is_greeting_lang, greeting_response = check_greeting(user_query)
+    if greeting_response:
+        return {
+            "answer": greeting_response,
+            "source_found": True,
+            "section": "Genel Karşılama" if is_greeting_lang == "TR" else "General Greeting"
+        }
+
+    # 2. Language detection
+    is_tr = is_turkish_text(user_query)
+
+    # 3. Similarity search
+    results = get_db().similarity_search_with_score(user_query, k=7)
     
     COSINE_THRESHOLD = 0.65
     filtered_results = [doc for doc, score in results if score <= COSINE_THRESHOLD]
 
     if not filtered_results:
+        no_info_ans = "Bu bilgi personel el kitabında bulunmamaktadır." if is_tr else "This information is not available in the staff handbook."
+        source_str = "Northwestern Personel El Kitabı" if is_tr else "Northwestern Staff Handbook"
         return {
-            "answer": "This information is not available in the staff handbook.",
+            "answer": f"{no_info_ans}, {source_str}",
             "source_found": False,
             "section": None
         }
@@ -147,14 +212,24 @@ def chat_endpoint(request: QueryRequest, user_data: dict = Depends(verify_jwt_to
     first_doc_meta = filtered_results[0].metadata
     matched_section = first_doc_meta.get("subsection_title") or first_doc_meta.get("section_title") or "General"
 
+    lang_instruction = (
+        "USER LANGUAGE: TURKISH. You MUST write your response ONLY in clear, natural Turkish."
+        if is_tr else
+        "USER LANGUAGE: ENGLISH. You MUST write your response ONLY in clear, natural English."
+    )
+
     system_prompt = f"""You are the official Northwestern University Staff Handbook AI Assistant.
 Below is the 'CONTEXT TEXT' extracted from the official Northwestern Staff Handbook.
 
 STRICT RULES TO FOLLOW:
-1. Answer the user's question accurately and thoroughly based ONLY on the provided 'CONTEXT TEXT'.
+1. Answer the user's question accurately, concisely, and clearly based ONLY on the provided 'CONTEXT TEXT'.
 2. Do NOT use outside knowledge, assumptions, or unverified claims not stated in the context text.
-3. If the answer is NOT present in the provided context text, respond strictly with: "This information is not available in the staff handbook."
-4. Provide a clear, helpful, professional, and well-structured response in English.
+3. If the answer is NOT present in the provided context text, respond strictly with:
+   {"'Bu bilgi personel el kitabında bulunmamaktadır.'" if is_tr else "'This information is not available in the staff handbook.'"}
+4. {lang_instruction}
+5. ABSOLUTELY NEVER generate Chinese, Japanese, or any language other than {"Turkish" if is_tr else "English"}.
+6. Do NOT wrap your output in ```markdown code blocks or include the word 'markdown' at the top of your response.
+7. Keep answers concise and direct. Avoid long or complex unnecessary explanations.
 
 CONTEXT TEXT:
 {context_text}
@@ -172,12 +247,29 @@ USER QUESTION:
 
     try:
         response = requests.post(ollama_generate_url, json=payload, timeout=180)
-        bot_response = response.json().get("response", "No response received.")
+        raw_bot_response = response.json().get("response", "No response received.")
         
+        bot_response = clean_markdown_wrappers(raw_bot_response)
+
+        # Fallback if Chinese characters are detected
+        if contains_chinese(bot_response):
+            bot_response = (
+                "Üzgünüm, sorunuz işlenirken bir dil hatası oluştu." if is_tr
+                else "Sorry, a language processing error occurred."
+            )
+
+        source_label = (
+            f"Northwestern Personel El Kitabı (Bölüm: {matched_section})" if is_tr
+            else f"Northwestern Staff Handbook (Section: {matched_section})"
+        )
+
+        formatted_answer = f"{bot_response}, {source_label}"
+
         return {
-            "answer": bot_response,
+            "answer": formatted_answer,
             "source_found": True,
             "section": matched_section
         }
     except Exception as e:
         raise HTTPException(status_code=500, detail=f"LLM connection error ({OLLAMA_BASE_URL}): {str(e)}")
+
