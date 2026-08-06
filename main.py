@@ -218,9 +218,9 @@ def chat_endpoint(request: QueryRequest, user_data: dict = Depends(verify_jwt_to
             "section": "Genel Karşılama" if is_greeting_lang == "tr" else "General Greeting"
         }
 
-    # 2. Vector search with expanded search query for high recall
-    search_query = expand_search_query(user_query, user_lang)
-    results = get_db().similarity_search_with_score(search_query, k=7)
+    # 2. Vector search with Nomic search_query: prefix and expanded query (k=4 for optimal speed & memory balance)
+    search_query = f"search_query: {expand_search_query(user_query, user_lang)}"
+    results = get_db().similarity_search_with_score(search_query, k=4)
 
     COSINE_THRESHOLD = 0.72 if user_lang == "tr" else 0.65
     filtered_results = [doc for doc, score in results if score <= COSINE_THRESHOLD]

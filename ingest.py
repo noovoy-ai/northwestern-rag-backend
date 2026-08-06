@@ -40,7 +40,7 @@ def load_and_split_enriched_markdown(file_path: str):
     )
     header_splits = markdown_splitter.split_text(raw_text)
 
-    # 2. Metadata Ayıklama ve Doküman Zenginleştirme
+    # 2. Metadata Ayıklama, Çift Dilli Zenginleştirme ve Nomic Task Prefix (`search_document:`)
     enriched_docs = []
     for doc in header_splits:
         extracted_meta = parse_metadata_from_text(doc.page_content)
@@ -48,10 +48,14 @@ def load_and_split_enriched_markdown(file_path: str):
         
         headers = [combined_meta.get(k) for k in ["section_title", "subsection_title", "topic_title"] if combined_meta.get(k)]
         header_prefix = " > ".join(headers) if headers else ""
-        keywords = combined_meta.get("keywords_en", "")
-        prefix_text = f"Context: [{header_prefix}] ({keywords})\n" if header_prefix else ""
+        keywords_tr = combined_meta.get("keywords_tr", "")
+        keywords_en = combined_meta.get("keywords_en", "")
         
-        enriched_content = f"{prefix_text}{doc.page_content}"
+        kw_text = f"TR: {keywords_tr} | EN: {keywords_en}" if (keywords_tr or keywords_en) else ""
+        prefix_text = f"Context: [{header_prefix}] ({kw_text})\n" if header_prefix else ""
+        
+        # Nomic Embed Text optimization: prepend search_document:
+        enriched_content = f"search_document: {prefix_text}{doc.page_content}"
         
         enriched_docs.append(
             Document(
@@ -60,10 +64,11 @@ def load_and_split_enriched_markdown(file_path: str):
             )
         )
 
-    # 3. İkinci Aşama Parçalama (Boyut Sınırlaması)
+    # 3. İkinci Aşama Parçalama (Tablo ve Liste Bütünlüğünü Koruyan Ayrıştırıcı)
     text_splitter = RecursiveCharacterTextSplitter(
         chunk_size=1200,
-        chunk_overlap=150
+        chunk_overlap=150,
+        separators=["\n## ", "\n### ", "\n\n", "\n|", "\n* ", "\n- ", "\n", " "]
     )
     final_chunks = text_splitter.split_documents(enriched_docs)
     print(f"[INFO] Toplam {len(final_chunks)} adet zenginleştirilmiş vektör parçası oluşturuldu.")
@@ -84,11 +89,17 @@ def rebuild_vector_db():
         base_url=base_url
     )
 
+    hnsw_metadata = {
+        "hnsw:space": "cosine",
+        "hnsw:construction_ef": 128,
+        "hnsw:M": 16
+    }
+
     vector_store = Chroma(
         persist_directory=db_dir,
         embedding_function=embeddings,
         collection_name=collection_name,
-        collection_metadata={"hnsw:space": "cosine"}
+        collection_metadata=hnsw_metadata
     )
     
     try:
@@ -101,12 +112,13 @@ def rebuild_vector_db():
         persist_directory=db_dir,
         embedding_function=embeddings,
         collection_name=collection_name,
-        collection_metadata={"hnsw:space": "cosine"}
+        collection_metadata=hnsw_metadata
     )
     vector_store.add_documents(chunks)
     
     print("\n[BAŞARILI] Vektör veritabanı yeni Markdown verisetiyle başarıyla güncellendi!")
     return len(chunks)
+
 
 if __name__ == "__main__":
     rebuild_vector_db()
