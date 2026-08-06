@@ -124,14 +124,28 @@ def admin_ingest_endpoint(user_data: dict = Depends(verify_jwt_token)):
         vector_store = get_vector_store()
         raise HTTPException(status_code=500, detail=f"Ingestion sırasında hata oluştu: {str(e)}")
 
-def detect_language(text: str, user_lang: str) -> str:
-    """Detect language based on user preference or text content."""
-    if user_lang in ["tr", "en"]:
-        return user_lang
-    turkish_chars = set("çğıöşüÇĞİÖŞÜ")
-    if any(c in turkish_chars for c in text):
-        return "tr"
-    return "tr"
+TR_KEYWORD_MAP = {
+    "tatil": "vacation holiday leave accrual",
+    "izin": "leave absence vacation PTO sick time",
+    "uzaktan": "remote work flexible working arrangement",
+    "çalışma": "work employment schedule hours",
+    "sağlık": "health medical insurance benefits plan",
+    "sigorta": "insurance health benefits coverage",
+    "maaş": "salary pay compensation wages",
+    "ücret": "compensation pay salary wages",
+    "disiplin": "discipline conduct policy standards",
+    "istifa": "resignation termination separation",
+    "emeklilik": "retirement pension benefits",
+    "bayram": "holiday university official holidays",
+}
+
+def expand_search_query(query: str, user_lang: str) -> str:
+    if user_lang == "tr":
+        query_lower = query.lower()
+        matched = [eng for tr, eng in TR_KEYWORD_MAP.items() if tr in query_lower]
+        if matched:
+            return f"{query} {' '.join(matched)}"
+    return query
 
 @app.post("/api/chat")
 def chat_endpoint(request: QueryRequest, user_data: dict = Depends(verify_jwt_token)):
@@ -141,8 +155,10 @@ def chat_endpoint(request: QueryRequest, user_data: dict = Depends(verify_jwt_to
     if not user_query:
         raise HTTPException(status_code=400, detail="Question cannot be empty." if user_lang == "en" else "Soru boş olamaz.")
 
-    # Vector search
-    results = vector_store.similarity_search_with_score(user_query, k=7)
+    # Vector search with expanded search query for high recall
+    search_query = expand_search_query(user_query, user_lang)
+    results = vector_store.similarity_search_with_score(search_query, k=7)
+
     
     COSINE_THRESHOLD = 0.72 if user_lang == "tr" else 0.65
     filtered_results = [doc for doc, score in results if score <= COSINE_THRESHOLD]
