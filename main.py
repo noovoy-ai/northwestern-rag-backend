@@ -52,6 +52,7 @@ class LoginRequest(BaseModel):
 
 class QueryRequest(BaseModel):
     question: str
+    lang: str = "tr"  # "tr" or "en"
 
 def verify_jwt_token(credentials: HTTPAuthorizationCredentials = Security(security)):
     token = credentials.credentials
@@ -123,21 +124,62 @@ def admin_ingest_endpoint(user_data: dict = Depends(verify_jwt_token)):
         vector_store = get_vector_store()
         raise HTTPException(status_code=500, detail=f"Ingestion sırasında hata oluştu: {str(e)}")
 
+def detect_language(text: str, user_lang: str) -> str:
+    """Detect language based on user preference or text content."""
+    if user_lang in ["tr", "en"]:
+        return user_lang
+    turkish_chars = set("çğıöşüÇĞİÖŞÜ")
+    if any(c in turkish_chars for c in text):
+        return "tr"
+    return "tr"
+
+TR_KEYWORD_MAP = {
+    "tatil": "vacation holiday leave accrual",
+    "izin": "leave absence vacation PTO sick time",
+    "uzaktan": "remote work flexible working arrangement",
+    "çalışma": "work employment schedule hours",
+    "sağlık": "health medical insurance benefits plan",
+    "sigorta": "insurance health benefits coverage",
+    "maaş": "salary pay compensation wages",
+    "ücret": "compensation pay salary wages",
+    "disiplin": "discipline conduct policy standards",
+    "istifa": "resignation termination separation",
+    "emeklilik": "retirement pension benefits",
+    "bayram": "holiday university official holidays",
+}
+
+def expand_search_query(query: str, user_lang: str) -> str:
+    if user_lang == "tr":
+        query_lower = query.lower()
+        matched = [eng for tr, eng in TR_KEYWORD_MAP.items() if tr in query_lower]
+        if matched:
+            return f"{query} {' '.join(matched)}"
+    return query
+
 @app.post("/api/chat")
 def chat_endpoint(request: QueryRequest, user_data: dict = Depends(verify_jwt_token)):
     user_query = request.question.strip()
+    user_lang = detect_language(user_query, request.lang.strip().lower())
     
     if not user_query:
-        raise HTTPException(status_code=400, detail="Question cannot be empty.")
+        raise HTTPException(status_code=400, detail="Question cannot be empty." if user_lang == "en" else "Soru boş olamaz.")
 
-    results = vector_store.similarity_search_with_score(user_query, k=7)
+    # Vector search with expanded search query for high recall
+    search_query = expand_search_query(user_query, user_lang)
+    results = vector_store.similarity_search_with_score(search_query, k=7)
+
     
-    COSINE_THRESHOLD = 0.65
+    COSINE_THRESHOLD = 0.72 if user_lang == "tr" else 0.65
     filtered_results = [doc for doc, score in results if score <= COSINE_THRESHOLD]
 
     if not filtered_results:
+        fallback_msg = (
+            "Bu bilgi personel el kitabında yer almamaktadır."
+            if user_lang == "tr"
+            else "This information is not available in the staff handbook."
+        )
         return {
-            "answer": "This information is not available in the staff handbook.",
+            "answer": fallback_msg,
             "source_found": False,
             "section": None
         }
@@ -145,9 +187,27 @@ def chat_endpoint(request: QueryRequest, user_data: dict = Depends(verify_jwt_to
     context_blocks = [doc.page_content for doc in filtered_results]
     context_text = "\n\n---\n\n".join(context_blocks)
     first_doc_meta = filtered_results[0].metadata
-    matched_section = first_doc_meta.get("subsection_title") or first_doc_meta.get("section_title") or "General"
+    matched_section = first_doc_meta.get("subsection_title") or first_doc_meta.get("section_title") or "Genel / General"
 
-    system_prompt = f"""You are the official Northwestern University Staff Handbook AI Assistant.
+    if user_lang == "tr":
+        system_prompt = f"""You are the official Northwestern University Staff Handbook AI Assistant.
+Below is the 'CONTEXT TEXT' extracted from the official Northwestern Staff Handbook (written in English).
+
+STRICT RULES TO FOLLOW:
+1. The user asked the question in TURKISH. Read the provided English 'CONTEXT TEXT' and synthesize a comprehensive, accurate, and fluent answer in TURKISH (Türkçe).
+2. Base your response strictly and ONLY on the facts and guidelines given in the 'CONTEXT TEXT'.
+3. Do NOT invent outside information not supported by the context text.
+4. IF AND ONLY IF the context text contains no relevant information regarding the user's question topic, respond ONLY with: "Bu bilgi personel el kitabında yer almamaktadır." Do NOT append this sentence if you answered the question.
+5. Structure your Turkish response nicely using clear markdown formatting (bullet points, headings).
+
+CONTEXT TEXT:
+{context_text}
+
+USER QUESTION (IN TURKISH):
+{user_query}
+"""
+    else:
+        system_prompt = f"""You are the official Northwestern University Staff Handbook AI Assistant.
 Below is the 'CONTEXT TEXT' extracted from the official Northwestern Staff Handbook.
 
 STRICT RULES TO FOLLOW:

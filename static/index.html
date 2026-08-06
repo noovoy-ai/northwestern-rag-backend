@@ -1,29 +1,27 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="tr">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Northwestern Staff Handbook AI Assistant</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Northwestern Staff Handbook Assistant</title>
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
     <script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
     <style>
         :root {
-            --bg-gradient: linear-gradient(135deg, #0f172a 0%, #1e1b4b 50%, #0f172a 100%);
-            --panel-bg: rgba(30, 41, 59, 0.75);
-            --panel-border: rgba(255, 255, 255, 0.1);
-            --primary: #4f46e5;
-            --primary-hover: #4338ca;
-            --primary-light: #818cf8;
-            --purple-accent: #7c3aed;
-            --text-main: #f8fafc;
-            --text-muted: #94a3b8;
-            --user-bubble: linear-gradient(135deg, #4f46e5 0%, #7c3aed 100%);
-            --bot-bubble: rgba(51, 65, 85, 0.85);
+            --bg-base: #090d16;
+            --bg-surface: rgba(17, 24, 39, 0.75);
+            --panel-border: rgba(255, 255, 255, 0.08);
+            --primary: #6366f1;
+            --primary-hover: #4f46e5;
+            --primary-glow: rgba(99, 102, 241, 0.25);
+            --text-main: #f3f4f6;
+            --text-muted: #9ca3af;
+            --user-bubble: linear-gradient(135deg, #6366f1 0%, #4f46e5 100%);
+            --bot-bubble: rgba(31, 41, 55, 0.85);
             --success: #10b981;
-            --warning: #f59e0b;
-            --danger: #ef4444;
+            --accent-purple: #8b5cf6;
         }
 
         * {
@@ -31,38 +29,51 @@
             margin: 0;
             padding: 0;
             font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+            -webkit-tap-highlight-color: transparent;
         }
 
         body {
-            background: var(--bg-gradient);
+            background-color: var(--bg-base);
+            background-image: 
+                radial-gradient(at 0% 0%, rgba(99, 102, 241, 0.12) 0px, transparent 50%),
+                radial-gradient(at 100% 100%, rgba(139, 92, 246, 0.12) 0px, transparent 50%);
             color: var(--text-main);
             height: 100vh;
+            height: 100dvh;
             display: flex;
             justify-content: center;
             align-items: center;
             overflow: hidden;
         }
 
+        /* Mobile First App Shell */
         .app-container {
             width: 100%;
-            max-width: 1100px;
-            height: 94vh;
-            background: var(--panel-bg);
-            backdrop-filter: blur(16px);
-            -webkit-backdrop-filter: blur(16px);
-            border: 1px solid var(--panel-border);
-            border-radius: 24px;
-            box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.5);
+            height: 100%;
+            max-width: 900px;
+            max-height: 100%;
+            background: var(--bg-surface);
+            backdrop-filter: blur(20px);
+            -webkit-backdrop-filter: blur(20px);
             display: flex;
             flex-direction: column;
             overflow: hidden;
             position: relative;
         }
 
-        /* SVG Utility */
+        @media (min-width: 768px) {
+            .app-container {
+                height: 94vh;
+                border: 1px solid var(--panel-border);
+                border-radius: 20px;
+                box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.6);
+            }
+        }
+
+        /* Utility Icons */
         .icon {
-            width: 20px;
-            height: 20px;
+            width: 18px;
+            height: 18px;
             fill: none;
             stroke: currentColor;
             stroke-width: 2;
@@ -72,168 +83,111 @@
             vertical-align: middle;
         }
 
-        .icon-lg {
-            width: 28px;
-            height: 28px;
-        }
-
         /* Header */
         header {
-            padding: 16px 24px;
+            padding: 12px 16px;
             border-bottom: 1px solid var(--panel-border);
             display: flex;
             justify-content: space-between;
             align-items: center;
-            background: rgba(15, 23, 42, 0.7);
-            flex-wrap: wrap;
-            gap: 12px;
+            background: rgba(11, 17, 29, 0.85);
+            backdrop-filter: blur(10px);
+            z-index: 10;
         }
 
         .brand-info {
             display: flex;
             align-items: center;
-            gap: 12px;
+            gap: 10px;
         }
 
         .logo-icon {
-            width: 44px;
-            height: 44px;
-            background: linear-gradient(135deg, #4f46e5, #9333ea);
-            border-radius: 14px;
+            width: 36px;
+            height: 36px;
+            background: linear-gradient(135deg, var(--primary), var(--accent-purple));
+            border-radius: 10px;
             display: flex;
             justify-content: center;
             align-items: center;
             color: white;
-            box-shadow: 0 4px 14px rgba(79, 70, 229, 0.4);
+            box-shadow: 0 4px 12px var(--primary-glow);
         }
 
         .brand-text h1 {
-            font-size: 1.1rem;
-            font-weight: 700;
-            background: linear-gradient(90deg, #ffffff, #c7d2fe);
-            -webkit-background-clip: text;
-            -webkit-text-fill-color: transparent;
+            font-size: 0.95rem;
+            font-weight: 600;
+            color: #ffffff;
+            letter-spacing: -0.01em;
         }
 
         .brand-text p {
-            font-size: 0.76rem;
+            font-size: 0.72rem;
             color: var(--text-muted);
         }
 
         .header-actions {
             display: flex;
             align-items: center;
-            gap: 10px;
-            flex-wrap: wrap;
-        }
-
-        .badge {
-            padding: 6px 12px;
-            border-radius: 20px;
-            font-size: 0.75rem;
-            font-weight: 600;
-            display: flex;
-            align-items: center;
-            gap: 6px;
-        }
-
-        .badge-status {
-            background: rgba(16, 185, 129, 0.15);
-            color: #34d399;
-            border: 1px solid rgba(52, 211, 153, 0.3);
-        }
-
-        .status-dot {
-            width: 8px;
-            height: 8px;
-            background-color: #34d399;
-            border-radius: 50%;
-            box-shadow: 0 0 8px #34d399;
-        }
-
-        .btn-secondary {
-            background: rgba(255, 255, 255, 0.08);
-            border: 1px solid var(--panel-border);
-            color: var(--text-main);
-            padding: 8px 14px;
-            border-radius: 10px;
-            font-size: 0.82rem;
-            font-weight: 500;
-            cursor: pointer;
-            transition: all 0.2s ease;
-            text-decoration: none;
-            display: inline-flex;
-            align-items: center;
-            gap: 6px;
-        }
-
-        .btn-secondary:hover {
-            background: rgba(255, 255, 255, 0.15);
-            transform: translateY(-1px);
-        }
-
-        .btn-admin-ingest {
-            background: rgba(124, 58, 237, 0.2);
-            border: 1px solid rgba(167, 139, 250, 0.4);
-            color: #c4b5fd;
-        }
-
-        .btn-admin-ingest:hover {
-            background: rgba(124, 58, 237, 0.35);
-        }
-
-        /* Main Chat Area */
-        .chat-container {
-            flex: 1;
-            padding: 20px;
-            overflow-y: auto;
-            display: flex;
-            flex-direction: column;
-            gap: 18px;
-            scroll-behavior: smooth;
-        }
-
-        .chat-container::-webkit-scrollbar {
-            width: 6px;
-        }
-
-        .chat-container::-webkit-scrollbar-thumb {
-            background: rgba(255, 255, 255, 0.15);
-            border-radius: 10px;
-        }
-
-        .quick-queries {
-            display: flex;
-            flex-wrap: wrap;
             gap: 8px;
         }
 
-        .chip {
-            background: rgba(79, 70, 229, 0.15);
-            border: 1px solid rgba(129, 140, 248, 0.3);
-            color: #a5b4fc;
-            padding: 8px 14px;
-            border-radius: 20px;
-            font-size: 0.82rem;
+        .lang-btn {
+            background: rgba(255, 255, 255, 0.06);
+            border: 1px solid var(--panel-border);
+            color: var(--text-main);
+            padding: 5px 10px;
+            border-radius: 8px;
+            font-size: 0.75rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            display: flex;
+            align-items: center;
+            gap: 4px;
+        }
+
+        .lang-btn:hover {
+            background: rgba(255, 255, 255, 0.12);
+            border-color: rgba(255, 255, 255, 0.2);
+        }
+
+        .btn-action {
+            background: rgba(255, 255, 255, 0.05);
+            border: 1px solid var(--panel-border);
+            color: var(--text-muted);
+            padding: 6px 10px;
+            border-radius: 8px;
+            font-size: 0.75rem;
+            font-weight: 500;
             cursor: pointer;
             transition: all 0.2s ease;
             display: inline-flex;
             align-items: center;
             gap: 6px;
+            text-decoration: none;
         }
 
-        .chip:hover {
-            background: rgba(79, 70, 229, 0.3);
-            color: #ffffff;
-            transform: translateY(-2px);
+        .btn-action:hover {
+            background: rgba(255, 255, 255, 0.1);
+            color: var(--text-main);
         }
 
-        /* Message Bubbles */
+        /* Chat Scroll Area */
+        .chat-container {
+            flex: 1;
+            overflow-y: auto;
+            padding: 16px;
+            display: flex;
+            flex-direction: column;
+            gap: 16px;
+            scroll-behavior: smooth;
+        }
+
         .message-row {
             display: flex;
-            gap: 12px;
+            gap: 10px;
             max-width: 88%;
-            animation: fadeIn 0.25s ease-in-out;
+            animation: fadeIn 0.3s ease;
         }
 
         @keyframes fadeIn {
@@ -251,37 +205,39 @@
         }
 
         .avatar {
-            width: 36px;
-            height: 36px;
-            border-radius: 10px;
+            width: 32px;
+            height: 32px;
+            border-radius: 50%;
             display: flex;
             justify-content: center;
             align-items: center;
-            color: white;
             flex-shrink: 0;
         }
 
-        .message-row.user .avatar {
-            background: linear-gradient(135deg, #6366f1, #8b5cf6);
+        .bot .avatar {
+            background: rgba(99, 102, 241, 0.15);
+            color: var(--primary);
+            border: 1px solid rgba(99, 102, 241, 0.3);
         }
 
-        .message-row.bot .avatar {
-            background: linear-gradient(135deg, #0ea5e9, #2563eb);
+        .user .avatar {
+            background: rgba(255, 255, 255, 0.1);
+            color: #e2e8f0;
         }
 
         .message-content {
             display: flex;
             flex-direction: column;
-            gap: 6px;
-            width: 100%;
+            gap: 4px;
         }
 
         .bubble {
-            padding: 14px 18px;
-            border-radius: 18px;
-            font-size: 0.92rem;
-            line-height: 1.55;
+            padding: 12px 16px;
+            border-radius: 16px;
+            font-size: 0.9rem;
+            line-height: 1.5;
             word-break: break-word;
+            white-space: pre-wrap;
         }
 
         .bubble p {
@@ -322,40 +278,37 @@
             margin-bottom: 8px;
         }
 
-        .message-row.user .bubble {
+        .user .bubble, .message-row.user .bubble {
             background: var(--user-bubble);
-            color: #ffffff;
+            color: white;
             border-bottom-right-radius: 4px;
-            box-shadow: 0 4px 14px rgba(79, 70, 229, 0.3);
+            box-shadow: 0 4px 12px rgba(79, 70, 229, 0.25);
         }
 
-        .message-row.bot .bubble {
+        .bot .bubble, .message-row.bot .bubble {
             background: var(--bot-bubble);
-            color: #f1f5f9;
-            border: 1px solid var(--panel-border);
+            color: var(--text-main);
             border-bottom-left-radius: 4px;
+            border: 1px solid var(--panel-border);
         }
 
         .message-meta {
-            display: flex;
-            align-items: center;
-            gap: 8px;
-            font-size: 0.72rem;
+            font-size: 0.7rem;
             color: var(--text-muted);
+            margin-top: 2px;
             padding: 0 4px;
         }
 
-        .message-row.user .message-meta {
-            justify-content: flex-end;
-        }
-
         .section-tag {
-            background: rgba(59, 130, 246, 0.15);
-            color: #60a5fa;
-            padding: 3px 8px;
+            display: inline-block;
+            background: rgba(99, 102, 241, 0.12);
+            color: #a5b4fc;
+            padding: 2px 8px;
             border-radius: 6px;
-            border: 1px solid rgba(96, 165, 250, 0.2);
             font-weight: 500;
+            font-size: 0.68rem;
+            border: 1px solid rgba(99, 102, 241, 0.25);
+            margin-top: 4px;
         }
 
         /* Typing Indicator */
@@ -363,16 +316,18 @@
             display: flex;
             align-items: center;
             gap: 5px;
-            padding: 12px 18px;
+            padding: 12px 16px;
             background: var(--bot-bubble);
-            border-radius: 18px;
+            border-radius: 16px;
+            border-bottom-left-radius: 4px;
+            border: 1px solid var(--panel-border);
             width: fit-content;
         }
 
         .typing-indicator span {
-            width: 7px;
-            height: 7px;
-            background: #94a3b8;
+            width: 6px;
+            height: 6px;
+            background-color: var(--text-muted);
             border-radius: 50%;
             animation: bounce 1.4s infinite ease-in-out both;
         }
@@ -382,79 +337,114 @@
 
         @keyframes bounce {
             0%, 80%, 100% { transform: scale(0); }
-            40% { transform: scale(1); }
+            40% { transform: scale(1.0); }
         }
 
-        /* Footer Input */
-        footer {
-            padding: 14px 20px;
-            background: rgba(15, 23, 42, 0.75);
-            border-top: 1px solid var(--panel-border);
-        }
-
-        .input-form {
+        /* Quick Suggestions Chips */
+        .suggestions-container {
+            padding: 6px 16px;
             display: flex;
-            gap: 10px;
-            align-items: center;
+            gap: 8px;
+            overflow-x: auto;
+            scrollbar-width: none;
+            -ms-overflow-style: none;
+            background: rgba(11, 17, 29, 0.4);
+            border-top: 1px solid rgba(255, 255, 255, 0.04);
         }
 
-        .chat-input {
-            flex: 1;
-            background: rgba(30, 41, 59, 0.8);
+        .suggestions-container::-webkit-scrollbar {
+            display: none;
+        }
+
+        .chip {
+            background: rgba(255, 255, 255, 0.05);
             border: 1px solid var(--panel-border);
-            border-radius: 14px;
-            padding: 13px 18px;
             color: var(--text-main);
-            font-size: 0.92rem;
-            outline: none;
-            transition: all 0.2s ease;
-        }
-
-        .chat-input:focus {
-            border-color: var(--primary-light);
-            box-shadow: 0 0 0 3px rgba(99, 102, 241, 0.25);
-            background: rgba(30, 41, 59, 1);
-        }
-
-        .chat-input::placeholder {
-            color: #64748b;
-        }
-
-        .btn-send {
-            background: linear-gradient(135deg, #4f46e5, #7c3aed);
-            border: none;
-            color: white;
-            padding: 13px 20px;
-            border-radius: 14px;
-            font-size: 0.92rem;
-            font-weight: 600;
+            padding: 6px 12px;
+            border-radius: 20px;
+            font-size: 0.76rem;
+            white-space: nowrap;
             cursor: pointer;
             transition: all 0.2s ease;
             display: flex;
             align-items: center;
             gap: 6px;
-            box-shadow: 0 4px 14px rgba(79, 70, 229, 0.4);
+            flex-shrink: 0;
+        }
+
+        .chip:hover {
+            background: rgba(99, 102, 241, 0.15);
+            border-color: rgba(99, 102, 241, 0.4);
+            color: #ffffff;
+        }
+
+        /* Input Bar */
+        .input-bar {
+            padding: 12px 16px;
+            background: rgba(11, 17, 29, 0.9);
+            border-top: 1px solid var(--panel-border);
+            display: flex;
+            gap: 8px;
+            align-items: center;
+        }
+
+        .input-wrapper {
+            flex: 1;
+            position: relative;
+            display: flex;
+            align-items: center;
+        }
+
+        .chat-input {
+            width: 100%;
+            background: rgba(31, 41, 55, 0.6);
+            border: 1px solid var(--panel-border);
+            border-radius: 12px;
+            padding: 12px 16px;
+            color: var(--text-main);
+            font-size: 0.9rem;
+            outline: none;
+            transition: all 0.2s ease;
+        }
+
+        .chat-input:focus {
+            border-color: var(--primary);
+            background: rgba(31, 41, 55, 0.9);
+            box-shadow: 0 0 0 3px var(--primary-glow);
+        }
+
+        .btn-send {
+            background: var(--primary);
+            color: white;
+            border: none;
+            width: 42px;
+            height: 42px;
+            border-radius: 12px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            cursor: pointer;
+            transition: all 0.2s ease;
             flex-shrink: 0;
         }
 
         .btn-send:hover {
-            transform: translateY(-2px);
-            box-shadow: 0 6px 20px rgba(79, 70, 229, 0.6);
+            background: var(--primary-hover);
+            transform: scale(1.02);
         }
 
         .btn-send:disabled {
-            opacity: 0.5;
+            opacity: 0.4;
             cursor: not-allowed;
             transform: none;
         }
 
-        /* Login Modal Overlay */
+        /* Modal Overlay */
         .modal-overlay {
             position: absolute;
             inset: 0;
-            background: rgba(15, 23, 42, 0.88);
-            backdrop-filter: blur(14px);
-            -webkit-backdrop-filter: blur(14px);
+            background: rgba(9, 13, 22, 0.88);
+            backdrop-filter: blur(12px);
             display: flex;
             justify-content: center;
             align-items: center;
@@ -462,273 +452,179 @@
             padding: 16px;
         }
 
-        .login-card {
-            background: #1e293b;
+        .modal-card {
+            background: rgba(31, 41, 55, 0.95);
             border: 1px solid var(--panel-border);
             border-radius: 20px;
-            padding: 32px;
+            padding: 24px;
             width: 100%;
-            max-width: 400px;
-            box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.5);
-            text-align: center;
+            max-width: 380px;
+            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.5);
+            animation: modalPop 0.3s ease;
         }
 
-        .login-icon {
-            width: 56px;
-            height: 56px;
-            background: linear-gradient(135deg, #4f46e5, #7c3aed);
-            border-radius: 16px;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            color: white;
-            margin: 0 auto 16px auto;
-            box-shadow: 0 4px 14px rgba(79, 70, 229, 0.4);
+        @keyframes modalPop {
+            from { opacity: 0; transform: scale(0.95); }
+            to { opacity: 1; transform: scale(1); }
         }
 
-        .login-card h2 {
-            font-size: 1.35rem;
+        .modal-card h2 {
+            font-size: 1.2rem;
+            font-weight: 700;
             margin-bottom: 6px;
         }
 
-        .login-card p {
-            font-size: 0.84rem;
+        .modal-card p {
+            font-size: 0.8rem;
             color: var(--text-muted);
-            margin-bottom: 24px;
+            margin-bottom: 20px;
         }
 
         .form-group {
-            text-align: left;
-            margin-bottom: 16px;
+            margin-bottom: 14px;
         }
 
         .form-group label {
             display: block;
-            font-size: 0.8rem;
-            font-weight: 500;
+            font-size: 0.75rem;
+            font-weight: 600;
+            color: var(--text-muted);
             margin-bottom: 6px;
-            color: #cbd5e1;
         }
 
-        .form-control {
+        .form-input {
             width: 100%;
-            background: #0f172a;
+            background: rgba(17, 24, 39, 0.8);
             border: 1px solid var(--panel-border);
             border-radius: 10px;
-            padding: 12px 14px;
-            color: white;
+            padding: 10px 14px;
+            color: var(--text-main);
             font-size: 0.9rem;
             outline: none;
         }
 
-        .form-control:focus {
-            border-color: var(--primary-light);
+        .form-input:focus {
+            border-color: var(--primary);
         }
 
-        .btn-login {
+        .quick-fill {
+            display: flex;
+            gap: 8px;
+            margin-top: 12px;
+            margin-bottom: 16px;
+        }
+
+        .quick-fill button {
+            flex: 1;
+            padding: 6px;
+            background: rgba(255, 255, 255, 0.05);
+            border: 1px solid var(--panel-border);
+            border-radius: 8px;
+            color: var(--text-muted);
+            font-size: 0.72rem;
+            cursor: pointer;
+        }
+
+        .btn-submit {
             width: 100%;
             padding: 12px;
-            border-radius: 10px;
-            border: none;
-            background: linear-gradient(135deg, #4f46e5, #7c3aed);
+            background: var(--primary);
             color: white;
+            border: none;
+            border-radius: 10px;
             font-weight: 600;
-            font-size: 0.95rem;
+            font-size: 0.9rem;
             cursor: pointer;
-            transition: all 0.2s;
-            margin-top: 8px;
+            transition: all 0.2s ease;
         }
 
-        .btn-login:hover {
-            opacity: 0.95;
+        .btn-submit:hover {
+            background: var(--primary-hover);
         }
 
-        .error-message {
+        .error-msg {
             color: #f87171;
-            font-size: 0.8rem;
-            margin-top: 12px;
+            font-size: 0.78rem;
+            margin-top: 10px;
             display: none;
-        }
-
-        /* Mobile Responsiveness */
-        @media (max-width: 640px) {
-            body {
-                padding: 0;
-            }
-
-            .app-container {
-                height: 100vh;
-                border-radius: 0;
-                border: none;
-            }
-
-            header {
-                padding: 12px 16px;
-            }
-
-            .brand-text h1 {
-                font-size: 0.95rem;
-            }
-
-            .brand-text p {
-                font-size: 0.7rem;
-            }
-
-            .logo-icon {
-                width: 36px;
-                height: 36px;
-            }
-
-            .btn-secondary {
-                padding: 6px 10px;
-                font-size: 0.75rem;
-            }
-
-            .chat-container {
-                padding: 14px;
-                gap: 14px;
-            }
-
-            .message-row {
-                max-width: 94%;
-            }
-
-            .bubble {
-                padding: 12px 14px;
-                font-size: 0.88rem;
-            }
-
-            footer {
-                padding: 10px 14px;
-            }
-
-            .chat-input {
-                padding: 11px 14px;
-                font-size: 0.88rem;
-            }
-
-            .btn-send {
-                padding: 11px 14px;
-            }
-
-            .btn-send span:not(:last-child) {
-                display: none;
-            }
-
-            .login-card {
-                padding: 24px 20px;
-            }
         }
     </style>
 </head>
 <body>
 
     <div class="app-container">
+        
         <!-- Header -->
         <header>
             <div class="brand-info">
                 <div class="logo-icon">
-                    <svg class="icon icon-lg" viewBox="0 0 24 24"><path d="M22 10v6M2 10l10-5 10 5-10 5z"/><path d="M6 12v5c3 3 9 3 12 0v-5"/></svg>
+                    <svg class="icon" viewBox="0 0 24 24"><path d="M12 2L2 7l10 5 10-5-10-5zM2 17l10 5 10-5M2 12l10 5 10-5"/></svg>
                 </div>
                 <div class="brand-text">
-                    <h1>Northwestern Staff Handbook AI</h1>
-                    <p>RAG-Powered Staff Handbook Assistant</p>
+                    <h1 id="txtAppTitle">Northwestern Handbook AI</h1>
+                    <p id="txtAppSubtitle">Staff Knowledge Assistant</p>
                 </div>
             </div>
+
             <div class="header-actions">
-                <div class="badge badge-status">
-                    <span class="status-dot"></span>
-                    <span>Live API (v0.1.0)</span>
-                </div>
-                <button id="btnAdminIngest" class="btn-secondary btn-admin-ingest" style="display: none;" onclick="triggerIngest()">
-                    <svg class="icon" viewBox="0 0 24 24"><polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"/></svg>
-                    <span>Rebuild DB</span>
+                <button class="lang-btn" onclick="toggleLanguage()" id="btnLangToggle">
+                    🌐 <span id="txtLangCode">TR</span>
                 </button>
-                <a href="/docs" target="_blank" class="btn-secondary">
-                    <svg class="icon" viewBox="0 0 24 24"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="16" y1="13" x2="8" y2="13"/><line x1="16" y1="17" x2="8" y2="17"/><polyline points="10 9 9 9 8 9"/></svg>
-                    <span>Swagger UI</span>
+                <button class="btn-action" id="btnAdminIngest" onclick="triggerIngest()" style="display:none;" title="Rebuild DB">
+                    ⚡ <span id="txtRebuild">Rebuild</span>
+                </button>
+                <a href="/docs" target="_blank" class="btn-action" title="API Docs">
+                    📑 Docs
                 </a>
-                <button class="btn-secondary" onclick="logout()">
-                    <svg class="icon" viewBox="0 0 24 24"><path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"/><polyline points="16 17 21 12 16 7"/><line x1="21" y1="12" x2="9" y2="12"/></svg>
-                    <span>Logout</span>
+                <button class="btn-action" onclick="logout()" title="Logout">
+                    🚪
                 </button>
             </div>
         </header>
 
         <!-- Chat Container -->
         <div class="chat-container" id="chatContainer">
-            <div class="message-row bot">
-                <div class="avatar">
-                    <svg class="icon" viewBox="0 0 24 24"><rect x="3" y="11" width="18" height="10" rx="2"/><circle cx="12" cy="5" r="2"/><path d="M12 7v4"/><line x1="8" y1="16" x2="8" y2="16"/><line x1="16" y1="16" x2="16" y2="16"/></svg>
-                </div>
-                <div class="message-content">
-                    <div class="bubble">Hello! I am your AI Assistant for the Northwestern University Staff Handbook. You can ask me any question regarding staff policies, benefits, leave entitlements, or workplace guidelines.
-
-Here are a few options you can ask me to get started:</div>
-                    <div class="quick-queries" style="margin-top: 12px; justify-content: flex-start;">
-                        <div class="chip" onclick="sendQuickQuery('What is the vacation policy for full-time staff?')">
-                            <svg class="icon" viewBox="0 0 24 24"><circle cx="12" cy="12" r="5"/><line x1="12" y1="1" x2="12" y2="3"/><line x1="12" y1="21" x2="12" y2="23"/><line x1="4.22" y1="4.22" x2="5.64" y2="5.64"/><line x1="18.36" y1="18.36" x2="19.78" y2="19.78"/><line x1="1" y1="12" x2="3" y2="12"/><line x1="21" y1="12" x2="23" y2="12"/><line x1="4.22" y1="19.78" x2="5.64" y2="18.36"/><line x1="18.36" y1="5.64" x2="19.78" y2="4.22"/></svg>
-                            <span>Vacation Policy</span>
-                        </div>
-                        <div class="chip" onclick="sendQuickQuery('What are the rules regarding remote work?')">
-                            <svg class="icon" viewBox="0 0 24 24"><path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/><polyline points="9 22 9 12 15 12 15 22"/></svg>
-                            <span>Remote Work Policy</span>
-                        </div>
-                        <div class="chip" onclick="sendQuickQuery('How do employee health and benefits work?')">
-                            <svg class="icon" viewBox="0 0 24 24"><path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"/></svg>
-                            <span>Health & Benefits</span>
-                        </div>
-                        <div class="chip" onclick="sendQuickQuery('What are the official university holidays?')">
-                            <svg class="icon" viewBox="0 0 24 24"><rect x="3" y="4" width="18" height="18" rx="2" ry="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg>
-                            <span>University Holidays</span>
-                        </div>
-                        <div class="chip" onclick="sendQuickQuery('How does sick leave work?')">
-                            <svg class="icon" viewBox="0 0 24 24"><path d="M12 2v20M2 12h20"/></svg>
-                            <span>Sick Leave Policy</span>
-                        </div>
-                    </div>
-                    <div class="message-meta">AI Assistant • Ready to help</div>
-                </div>
-            </div>
+            <!-- Dynamic Welcome Message will be injected here on load -->
         </div>
 
-        <!-- Footer Form -->
-        <footer>
-            <form class="input-form" id="chatForm" onsubmit="handleSend(event)">
-                <input 
-                    type="text" 
-                    id="userInput" 
-                    class="chat-input" 
-                    placeholder="Ask a question about the staff handbook... (e.g. What is the sick leave policy?)" 
-                    autocomplete="off"
-                >
-                <button type="submit" class="btn-send" id="sendBtn">
-                    <span>Send</span>
-                    <svg class="icon" viewBox="0 0 24 24"><line x1="22" y1="2" x2="11" y2="13"/><polygon points="22 2 15 22 11 13 2 9 22 2"/></svg>
-                </button>
-            </form>
-        </footer>
+        <!-- Quick Suggestions Chips -->
+        <div class="suggestions-container" id="suggestionsContainer">
+            <!-- Injected by JS based on selected language -->
+        </div>
 
-        <!-- Login Modal -->
+        <!-- Input Bar -->
+        <form class="input-bar" onsubmit="handleSend(event)">
+            <div class="input-wrapper">
+                <input type="text" class="chat-input" id="userInput" placeholder="Bir soru sorun..." autocomplete="off">
+            </div>
+            <button type="submit" class="btn-send" id="sendBtn">
+                <svg class="icon" viewBox="0 0 24 24"><line x1="22" y1="2" x2="11" y2="13"/><polygon points="22 2 15 22 11 13 2 9 22 2"/></svg>
+            </button>
+        </form>
+
+        <!-- Login Modal Overlay -->
         <div class="modal-overlay" id="loginModal">
-            <div class="login-card">
-                <div class="login-icon">
-                    <svg class="icon icon-lg" viewBox="0 0 24 24"><rect x="3" y="11" width="18" height="11" rx="2" ry="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg>
-                </div>
-                <h2>Sign In</h2>
-                <p>Please authenticate with your credentials to access the staff handbook assistant.</p>
-
+            <div class="modal-card">
+                <h2 id="txtLoginTitle">Giriş Yap</h2>
+                <p id="txtLoginDesc">Devam etmek için hesabınızla giriş yapın.</p>
+                
                 <form onsubmit="handleLogin(event)">
                     <div class="form-group">
-                        <label for="username">Username</label>
-                        <input type="text" id="username" class="form-control" placeholder="Enter your username" required>
+                        <label id="lblUsername">Kullanıcı Adı</label>
+                        <input type="text" id="username" class="form-input" required>
                     </div>
                     <div class="form-group">
-                        <label for="password">Password</label>
-                        <input type="password" id="password" class="form-control" placeholder="Enter your password" required>
+                        <label id="lblPassword">Şifre</label>
+                        <input type="password" id="password" class="form-input" required>
                     </div>
-                    <button type="submit" class="btn-login">Sign In & Start</button>
-                    <div class="error-message" id="loginError">Invalid username or password!</div>
+
+                    <div class="quick-fill">
+                        <button type="button" onclick="quickFill('staff', 'nu2026pass')">👤 Staff User</button>
+                        <button type="button" onclick="quickFill('admin', 'admin*123!')">⚡ Admin User</button>
+                    </div>
+
+                    <button type="submit" class="btn-submit" id="btnSignIn">Giriş Yap ve Başla</button>
+                    <div class="error-msg" id="loginError"></div>
                 </form>
             </div>
         </div>
@@ -736,17 +632,119 @@ Here are a few options you can ask me to get started:</div>
     </div>
 
     <script>
+        let currentLang = localStorage.getItem('rag_lang') || 'tr';
         let authToken = localStorage.getItem('rag_token') || null;
         let userRole = localStorage.getItem('rag_role') || null;
 
+        const i18n = {
+            tr: {
+                title: "Northwestern Handbook AI",
+                subtitle: "Personel Bilgi Asistanı",
+                rebuild: "Yenile",
+                placeholder: "El kitabı hakkında bir soru sorun...",
+                loginTitle: "Sisteme Giriş Yapın",
+                loginDesc: "Northwestern El Kitabı Asistanına erişmek için giriş yapın.",
+                lblUsername: "Kullanıcı Adı",
+                lblPassword: "Şifre",
+                btnSignIn: "Giriş Yap ve Başla",
+                loginErr: "Kullanıcı adı veya şifre hatalı.",
+                welcomeMsg: "Merhaba! Northwestern University Personel El Kitabı Asistanına hoş geldiniz. Personel hakları, izinler, sağlık sigortası ve üniversite politikaları hakkında bana dilediğiniz soruyu sorabilirsiniz.",
+                sectionLabel: "Bölüm:",
+                connErr: "Bağlantı hatası: Sunucuya ulaşılamıyor.",
+                chips: [
+                    { label: "🏖️ Tatil Politikası", query: "Tatil izin hakları ve yıllık izin kuralları nedir?" },
+                    { label: "🏠 Uzaktan Çalışma", query: "Uzaktan çalışma (Remote Work) politikası nasıldır?" },
+                    { label: "🏥 Sağlık & Yan Haklar", query: "Sağlık sigortası ve yan haklar nelerdir?" },
+                    { label: "🎉 Resmi Tatiller", query: "Üniversite resmi tatil günleri hangileridir?" }
+                ]
+            },
+            en: {
+                title: "Northwestern Handbook AI",
+                subtitle: "Staff Knowledge Assistant",
+                rebuild: "Rebuild",
+                placeholder: "Ask a question about the staff handbook...",
+                loginTitle: "Sign In",
+                loginDesc: "Log in to access Northwestern Staff Handbook Assistant.",
+                lblUsername: "Username",
+                lblPassword: "Password",
+                btnSignIn: "Sign In & Start",
+                loginErr: "Invalid username or password.",
+                welcomeMsg: "Hello! Welcome to Northwestern University Staff Handbook Assistant. You can ask me any questions regarding staff policies, vacation allowances, health benefits, and university guidelines.",
+                sectionLabel: "Section:",
+                connErr: "Connection error: Server unreachable.",
+                chips: [
+                    { label: "🏖️ Vacation Policy", query: "What is the vacation policy and accrual rate?" },
+                    { label: "🏠 Remote Work Policy", query: "What are the rules for remote work?" },
+                    { label: "🏥 Health & Benefits", query: "What health insurance and benefits are provided?" },
+                    { label: "🎉 University Holidays", query: "What are the official university holidays?" }
+                ]
+            }
+        };
+
         document.addEventListener('DOMContentLoaded', () => {
+            applyLanguage();
             if (authToken) {
                 hideLoginModal();
                 checkUserRole();
+                initWelcomeMessage();
             } else {
                 showLoginModal();
             }
         });
+
+        function toggleLanguage() {
+            currentLang = currentLang === 'tr' ? 'en' : 'tr';
+            localStorage.setItem('rag_lang', currentLang);
+            applyLanguage();
+            
+            // Reload welcome message in new language if chat is fresh
+            const container = document.getElementById('chatContainer');
+            if (container.children.length <= 1) {
+                container.innerHTML = '';
+                initWelcomeMessage();
+            }
+        }
+
+        function applyLanguage() {
+            const t = i18n[currentLang];
+            document.getElementById('txtLangCode').innerText = currentLang.toUpperCase();
+            document.getElementById('txtAppTitle').innerText = t.title;
+            document.getElementById('txtAppSubtitle').innerText = t.subtitle;
+            document.getElementById('txtRebuild').innerText = t.rebuild;
+            document.getElementById('userInput').placeholder = t.placeholder;
+            
+            document.getElementById('txtLoginTitle').innerText = t.loginTitle;
+            document.getElementById('txtLoginDesc').innerText = t.loginDesc;
+            document.getElementById('lblUsername').innerText = t.lblUsername;
+            document.getElementById('lblPassword').innerText = t.lblPassword;
+            document.getElementById('btnSignIn').innerText = t.btnSignIn;
+
+            renderChips();
+        }
+
+        function renderChips() {
+            const chipsContainer = document.getElementById('suggestionsContainer');
+            chipsContainer.innerHTML = '';
+            i18n[currentLang].chips.forEach(c => {
+                const btn = document.createElement('button');
+                btn.className = 'chip';
+                btn.type = 'button';
+                btn.innerText = c.label;
+                btn.onclick = () => sendQuickQuery(c.query);
+                chipsContainer.appendChild(btn);
+            });
+        }
+
+        function initWelcomeMessage() {
+            const container = document.getElementById('chatContainer');
+            if (container.children.length > 0) return;
+
+            const typingElem = appendTypingIndicator();
+            setTimeout(() => {
+                typingElem.remove();
+                appendBotMessage(i18n[currentLang].welcomeMsg, false, null);
+            }, 1000);
+        }
 
         function showLoginModal() {
             document.getElementById('loginModal').style.display = 'flex';
@@ -764,6 +762,11 @@ Here are a few options you can ask me to get started:</div>
             }
         }
 
+        function quickFill(u, p) {
+            document.getElementById('username').value = u;
+            document.getElementById('password').value = p;
+        }
+
         async function handleLogin(e) {
             e.preventDefault();
             const u = document.getElementById('username').value.trim();
@@ -779,7 +782,7 @@ Here are a few options you can ask me to get started:</div>
                     body: JSON.stringify({ username: u, password: p })
                 });
 
-                if (!res.ok) throw new Error('Authentication failed.');
+                if (!res.ok) throw new Error(i18n[currentLang].loginErr);
 
                 const data = await res.json();
                 authToken = data.access_token;
@@ -790,8 +793,9 @@ Here are a few options you can ask me to get started:</div>
 
                 hideLoginModal();
                 checkUserRole();
+                initWelcomeMessage();
             } catch (err) {
-                errorDiv.innerText = err.message || 'Login failed.';
+                errorDiv.innerText = err.message || i18n[currentLang].loginErr;
                 errorDiv.style.display = 'block';
             }
         }
@@ -801,6 +805,7 @@ Here are a few options you can ask me to get started:</div>
             localStorage.removeItem('rag_role');
             authToken = null;
             userRole = null;
+            document.getElementById('chatContainer').innerHTML = '';
             showLoginModal();
         }
 
@@ -834,7 +839,7 @@ Here are a few options you can ask me to get started:</div>
                         'Content-Type': 'application/json',
                         'Authorization': `Bearer ${authToken}`
                     },
-                    body: JSON.stringify({ question: query })
+                    body: JSON.stringify({ question: query, lang: currentLang })
                 });
 
                 typingElem.remove();
@@ -842,7 +847,7 @@ Here are a few options you can ask me to get started:</div>
 
                 if (res.status === 401) {
                     logout();
-                    alert('Session expired. Please log in again.');
+                    alert(currentLang === 'tr' ? 'Oturum süresi doldu. Lütfen tekrar giriş yapın.' : 'Session expired. Please log in again.');
                     return;
                 }
 
@@ -858,7 +863,7 @@ Here are a few options you can ask me to get started:</div>
             } catch (err) {
                 typingElem.remove();
                 sendBtn.disabled = false;
-                appendBotMessage(`Connection error: Server unreachable.`, false, null);
+                appendBotMessage(i18n[currentLang].connErr, false, null);
             }
         }
 
@@ -886,7 +891,7 @@ Here are a few options you can ask me to get started:</div>
 
             let metaInfo = new Date().toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'});
             if (sourceFound && section) {
-                metaInfo += ` • <span class="section-tag">Section: ${escapeHtml(section)}</span>`;
+                metaInfo += ` • <span class="section-tag">${i18n[currentLang].sectionLabel} ${escapeHtml(section)}</span>`;
             }
 
             row.innerHTML = `
@@ -920,7 +925,8 @@ Here are a few options you can ask me to get started:</div>
         }
 
         async function triggerIngest() {
-            if (!confirm("Are you sure you want to rebuild the vector database?")) return;
+            const msg = currentLang === 'tr' ? "Vektör veritabanını baştan oluşturmak istediğinize emin misiniz?" : "Are you sure you want to rebuild the vector database?";
+            if (!confirm(msg)) return;
             try {
                 const res = await fetch('/api/admin/ingest', {
                     method: 'POST',
@@ -928,12 +934,12 @@ Here are a few options you can ask me to get started:</div>
                 });
                 const data = await res.json();
                 if (res.ok) {
-                    alert(`Success: ${data.message} (Total ${data.total_chunks} chunks)`);
+                    alert(`Başarılı: ${data.message} (Toplam ${data.total_chunks} chunk)`);
                 } else {
-                    alert(`Error: ${data.detail}`);
+                    alert(`Hata: ${data.detail}`);
                 }
             } catch (err) {
-                alert("An error occurred during ingestion: " + err);
+                alert("Veritabanı yenileme hatası: " + err);
             }
         }
 
