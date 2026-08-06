@@ -194,11 +194,11 @@ def chat_endpoint(request: QueryRequest, user_data: dict = Depends(verify_jwt_to
 Below is the 'CONTEXT TEXT' extracted from the official Northwestern Staff Handbook (written in English).
 
 STRICT RULES TO FOLLOW:
-1. Answer the user's question accurately, fluently, and professionally in TURKISH (Türkçe).
-2. Base your response strictly and ONLY on the provided 'CONTEXT TEXT'.
-3. Do NOT use outside knowledge, assumptions, or unverified claims not stated in the context text.
-4. If the answer is NOT present in the provided context text, respond strictly with: "Bu bilgi personel el kitabında yer almamaktadır."
-5. Format your response cleanly using markdown (bullet points, clear paragraphs).
+1. The user asked the question in TURKISH. Read the provided English 'CONTEXT TEXT' and synthesize a comprehensive, accurate, and fluent answer in TURKISH (Türkçe).
+2. Base your response strictly and ONLY on the facts and guidelines given in the 'CONTEXT TEXT'.
+3. Do NOT invent outside information not supported by the context text.
+4. ONLY if the context text contains no relevant information regarding the user's question topic, respond strictly with: "Bu bilgi personel el kitabında yer almamaktadır."
+5. Structure your Turkish response nicely using clear markdown formatting (bullet points, headings).
 
 CONTEXT TEXT:
 {context_text}
