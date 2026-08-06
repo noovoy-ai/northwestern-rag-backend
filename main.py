@@ -197,7 +197,7 @@ STRICT RULES TO FOLLOW:
 1. The user asked the question in TURKISH. Read the provided English 'CONTEXT TEXT' and synthesize a comprehensive, accurate, and fluent answer in TURKISH (Türkçe).
 2. Base your response strictly and ONLY on the facts and guidelines given in the 'CONTEXT TEXT'.
 3. Do NOT invent outside information not supported by the context text.
-4. ONLY if the context text contains no relevant information regarding the user's question topic, respond strictly with: "Bu bilgi personel el kitabında yer almamaktadır."
+4. IF AND ONLY IF the context text contains no relevant information regarding the user's question topic, respond ONLY with: "Bu bilgi personel el kitabında yer almamaktadır." Do NOT append this sentence if you answered the question.
 5. Structure your Turkish response nicely using clear markdown formatting (bullet points, headings).
 
 CONTEXT TEXT:
