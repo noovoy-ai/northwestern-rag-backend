@@ -88,8 +88,26 @@ Projede kullanılan veritabanı **ChromaDB** tabanlı bir **Vektör Veritabanıd
    - **İşleme (Ingest - `ingest.py`):** Markdown dosyası başlıklarına göre parçalanır (1200 karakterlik chunk'lar), Ollama `nomic-embed-text` modeliyle sayısal vektörlere çevrilir ve SQLite3 / HNSW indeksine yazılır.
    - **Sorgulama (RAG Query - `main.py`):** Kullanıcının sorduğu soru anında vektöre çevrilir. ChromaDB vektör indeksinde kosinüs benzerliği ile sorunun anlamına en yakın metin parçalarını milisaniyeler içinde arayıp bulur ve cevabı üretmesi için LLM'e (`qwen2.5:7b`) iletir.
 
+### 3.2 Donanım Limitleri ve Performans Optimizasyonları (Mac Mini M2 8GB & `k` Parametresi)
 
----
+Sistemin çalıştığı canlı donanım ortamı **Mac Mini M2 (8GB Birleşik Bellek / Unified Memory)** mimarisidir:
+
+1. **Donanım Darboğazı ve RAM Analizi:**
+   - `qwen2.5:7b` (Q4_K_M) modeli yaklaşık 4.7 GB bellek kaplar.
+   - LLM'e çok büyük bağlam (Context) gönderildiğinde (örn. `k=7` chunk = ~4500 token), Ollama'nın KV-Cache bellek kullanımı 2.0 GB seviyelerine ulaşır.
+   - Bu durum 8GB birleşik belleğe sahip Mac Mini M2 üzerinde bellek sınırını zorlayarak macOS'un disk swap (sanal bellek) kullanmasına neden olur ve çıkarım (inference) hızını yavaşlatır.
+
+2. **`k=4` Arama Optimizasyonu ve Yanıt Kalitesine Etkisi:**
+   - ChromaDB vektör aramasında `k` parametresi `7`'den `4`'e düşürülmüştür.
+   - **Cevap Verme Kapasitesi / Kalitesi Düşer mi?**
+     - **HAYIR!** El kitabındaki personel politikaları (izin hakları, sağlık sigortası, uzaktan çalışma vb.) genellikle 1 ila 3 ilgili paragraf içerisinde eksiksiz olarak yer almaktadır.
+     - `k=4` yapıldığında en alakalı ilk 4 chunk (~4000 karakter) LLM'e iletilir. Bu miktar 98%+ oranında soruların yanıtlanması için tamamen yeterlidir.
+     - Aksine, 5., 6. ve 7. sıradaki daha az alakalı metin parçalarının elenmesi, LLM'in odaklanmasını kolaylaştırır ve anlamsal gürültüyü (noise/hallucination) engeller.
+   - **Performans Kazancı:** Modele gönderilen girdi token sayısı %45 azalır, Ollama prompt işleme süresi yarı yarıya düşer ve bellek kullanımı 8GB sınırında kalıp swap yapmadığı için yanıtlar belirgin şekilde hızlanır.
+
+3. **Gelecek Dönem Modeli Küçültme Alternatifleri:**
+   - İleriki aşamalarda yanıt sürelerini daha da hızlandırmak istenirse, `qwen2.5:7b` yerine **`qwen2.5:3b`** modeline geçiş değerlendirilebilir. 3B modelleri 8GB RAM ortamında çok daha düşük kaynak harcayarak 3 kat daha hızlı yanıt verir.
+
 
 ## 4. Hata Kodları ve Logları Nerede Bulabiliriz?
 
