@@ -53,6 +53,7 @@ class LoginRequest(BaseModel):
 
 class QueryRequest(BaseModel):
     question: str
+    lang: str = "tr"  # "tr" or "en"
 
 def verify_jwt_token(credentials: HTTPAuthorizationCredentials = Security(security)):
     token = credentials.credentials
@@ -144,15 +145,18 @@ def clean_markdown_wrappers(text: str) -> str:
     text = re.sub(r'^markdown\s*\n', '', text, flags=re.IGNORECASE)
     return text.strip()
 
-def is_turkish_text(text: str) -> bool:
-    tr_chars = set("çğıöşüÇĞİÖŞÜ")
-    if any(c in tr_chars for c in text):
-        return True
+def detect_language(text: str, user_lang: str) -> str:
+    """Detect language based on user preference or text content."""
+    if user_lang in ["tr", "en"]:
+        return user_lang
+    turkish_chars = set("çğıöşüÇĞİÖŞÜ")
+    if any(c in turkish_chars for c in text):
+        return "tr"
     tr_words = {"merhaba", "nasılsın", "nasıl", "selam", "günaydın", "iyi", "bugün", "hastayım", "izin", "nedir", "veya", "var", "yok", "hakkında", "bilgi", "gideceğim", "gidemice", "yapmalıyım", "işe"}
     words = set(re.findall(r'\w+', text.lower()))
     if words.intersection(tr_words):
-        return True
-    return False
+        return "tr"
+    return "tr"
 
 def check_greeting(text: str):
     cleaned = re.sub(r'[^\w\s]', '', text.lower()).strip()
@@ -161,24 +165,49 @@ def check_greeting(text: str):
     
     words = cleaned.split()
     if cleaned in tr_greetings or cleaned in ("bugun nasilsin", "nasilsin iyiyim", "merhaba nasilsin"):
-        return "TR", "Merhaba, iyiyim! Bugün sana nasıl yardımcı olabilirim?, Genel Karşılama"
+        return "tr", "Merhaba, iyiyim! Bugün sana nasıl yardımcı olabilirim?, Genel Karşılama"
     if cleaned in en_greetings or cleaned in ("how are you today", "hello how are you"):
-        return "EN", "Hello, I am doing well! How can I help you today?, General Greeting"
+        return "en", "Hello, I am doing well! How can I help you today?, General Greeting"
     
     if len(words) <= 3:
         if any(w in tr_greetings for w in words):
-            return "TR", "Merhaba, iyiyim! Bugün sana nasıl yardımcı olabilirim?, Genel Karşılama"
+            return "tr", "Merhaba, iyiyim! Bugün sana nasıl yardımcı olabilirim?, Genel Karşılama"
         if any(w in en_greetings for w in words):
-            return "EN", "Hello, I am doing well! How can I help you today?, General Greeting"
+            return "en", "Hello, I am doing well! How can I help you today?, General Greeting"
             
     return None, None
+
+TR_KEYWORD_MAP = {
+    "tatil": "vacation holiday leave accrual",
+    "izin": "leave absence vacation PTO sick time",
+    "uzaktan": "remote work flexible working arrangement",
+    "çalışma": "work employment schedule hours",
+    "sağlık": "health medical insurance benefits plan",
+    "sigorta": "insurance health benefits coverage",
+    "maaş": "salary pay compensation wages",
+    "ücret": "compensation pay salary wages",
+    "disiplin": "discipline conduct policy standards",
+    "istifa": "resignation termination separation",
+    "emeklilik": "retirement pension benefits",
+    "bayram": "holiday university official holidays",
+}
+
+def expand_search_query(query: str, user_lang: str) -> str:
+    if user_lang == "tr":
+        query_lower = query.lower()
+        matched = [eng for tr, eng in TR_KEYWORD_MAP.items() if tr in query_lower]
+        if matched:
+            return f"{query} {' '.join(matched)}"
+    return query
 
 @app.post("/api/chat")
 def chat_endpoint(request: QueryRequest, user_data: dict = Depends(verify_jwt_token)):
     user_query = request.question.strip()
+    raw_lang = (request.lang or "").strip().lower()
+    user_lang = detect_language(user_query, raw_lang)
     
     if not user_query:
-        raise HTTPException(status_code=400, detail="Question cannot be empty.")
+        raise HTTPException(status_code=400, detail="Question cannot be empty." if user_lang == "en" else "Soru boş olamaz.")
 
     # 1. Special greeting handler
     is_greeting_lang, greeting_response = check_greeting(user_query)
@@ -186,21 +215,19 @@ def chat_endpoint(request: QueryRequest, user_data: dict = Depends(verify_jwt_to
         return {
             "answer": greeting_response,
             "source_found": True,
-            "section": "Genel Karşılama" if is_greeting_lang == "TR" else "General Greeting"
+            "section": "Genel Karşılama" if is_greeting_lang == "tr" else "General Greeting"
         }
 
-    # 2. Language detection
-    is_tr = is_turkish_text(user_query)
+    # 2. Vector search with expanded search query for high recall
+    search_query = expand_search_query(user_query, user_lang)
+    results = get_db().similarity_search_with_score(search_query, k=7)
 
-    # 3. Similarity search
-    results = get_db().similarity_search_with_score(user_query, k=7)
-    
-    COSINE_THRESHOLD = 0.65
+    COSINE_THRESHOLD = 0.72 if user_lang == "tr" else 0.65
     filtered_results = [doc for doc, score in results if score <= COSINE_THRESHOLD]
 
     if not filtered_results:
-        no_info_ans = "Bu bilgi personel el kitabında bulunmamaktadır." if is_tr else "This information is not available in the staff handbook."
-        source_str = "Northwestern Personel El Kitabı" if is_tr else "Northwestern Staff Handbook"
+        no_info_ans = "Bu bilgi personel el kitabında bulunmamaktadır." if user_lang == "tr" else "This information is not available in the staff handbook."
+        source_str = "Northwestern Personel El Kitabı" if user_lang == "tr" else "Northwestern Staff Handbook"
         return {
             "answer": f"{no_info_ans}, {source_str}",
             "source_found": False,
@@ -210,26 +237,38 @@ def chat_endpoint(request: QueryRequest, user_data: dict = Depends(verify_jwt_to
     context_blocks = [doc.page_content for doc in filtered_results]
     context_text = "\n\n---\n\n".join(context_blocks)
     first_doc_meta = filtered_results[0].metadata
-    matched_section = first_doc_meta.get("subsection_title") or first_doc_meta.get("section_title") or "General"
+    matched_section = first_doc_meta.get("subsection_title") or first_doc_meta.get("section_title") or "Genel / General"
 
-    lang_instruction = (
-        "USER LANGUAGE: TURKISH. You MUST write your response ONLY in clear, natural Turkish."
-        if is_tr else
-        "USER LANGUAGE: ENGLISH. You MUST write your response ONLY in clear, natural English."
-    )
+    if user_lang == "tr":
+        system_prompt = f"""You are the official Northwestern University Staff Handbook AI Assistant.
+Below is the 'CONTEXT TEXT' extracted from the official Northwestern Staff Handbook (written in English).
 
-    system_prompt = f"""You are the official Northwestern University Staff Handbook AI Assistant.
+STRICT RULES TO FOLLOW:
+1. The user asked the question in TURKISH. Read the provided English 'CONTEXT TEXT' and synthesize a comprehensive, accurate, and fluent answer in TURKISH (Türkçe).
+2. Base your response strictly and ONLY on the facts and guidelines given in the 'CONTEXT TEXT'.
+3. Do NOT invent outside information not supported by the context text.
+4. IF AND ONLY IF the context text contains no relevant information regarding the user's question topic, respond ONLY with: "Bu bilgi personel el kitabında bulunmamaktadır."
+5. ABSOLUTELY NEVER generate Chinese, Japanese, or any language other than Turkish.
+6. Do NOT wrap your output in ```markdown code blocks or include the word 'markdown' at the top of your response.
+7. Keep answers concise and direct. Avoid long or complex unnecessary explanations.
+
+CONTEXT TEXT:
+{context_text}
+
+USER QUESTION (IN TURKISH):
+{user_query}
+"""
+    else:
+        system_prompt = f"""You are the official Northwestern University Staff Handbook AI Assistant.
 Below is the 'CONTEXT TEXT' extracted from the official Northwestern Staff Handbook.
 
 STRICT RULES TO FOLLOW:
 1. Answer the user's question accurately, concisely, and clearly based ONLY on the provided 'CONTEXT TEXT'.
 2. Do NOT use outside knowledge, assumptions, or unverified claims not stated in the context text.
-3. If the answer is NOT present in the provided context text, respond strictly with:
-   {"'Bu bilgi personel el kitabında bulunmamaktadır.'" if is_tr else "'This information is not available in the staff handbook.'"}
-4. {lang_instruction}
-5. ABSOLUTELY NEVER generate Chinese, Japanese, or any language other than {"Turkish" if is_tr else "English"}.
-6. Do NOT wrap your output in ```markdown code blocks or include the word 'markdown' at the top of your response.
-7. Keep answers concise and direct. Avoid long or complex unnecessary explanations.
+3. If the answer is NOT present in the provided context text, respond strictly with: "This information is not available in the staff handbook."
+4. ABSOLUTELY NEVER generate Chinese, Japanese, or any language other than English.
+5. Do NOT wrap your output in ```markdown code blocks or include the word 'markdown' at the top of your response.
+6. Keep answers concise and direct. Avoid long or complex unnecessary explanations.
 
 CONTEXT TEXT:
 {context_text}
@@ -254,12 +293,12 @@ USER QUESTION:
         # Fallback if Chinese characters are detected
         if contains_chinese(bot_response):
             bot_response = (
-                "Üzgünüm, sorunuz işlenirken bir dil hatası oluştu." if is_tr
+                "Üzgünüm, sorunuz işlenirken bir dil hatası oluştu." if user_lang == "tr"
                 else "Sorry, a language processing error occurred."
             )
 
         source_label = (
-            f"Northwestern Personel El Kitabı (Bölüm: {matched_section})" if is_tr
+            f"Northwestern Personel El Kitabı (Bölüm: {matched_section})" if user_lang == "tr"
             else f"Northwestern Staff Handbook (Section: {matched_section})"
         )
 
@@ -272,4 +311,5 @@ USER QUESTION:
         }
     except Exception as e:
         raise HTTPException(status_code=500, detail=f"LLM connection error ({OLLAMA_BASE_URL}): {str(e)}")
+
 

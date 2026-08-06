@@ -3,3 +3,8 @@ __pycache__/
 *.pyc
 venv/
 .DS_Store
+
+# Tunnel scripts and temporary tunnel configuration files
+tunnel_watcher.py
+last_tunnel_url.txt
+*.tunnel.log
