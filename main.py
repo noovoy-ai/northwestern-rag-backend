@@ -124,6 +124,15 @@ def admin_ingest_endpoint(user_data: dict = Depends(verify_jwt_token)):
         vector_store = get_vector_store()
         raise HTTPException(status_code=500, detail=f"Ingestion sırasında hata oluştu: {str(e)}")
 
+def detect_language(text: str, user_lang: str) -> str:
+    """Detect language based on user preference or text content."""
+    if user_lang in ["tr", "en"]:
+        return user_lang
+    turkish_chars = set("çğıöşüÇĞİÖŞÜ")
+    if any(c in turkish_chars for c in text):
+        return "tr"
+    return "tr"
+
 TR_KEYWORD_MAP = {
     "tatil": "vacation holiday leave accrual",
     "izin": "leave absence vacation PTO sick time",
