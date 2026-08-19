@@ -26,11 +26,12 @@ async def search_relevant_chunks(
         }
     })
 
+    claims_escaped = jwt_claims.replace("'", "''")
     citations = []
     async with db_pool.acquire() as conn:
         async with conn.transaction():
             # Session seviyesinde JWT claims enjeksiyonu (Sıfır Sızıntı İlkesi)
-            await conn.execute("SET LOCAL request.jwt.claims = $1", jwt_claims)
+            await conn.execute(f"SET LOCAL request.jwt.claims = '{claims_escaped}';")
             
             # match_documents RPC çağrısı
             rows = await conn.fetch(

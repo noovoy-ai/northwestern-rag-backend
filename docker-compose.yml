@@ -28,6 +28,8 @@ services:
     environment:
       GOTRUE_API_HOST: 0.0.0.0
       GOTRUE_API_PORT: 9999
+      API_EXTERNAL_URL: http://localhost:${AUTH_PORT:-9999}
+      GOTRUE_API_EXTERNAL_URL: http://localhost:${AUTH_PORT:-9999}
       GOTRUE_DB_DRIVER: postgres
       GOTRUE_DB_DATABASE_URL: postgres://postgres:${POSTGRES_PASSWORD:-postgres}@db:5432/postgres?sslmode=disable
       GOTRUE_SITE_URL: http://localhost:${HOST_PORT:-8005}
