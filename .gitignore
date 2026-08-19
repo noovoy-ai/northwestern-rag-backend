@@ -8,3 +8,5 @@ venv/
 tunnel_watcher.py
 last_tunnel_url.txt
 *.tunnel.log
+cloudflared.log
+

@@ -1,28 +1,77 @@
-name: rag_staging
+name: rag_enterprise
 
 services:
-  fastapi-backend:
-    build:
-      context: .
-      dockerfile: Dockerfile
-    container_name: rag_staging_backend
-    ports:
-      - "${HOST_PORT:-8005}:8000"
-    env_file:
-      - .env
+  # Supabase PostgreSQL + pgvector
+  db:
+    image: supabase/postgres:15.1.0.147
+    container_name: local-rag-db
     environment:
-      - OLLAMA_BASE_URL=${OLLAMA_BASE_URL:-http://host.docker.internal:11434}
-      - DB_DIR=${DB_DIR:-/app/chroma_db}
-      - ADMIN_PASSWORD=${ADMIN_PASSWORD:-admin*123!}
-      - STAFF_PASSWORD=${STAFF_PASSWORD:-nu2026pass}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:-postgres}
+      POSTGRES_DB: postgres
+    ports:
+      - "${DB_PORT:-5432}:5432"
     volumes:
-      - ./chroma_db:/app/chroma_db
-      - ./handbook_vectordb_ready.md:/app/handbook_vectordb_ready.md
-      - ./static:/app/static
-    extra_hosts:
-      - "host.docker.internal:host-gateway"
+      - db_data:/var/lib/postgresql/data
+      - ./db/schema.sql:/docker-entrypoint-initdb.d/init.sql
     deploy:
       resources:
         limits:
-          memory: 1.5G
+          memory: 1G
     restart: unless-stopped
+
+  # Supabase GoTrue (Auth)
+  auth:
+    image: supabase/gotrue:v2.132.3
+    container_name: local-rag-auth
+    depends_on:
+      - db
+    environment:
+      GOTRUE_API_HOST: 0.0.0.0
+      GOTRUE_API_PORT: 9999
+      GOTRUE_DB_DRIVER: postgres
+      GOTRUE_DB_DATABASE_URL: postgres://postgres:${POSTGRES_PASSWORD:-postgres}@db:5432/postgres?sslmode=disable
+      GOTRUE_SITE_URL: http://localhost:${HOST_PORT:-8005}
+      GOTRUE_JWT_SECRET: ${JWT_SECRET:-super-secret-jwt-token-key-change-me-32-chars}
+      GOTRUE_JWT_EXP: 3600
+      GOTRUE_DISABLE_SIGNUP: "false"
+    ports:
+      - "${AUTH_PORT:-9999}:9999"
+    deploy:
+      resources:
+        limits:
+          memory: 512M
+    restart: unless-stopped
+
+  # FastAPI Backend Uygulaması
+  backend:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: local-rag-backend
+    depends_on:
+      - db
+      - auth
+    environment:
+      DATABASE_URL: postgresql://postgres:${POSTGRES_PASSWORD:-postgres}@db:5432/postgres
+      GOTRUE_URL: http://auth:9999
+      JWT_SECRET: ${JWT_SECRET:-super-secret-jwt-token-key-change-me-32-chars}
+      OLLAMA_BASE_URL: ${OLLAMA_BASE_URL:-http://host.docker.internal:11434}
+      EMBEDDING_MODEL: ${EMBEDDING_MODEL:-nomic-embed-text}
+      LLM_MODEL: ${LLM_MODEL:-qwen2.5:7b}
+      ADMIN_PASSWORD: ${ADMIN_PASSWORD:-admin*123!}
+      STAFF_PASSWORD: ${STAFF_PASSWORD:-nu2026pass}
+    extra_hosts:
+      - "host.docker.internal:host-gateway"
+    ports:
+      - "${HOST_PORT:-8005}:8000"
+    volumes:
+      - ./app:/app/app
+      - ./static:/app/static
+    deploy:
+      resources:
+        limits:
+          memory: 1G
+    restart: unless-stopped
+
+volumes:
+  db_data:
