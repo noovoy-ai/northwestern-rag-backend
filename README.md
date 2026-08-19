@@ -194,5 +194,10 @@ Bu depoda çalışan tüm yapay zeka ajanları kök dizindeki [`AGENTS.md`](file
 2. **Kapsam Sınırı:** Yalnızca hedef görevle ilgili dosyalar değiştirilir.
 3. **Güvenlik:** `.env` ve gizli anahtarlar asla commit edilemez.
 
+---
 
+## 10. Dış Erişim Tüneli ve Çökme / Sağlık İzleme Servisi (`tunnel_watcher.py`)
 
+- **Dış Erişim (Cloudflare Tunnel):** Cloudflare tüneli otomatik olarak `http://localhost:8005` portunu internete güvenli HTTPS bağlantısıyla açar (`https://*.trycloudflare.com`).
+- **Otomatik E-Posta Bildirimi:** Tünel adresi her yenilendiğinde Apple Mail üzerinden `yunusemrec103@gmail.com` adresine canlı erişim linki iletilir.
+- **Sağlık & Çökme İzleme:** Servis her 10 saniyede bir `http://localhost:8005/health` adresini denetler. Arka arkaya 3 başarısızlık tespit edilirse yöneticiye anında acil durum çökme e-postası (`🚨 [ACİL UYARI] Nirene AI Sistemi Çöktü`) gönderilir; sistem toparlandığında ise kurtarma bildirimi (`✅ [SİSTEM KURTARILDI]`) iletilir.
