@@ -1,4 +1,4 @@
-# Northwestern Staff Handbook RAG - Tam Proje, Mimari, Buton & Link Rehberi (`all.md`)
+# Northwestern Staff Handbook RAG - Tam Proje, Mimari, Buton & Link Rehberi (`README.md`)
 
 Bu doküman, **Northwestern University Staff Handbook RAG** projesinin mimarisini, sistemin çalışma akışını, kurumsal RBAC/ABAC yetkilendirme modelini, veritabanı şemasını, arayüzdeki her tuşun işlevini, hata loglarının yerlerini ve sistemi sıfırdan kurma adımlarını içermektedir.
 
@@ -180,7 +180,7 @@ sequenceDiagram
 
 ## 8. Ekip Çalışması, Git İş Akışı ve GitHub CI/CD Otomasyonu
 
-- **GitHub Repository:** [https://github.com/yunusemre-celik/northwestern-rag-backend](https://github.com/yunusemre-celik/northwestern-rag-backend)
+- **GitHub Repository:** [https://github.com/noovoy-ai/northwestern-rag-backend](https://github.com/noovoy-ai/northwestern-rag-backend)
 - **Canlı / Dağıtım Branch:** `main` (Mac Mini 2 üzerinde çalışan dal)
 
 Tüm geliştirmeler `feature/*` dallarında yapılır, yerel testlerden sonra PR açılarak `main` dalına merge edilir.
