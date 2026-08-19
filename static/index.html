@@ -60,9 +60,7 @@
             overflow: hidden;
         }
 
-        body.menu-open { overflow: hidden; }
-
-        /* Typography & Mask Utilities */
+        /* Mask Utilities */
         .hl-mask {
             display: block;
             padding-bottom: 0.12em;
@@ -83,19 +81,168 @@
             opacity: 0;
         }
 
-        /* App Wrapper */
-        .app-wrapper {
+        /* ══════════════════════════════════════════
+           PAGE 1: FULLSCREEN LOGIN SCREEN
+        ══════════════════════════════════════════ */
+        #authScreen {
             display: flex;
             flex-direction: column;
             height: 100dvh;
             width: 100%;
+            background: radial-gradient(circle at 50% 30%, rgba(255, 232, 120, 0.05) 0%, transparent 65%), #0c0c0c;
             position: relative;
-            background-color: var(--bg);
+            z-index: 100;
+            overflow-y: auto;
+        }
+
+        .auth-topbar {
+            height: 64px;
+            padding: 0 clamp(16px, 3vw, 36px);
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            border-bottom: 1px solid var(--hairline);
+            flex-shrink: 0;
+        }
+
+        .auth-container {
+            flex: 1;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 24px;
+        }
+
+        .auth-card {
+            background: linear-gradient(180deg, rgba(255,255,255,0.035), rgba(255,255,255,0) 42%), #111111;
+            border: 1px solid rgba(255,255,255,0.09);
+            border-radius: 24px;
+            padding: clamp(24px, 3.5vw, 40px);
+            max-width: 480px;
+            width: 100%;
+            box-shadow: 0 25px 60px rgba(0,0,0,0.7), inset 0 1px 0 rgba(255,255,255,0.06);
+            position: relative;
+        }
+
+        .auth-header {
+            text-align: center;
+            margin-bottom: 24px;
+        }
+        .auth-brand-title {
+            font-size: 2rem;
+            font-weight: 700;
+            letter-spacing: -0.03em;
+            color: var(--heading);
+            margin-bottom: 6px;
+        }
+        .auth-subtitle {
+            font-size: 0.88rem;
+            color: var(--subtitle);
+            line-height: 1.4;
+        }
+
+        .form-group {
+            margin-bottom: 16px;
+        }
+        .form-group label {
+            display: block;
+            font-size: 0.78rem;
+            font-weight: 500;
+            color: #d1d5db;
+            margin-bottom: 6px;
+        }
+        .auth-input {
+            width: 100%;
+            padding: 12px 16px;
+            background: rgba(255,255,255,0.04);
+            border: 1px solid rgba(255,255,255,0.1);
+            border-radius: 12px;
+            color: #ffffff;
+            font-size: 0.92rem;
+            font-family: inherit;
+            outline: none;
+            transition: all 0.2s ease;
+        }
+        .auth-input:focus {
+            border-color: rgba(255,255,255,0.35);
+            background: rgba(255,255,255,0.07);
+            box-shadow: 0 0 12px rgba(255,255,255,0.05);
+        }
+
+        .quick-roles-title {
+            font-size: 0.75rem;
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+            color: #737373;
+            margin: 18px 0 8px;
+            text-align: center;
+        }
+
+        .quick-roles-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 8px;
+            margin-bottom: 20px;
+        }
+
+        .btn-quick-role {
+            background: rgba(255,255,255,0.03);
+            border: 1px solid rgba(255,255,255,0.08);
+            color: #d1d5db;
+            padding: 9px 12px;
+            border-radius: 10px;
+            font-size: 0.76rem;
+            cursor: pointer;
+            text-align: left;
+            transition: all 0.2s ease;
+        }
+        .btn-quick-role:hover {
+            background: rgba(255,255,255,0.09);
+            border-color: rgba(255,255,255,0.2);
+            color: #ffffff;
+        }
+
+        .btn-auth-submit {
+            width: 100%;
+            padding: 13px;
+            background: #ffffff;
+            color: #0c0c0c;
+            border: none;
+            border-radius: 999px;
+            font-weight: 600;
+            font-size: 0.95rem;
+            cursor: pointer;
+            transition: background 0.18s ease, transform 0.1s ease;
+            box-shadow: 0 4px 20px rgba(255,255,255,0.1);
+        }
+        .btn-auth-submit:hover { background: #ededed; }
+        .btn-auth-submit:active { transform: scale(0.98); }
+
+        .auth-error {
+            background: rgba(239, 68, 68, 0.12);
+            border: 1px solid rgba(239, 68, 68, 0.3);
+            color: #f87171;
+            padding: 10px 14px;
+            border-radius: 10px;
+            font-size: 0.8rem;
+            margin-top: 14px;
+            text-align: center;
+            display: none;
         }
 
         /* ══════════════════════════════════════════
-           TOPBAR NAVIGATION
+           PAGE 2: WORKSPACE (HERO & CHAT)
         ══════════════════════════════════════════ */
+        #workspaceScreen {
+            display: none;
+            flex-direction: column;
+            height: 100dvh;
+            width: 100%;
+            background-color: var(--bg);
+            position: relative;
+        }
+
+        /* Topbar */
         .nav-topbar {
             height: 64px;
             padding: 0 clamp(16px, 2.5vw, 36px);
@@ -179,7 +326,6 @@
             padding: 5px 12px;
             border-radius: 999px;
             font-weight: 500;
-            display: none;
         }
 
         .btn-lang {
@@ -195,43 +341,25 @@
         }
         .btn-lang:hover { color: #fff; border-color: rgba(255,255,255,0.2); }
 
-        .btn-auth-action {
-            background: #ffffff;
-            color: #0c0c0c;
-            font-weight: 600;
-            font-size: 0.85rem;
-            border-radius: 999px;
-            padding: 7px 18px;
-            border: none;
-            cursor: pointer;
-            transition: background 0.18s ease, transform 0.1s ease;
-        }
-        .btn-auth-action:hover { background: #ededed; }
-        .btn-auth-action:active { transform: scale(0.97); }
-
-        .burger-btn {
-            display: none;
-            flex-direction: column;
-            justify-content: space-between;
-            width: 24px;
-            height: 16px;
+        .btn-signout {
             background: transparent;
-            border: none;
+            color: #9e9e9e;
+            font-weight: 500;
+            font-size: 0.82rem;
+            border-radius: 999px;
+            padding: 6px 14px;
+            border: 1px solid var(--hairline);
             cursor: pointer;
+            transition: all 0.2s ease;
         }
-        .burger-bar {
-            width: 100%;
-            height: 1.5px;
-            background: #ffffff;
-            border-radius: 2px;
-            transition: transform 0.25s ease, opacity 0.2s ease;
+        .btn-signout:hover {
+            color: #f87171;
+            border-color: rgba(248, 113, 113, 0.3);
+            background: rgba(248, 113, 113, 0.05);
         }
-        .burger-btn[aria-expanded="true"] .burger-bar:nth-child(1) { transform: translateY(7px) rotate(45deg); }
-        .burger-btn[aria-expanded="true"] .burger-bar:nth-child(2) { opacity: 0; }
-        .burger-btn[aria-expanded="true"] .burger-bar:nth-child(3) { transform: translateY(-7.5px) rotate(-45deg); }
 
         /* ══════════════════════════════════════════
-           VIEW 1: HERO / WELCOME STATE
+           VIEW A: HERO / WELCOME STATE
         ══════════════════════════════════════════ */
         .view-container {
             flex: 1;
@@ -450,7 +578,7 @@
         .trust-item svg { fill: currentColor; }
 
         /* ══════════════════════════════════════════
-           VIEW 2: ACTIVE CHAT CONVERSATION STATE
+           VIEW B: ACTIVE CHAT CONVERSATION STATE
         ══════════════════════════════════════════ */
         #chatView {
             display: none;
@@ -634,47 +762,12 @@
         .chat-input-field::placeholder { color: var(--placeholder); }
 
         /* ══════════════════════════════════════════
-           MOBILE NAV OVERLAY
-        ══════════════════════════════════════════ */
-        .nav-overlay {
-            position: fixed;
-            inset: 0;
-            background: radial-gradient(circle at 50% 20%, rgba(255, 232, 120, 0.12) 0%, transparent 60%), rgba(12, 12, 12, 0.95);
-            backdrop-filter: blur(24px) saturate(120%);
-            z-index: 90;
-            display: flex;
-            flex-direction: column;
-            padding: 90px 24px 36px;
-            opacity: 0;
-            pointer-events: none;
-            transition: opacity 0.3s cubic-bezier(0.22, 1, 0.36, 1);
-        }
-        .nav-overlay.open {
-            opacity: 1;
-            pointer-events: auto;
-        }
-        .overlay-links {
-            display: flex;
-            flex-direction: column;
-            gap: 24px;
-            list-style: none;
-        }
-        .overlay-link {
-            font-size: clamp(1.8rem, 8vw, 2.8rem);
-            font-weight: 500;
-            color: #bcbcbc;
-            text-decoration: none;
-            transition: color 0.2s;
-        }
-        .overlay-link:hover { color: #ffffff; }
-
-        /* ══════════════════════════════════════════
-           MODALS (Login, Upload, Curation, Docs)
+           MODALS (Upload, Curation, Docs)
         ══════════════════════════════════════════ */
         .modal-overlay {
             position: fixed;
             inset: 0;
-            background: rgba(0, 0, 0, 0.8);
+            background: rgba(0, 0, 0, 0.82);
             backdrop-filter: blur(16px);
             z-index: 200;
             display: flex;
@@ -692,8 +785,8 @@
 
         .modal-card {
             background: #111111;
-            border: 1px solid rgba(255,255,255,0.08);
-            border-radius: 18px;
+            border: 1px solid rgba(255,255,255,0.09);
+            border-radius: 20px;
             padding: 28px;
             max-width: 480px;
             width: 100%;
@@ -713,52 +806,16 @@
             line-height: 1.4;
         }
 
-        .form-group {
-            margin-bottom: 14px;
-        }
-        .form-group label {
-            display: block;
-            font-size: 0.78rem;
-            font-weight: 500;
-            color: #d1d5db;
-            margin-bottom: 5px;
-        }
-        .form-input, .form-select {
+        .form-select {
             width: 100%;
             padding: 10px 14px;
             background: rgba(255,255,255,0.04);
             border: 1px solid rgba(255,255,255,0.1);
-            border-radius: 8px;
+            border-radius: 10px;
             color: #ffffff;
             font-size: 0.88rem;
             font-family: inherit;
             outline: none;
-        }
-        .form-input:focus, .form-select:focus {
-            border-color: rgba(255,255,255,0.3);
-            background: rgba(255,255,255,0.06);
-        }
-
-        .quick-fill-grid {
-            display: grid;
-            grid-template-columns: 1fr 1fr;
-            gap: 8px;
-            margin: 14px 0;
-        }
-        .btn-quick {
-            background: rgba(255,255,255,0.04);
-            border: 1px solid rgba(255,255,255,0.08);
-            color: #d1d5db;
-            padding: 8px 10px;
-            border-radius: 8px;
-            font-size: 0.75rem;
-            cursor: pointer;
-            text-align: left;
-            transition: all 0.2s;
-        }
-        .btn-quick:hover {
-            background: rgba(255,255,255,0.1);
-            color: #fff;
         }
 
         .btn-modal-submit {
@@ -799,7 +856,6 @@
         /* Responsive */
         @media (max-width: 1024px) {
             .nav-center-links { display: none; }
-            .burger-btn { display: flex; }
             .badge-user-status { display: inline-block; }
         }
         @media (max-width: 600px) {
@@ -810,7 +866,53 @@
 </head>
 <body>
 
-    <div class="app-wrapper">
+    <!-- ══════════════════════════════════════════
+         PAGE 1: FULLSCREEN AUTHENTICATION GATE
+    ══════════════════════════════════════════ -->
+    <div id="authScreen">
+        <div class="auth-topbar">
+            <span class="brand-text-logo">Nirene</span>
+            <button class="btn-lang" onclick="toggleLanguage()" id="btnAuthLang">TR</button>
+        </div>
+
+        <div class="auth-container">
+            <div class="auth-card">
+                <div class="auth-header">
+                    <h1 class="auth-brand-title">Nirene</h1>
+                    <p class="auth-subtitle" id="txtAuthSubtitle">Sign in to access your authorized enterprise knowledge base.</p>
+                </div>
+
+                <form onsubmit="handleAuthLogin(event)">
+                    <div class="form-group">
+                        <label id="lblUsername">Username</label>
+                        <input type="text" id="loginUsername" class="auth-input" placeholder="admin, ik_admin, staff..." required>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label id="lblPassword">Password</label>
+                        <input type="password" id="loginPassword" class="auth-input" placeholder="••••••••" required>
+                    </div>
+
+                    <div class="quick-roles-title" id="txtQuickFillTitle">Fast Role Fill (One-Click)</div>
+                    <div class="quick-roles-grid">
+                        <button type="button" class="btn-quick-role" onclick="quickFillAuth('admin', 'admin*123!')">⚡ Super Admin (Lv100)</button>
+                        <button type="button" class="btn-quick-role" onclick="quickFillAuth('ik_admin', 'ik*2026!')">👥 İK Admin (Lv50)</button>
+                        <button type="button" class="btn-quick-role" onclick="quickFillAuth('hukuk_admin', 'hukuk*2026!')">⚖️ Hukuk Admin (Lv50)</button>
+                        <button type="button" class="btn-quick-role" onclick="quickFillAuth('finans_admin', 'finans*2026!')">💰 Finans Admin (Lv50)</button>
+                        <button type="button" class="btn-quick-role" onclick="quickFillAuth('staff', 'nu2026pass')" style="grid-column: span 2;">👤 Genel Personel (Staff Lv10)</button>
+                    </div>
+
+                    <button type="submit" class="btn-auth-submit" id="btnAuthSubmit">Continue to Workspace →</button>
+                    <div class="auth-error" id="authErrorMsg"></div>
+                </form>
+            </div>
+        </div>
+    </div>
+
+    <!-- ══════════════════════════════════════════
+         PAGE 2: WORKSPACE (HERO & CHAT)
+    ══════════════════════════════════════════ -->
+    <div id="workspaceScreen">
         
         <!-- Topbar Navigation -->
         <header class="nav-topbar">
@@ -829,24 +931,16 @@
 
             <div class="nav-right">
                 <span class="badge-user-status" id="topUserBadge"></span>
-                <button class="btn-lang" onclick="toggleLanguage()" id="btnLang">TR</button>
-                <button class="btn-auth-action" id="btnMainAction" onclick="handleAuthAction()" data-enter="cta">Start Free</button>
-                <button class="burger-btn" id="burgerBtn" aria-label="Toggle menu" aria-expanded="false" onclick="toggleMobileNav()">
-                    <span class="burger-bar"></span>
-                    <span class="burger-bar"></span>
-                    <span class="burger-bar"></span>
-                </button>
+                <button class="btn-lang" onclick="toggleLanguage()" id="btnWorkspaceLang">TR</button>
+                <button class="btn-signout" onclick="handleSignOut()" id="btnSignOut">Sign Out</button>
             </div>
         </header>
 
         <!-- Main View Container -->
         <main class="view-container">
             
-            <!-- ══════════════════════════════════════════
-                 VIEW 1: HERO / WELCOME STATE
-            ══════════════════════════════════════════ -->
+            <!-- VIEW A: HERO / WELCOME STATE -->
             <section id="heroView">
-                
                 <div class="hero-copy">
                     <h1 class="hero-title">
                         <span class="hl-mask"><span class="hl-line" data-enter="hl-0">Think clearly.</span></span>
@@ -899,15 +993,10 @@
                         <span>Knowledge Flywheel</span>
                     </div>
                 </footer>
-
             </section>
 
-            <!-- ══════════════════════════════════════════
-                 VIEW 2: ACTIVE CHAT CONVERSATION STATE
-            ══════════════════════════════════════════ -->
+            <!-- VIEW B: ACTIVE CHAT CONVERSATION STATE -->
             <section id="chatView">
-                
-                <!-- Status Strip -->
                 <div class="chat-status-strip">
                     <div class="status-left">
                         <span class="green-pulse-dot"></span>
@@ -916,10 +1005,8 @@
                     <span class="status-badge" id="chatClearanceBadge">Genel (Clearance Lv10)</span>
                 </div>
 
-                <!-- Chat Stream Container -->
                 <div class="chat-stream-container" id="chatStream"></div>
 
-                <!-- Floating Bottom Input Bar -->
                 <div class="chat-composer-bar">
                     <form class="chat-composer-card" onsubmit="handleChatSubmit(event)">
                         <button type="button" class="btn-attach-round" style="width:36px; height:36px;" onclick="showUploadModal()" title="Upload Document">
@@ -935,55 +1022,9 @@
                         </button>
                     </form>
                 </div>
-
             </section>
 
         </main>
-
-    </div>
-
-    <!-- ══════════════════════════════════════════
-         MOBILE NAV OVERLAY
-    ══════════════════════════════════════════ -->
-    <div class="nav-overlay" id="navOverlay">
-        <ul class="overlay-links">
-            <li><a href="javascript:void(0)" class="overlay-link" onclick="resetToHeroView(); toggleMobileNav();">New Chat</a></li>
-            <li><a href="javascript:void(0)" class="overlay-link" onclick="showDocsModal(); toggleMobileNav();">Documents</a></li>
-            <li><a href="javascript:void(0)" class="overlay-link" onclick="showLoginModal(); toggleMobileNav();">Sign In / Switch Role</a></li>
-        </ul>
-    </div>
-
-    <!-- ══════════════════════════════════════════
-         LOGIN MODAL
-    ══════════════════════════════════════════ -->
-    <div class="modal-overlay" id="loginModal">
-        <div class="modal-card">
-            <h2>Nirene Workspace Login</h2>
-            <p>Select a pre-configured role or enter your credentials.</p>
-
-            <form onsubmit="handleLogin(event)">
-                <div class="form-group">
-                    <label>Username</label>
-                    <input type="text" id="usernameInput" class="form-input" required>
-                </div>
-                <div class="form-group">
-                    <label>Password</label>
-                    <input type="password" id="passwordInput" class="form-input" required>
-                </div>
-
-                <div class="quick-fill-grid">
-                    <button type="button" class="btn-quick" onclick="quickFill('admin', 'admin*123!')">⚡ Super Admin (Lv100)</button>
-                    <button type="button" class="btn-quick" onclick="quickFill('ik_admin', 'ik*2026!')">👥 IK Admin (Lv50)</button>
-                    <button type="button" class="btn-quick" onclick="quickFill('hukuk_admin', 'hukuk*2026!')">⚖️ Hukuk Admin (Lv50)</button>
-                    <button type="button" class="btn-quick" onclick="quickFill('finans_admin', 'finans*2026!')">💰 Finans Admin (Lv50)</button>
-                    <button type="button" class="btn-quick" onclick="quickFill('staff', 'nu2026pass')" style="grid-column: span 2;">👤 Genel Personel (Staff Lv10)</button>
-                </div>
-
-                <button type="submit" class="btn-modal-submit">Sign In to Nirene</button>
-                <button type="button" class="btn-modal-close" onclick="hideLoginModal()">Cancel</button>
-                <div class="error-badge" id="loginError"></div>
-            </form>
-        </div>
     </div>
 
     <!-- ══════════════════════════════════════════
@@ -997,7 +1038,7 @@
             <form onsubmit="handleUpload(event)">
                 <div class="form-group">
                     <label>Document Title</label>
-                    <input type="text" id="uploadTitle" class="form-input" placeholder="e.g. 2026 Financial Policies" required>
+                    <input type="text" id="uploadTitle" class="auth-input" placeholder="e.g. 2026 Financial Policies" required>
                 </div>
                 <div class="form-group">
                     <label>Department</label>
@@ -1018,7 +1059,7 @@
                 </div>
                 <div class="form-group">
                     <label>PDF File</label>
-                    <input type="file" id="uploadFile" class="form-input" accept=".pdf" required>
+                    <input type="file" id="uploadFile" class="auth-input" accept=".pdf" required>
                 </div>
 
                 <button type="submit" class="btn-modal-submit" id="btnSubmitUpload">Upload & Vectorize</button>
@@ -1068,11 +1109,16 @@
         let userRole = localStorage.getItem('nirene_role') || null;
         let userDept = localStorage.getItem('nirene_dept') || 'genel';
         let userClearance = parseInt(localStorage.getItem('nirene_clearance') || '10');
-        let currentConversation = [];
 
         const i18n = {
             tr: {
+                authSubtitle: "Yetkili kurumsal bilgi tabanına erişmek için giriş yapın.",
+                lblUser: "Kullanıcı Adı",
+                lblPass: "Şifre",
+                btnAuthSubmit: "Çalışma Alanına Giriş Yap →",
+                quickFillTitle: "Hızlı Rol Doldurucu (Tek Tık)",
                 newChat: "+ Yeni Sohbet",
+                signOut: "Çıkış Yap",
                 chips: [
                     { label: "🏖️ İzin Politikası", query: "Yıllık izin hakları ve devir kuralları nelerdir?" },
                     { label: "🏠 Uzaktan Çalışma", query: "Uzaktan çalışma şartları ve onay süreçleri nasıldır?" },
@@ -1084,7 +1130,13 @@
                 placeholderChat: "Bir takip sorusu sorun veya başka bir konuyu inceleyin..."
             },
             en: {
+                authSubtitle: "Sign in to access your authorized enterprise knowledge base.",
+                lblUser: "Username",
+                lblPass: "Password",
+                btnAuthSubmit: "Continue to Workspace →",
+                quickFillTitle: "Fast Role Fill (One-Click)",
                 newChat: "+ New Chat",
+                signOut: "Sign Out",
                 chips: [
                     { label: "🏖️ Vacation Policy", query: "What is the vacation accrual rate and carryover rule?" },
                     { label: "🏠 Remote Work", query: "What are the requirements for remote work approval?" },
@@ -1097,7 +1149,138 @@
             }
         };
 
-        // WAAPI Choreography for Hero Entrance
+        // Lifecycle Init
+        document.addEventListener('DOMContentLoaded', () => {
+            applyLanguageTexts();
+            renderChips();
+            checkInitialAuth();
+        });
+
+        function checkInitialAuth() {
+            if (authToken && userRole) {
+                showWorkspaceScreen();
+                initAnimations();
+            } else {
+                showAuthScreen();
+            }
+        }
+
+        function showAuthScreen() {
+            document.getElementById('authScreen').style.display = 'flex';
+            document.getElementById('workspaceScreen').style.display = 'none';
+        }
+
+        function showWorkspaceScreen() {
+            document.getElementById('authScreen').style.display = 'none';
+            document.getElementById('workspaceScreen').style.display = 'flex';
+            resetToHeroView();
+            updateWorkspaceAuthUI();
+        }
+
+        function updateWorkspaceAuthUI() {
+            const badge = document.getElementById('topUserBadge');
+            const navUpload = document.getElementById('navUploadBtn');
+            const navCuration = document.getElementById('navCurationBtn');
+            const chatClearance = document.getElementById('chatClearanceBadge');
+
+            if (authToken && userRole) {
+                badge.innerText = `👤 ${userRole} (${userDept.toUpperCase()} · Lv${userClearance})`;
+                chatClearance.innerText = `${userDept.toUpperCase()} (Clearance Lv${userClearance})`;
+                navUpload.style.display = (userRole === 'super_admin') ? 'inline-block' : 'none';
+                navCuration.style.display = (userRole === 'super_admin' || userRole.includes('admin')) ? 'inline-block' : 'none';
+            }
+        }
+
+        function handleSignOut() {
+            localStorage.clear();
+            authToken = null;
+            userRole = null;
+            userDept = 'genel';
+            userClearance = 10;
+            document.getElementById('loginUsername').value = '';
+            document.getElementById('loginPassword').value = '';
+            showAuthScreen();
+        }
+
+        function quickFillAuth(u, p) {
+            document.getElementById('loginUsername').value = u;
+            document.getElementById('loginPassword').value = p;
+        }
+
+        async function handleAuthLogin(e) {
+            e.preventDefault();
+            const u = document.getElementById('loginUsername').value.trim();
+            const p = document.getElementById('loginPassword').value.trim();
+            const errDiv = document.getElementById('authErrorMsg');
+            errDiv.style.display = 'none';
+
+            try {
+                const res = await fetch('/api/auth/login', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ username: u, password: p })
+                });
+                if (!res.ok) throw new Error('Kullanıcı adı veya şifre hatalı.');
+                const data = await res.json();
+                
+                authToken = data.access_token;
+                userRole = data.role;
+                userDept = data.department;
+                userClearance = data.clearance_level;
+
+                localStorage.setItem('nirene_token', authToken);
+                localStorage.setItem('nirene_role', userRole);
+                localStorage.setItem('nirene_dept', userDept);
+                localStorage.setItem('nirene_clearance', userClearance);
+
+                showWorkspaceScreen();
+                initAnimations();
+            } catch (err) {
+                errDiv.innerText = err.message;
+                errDiv.style.display = 'block';
+            }
+        }
+
+        function toggleLanguage() {
+            currentLang = currentLang === 'tr' ? 'en' : 'tr';
+            localStorage.setItem('nirene_lang', currentLang);
+            applyLanguageTexts();
+            renderChips();
+        }
+
+        function applyLanguageTexts() {
+            document.getElementById('btnAuthLang').innerText = currentLang.toUpperCase();
+            document.getElementById('btnWorkspaceLang').innerText = currentLang.toUpperCase();
+            document.getElementById('txtAuthSubtitle').innerText = i18n[currentLang].authSubtitle;
+            document.getElementById('lblUsername').innerText = i18n[currentLang].lblUser;
+            document.getElementById('lblPassword').innerText = i18n[currentLang].lblPass;
+            document.getElementById('btnAuthSubmit').innerText = i18n[currentLang].btnAuthSubmit;
+            document.getElementById('txtQuickFillTitle').innerText = i18n[currentLang].quickFillTitle;
+            document.getElementById('txtNewChat').innerText = i18n[currentLang].newChat;
+            document.getElementById('btnSignOut').innerText = i18n[currentLang].signOut;
+            document.getElementById('heroQueryInput').placeholder = i18n[currentLang].placeholderHero;
+            document.getElementById('chatInputField').placeholder = i18n[currentLang].placeholderChat;
+            document.getElementById('txtChatStatus').innerText = i18n[currentLang].liveStatus;
+        }
+
+        function renderChips() {
+            const container = document.getElementById('heroChipsContainer');
+            if (!container) return;
+            container.innerHTML = '';
+            i18n[currentLang].chips.forEach(c => {
+                const btn = document.createElement('button');
+                btn.className = 'chip-sugg';
+                btn.type = 'button';
+                btn.innerText = c.label;
+                btn.onclick = () => {
+                    document.getElementById('heroQueryInput').value = c.query;
+                    submitHeroQuery();
+                };
+                container.appendChild(btn);
+            });
+        }
+
+        // WAAPI Choreography
         function initAnimations() {
             const prefersReduced = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
             if (prefersReduced) return;
@@ -1152,14 +1335,7 @@
             }, 1600);
         }
 
-        // Lifecycle Init
-        document.addEventListener('DOMContentLoaded', () => {
-            renderChips();
-            updateAuthUI();
-            initAnimations();
-        });
-
-        // Switch Views (Hero vs Chat)
+        // View Toggling
         function switchToChatView() {
             document.getElementById('heroView').style.display = 'none';
             document.getElementById('chatView').style.display = 'flex';
@@ -1171,133 +1347,9 @@
             document.getElementById('chatStream').innerHTML = '';
             document.getElementById('heroQueryInput').value = '';
             document.getElementById('chatInputField').value = '';
-            currentConversation = [];
         }
 
-        // UI & Auth Sync
-        function updateAuthUI() {
-            const badge = document.getElementById('topUserBadge');
-            const btnAction = document.getElementById('btnMainAction');
-            const navUpload = document.getElementById('navUploadBtn');
-            const navCuration = document.getElementById('navCurationBtn');
-            const chatClearance = document.getElementById('chatClearanceBadge');
-
-            if (authToken && userRole) {
-                badge.style.display = 'inline-block';
-                badge.innerText = `👤 ${userRole} (${userDept.toUpperCase()} · Lv${userClearance})`;
-                btnAction.innerText = "Switch Role";
-                chatClearance.innerText = `${userDept.toUpperCase()} (Clearance Lv${userClearance})`;
-
-                navUpload.style.display = (userRole === 'super_admin') ? 'inline-block' : 'none';
-                navCuration.style.display = (userRole === 'super_admin' || userRole.includes('admin')) ? 'inline-block' : 'none';
-            } else {
-                badge.style.display = 'none';
-                btnAction.innerText = "Start Free";
-                chatClearance.innerText = "Genel (Clearance Lv10)";
-                navUpload.style.display = 'none';
-                navCuration.style.display = 'none';
-            }
-        }
-
-        function toggleLanguage() {
-            currentLang = currentLang === 'tr' ? 'en' : 'tr';
-            localStorage.setItem('nirene_lang', currentLang);
-            document.getElementById('btnLang').innerText = currentLang.toUpperCase();
-            document.getElementById('txtNewChat').innerText = i18n[currentLang].newChat;
-            renderChips();
-            document.getElementById('heroQueryInput').placeholder = i18n[currentLang].placeholderHero;
-            document.getElementById('chatInputField').placeholder = i18n[currentLang].placeholderChat;
-            document.getElementById('txtChatStatus').innerText = i18n[currentLang].liveStatus;
-        }
-
-        function renderChips() {
-            const container = document.getElementById('heroChipsContainer');
-            if (!container) return;
-            container.innerHTML = '';
-            i18n[currentLang].chips.forEach(c => {
-                const btn = document.createElement('button');
-                btn.className = 'chip-sugg';
-                btn.type = 'button';
-                btn.innerText = c.label;
-                btn.onclick = () => {
-                    document.getElementById('heroQueryInput').value = c.query;
-                    submitHeroQuery();
-                };
-                container.appendChild(btn);
-            });
-        }
-
-        function toggleMobileNav() {
-            const overlay = document.getElementById('navOverlay');
-            const burger = document.getElementById('burgerBtn');
-            const isOpen = overlay.classList.toggle('open');
-            burger.setAttribute('aria-expanded', isOpen);
-            document.body.classList.toggle('menu-open', isOpen);
-        }
-
-        // Modals
-        function handleAuthAction() { showLoginModal(); }
-        function showLoginModal() { document.getElementById('loginModal').classList.add('active'); }
-        function hideLoginModal() { document.getElementById('loginModal').classList.remove('active'); }
-        function showUploadModal() {
-            if (!authToken) { showLoginModal(); return; }
-            document.getElementById('uploadModal').classList.add('active');
-        }
-        function hideUploadModal() { document.getElementById('uploadModal').classList.remove('active'); }
-        function showCurationModal() {
-            if (!authToken) { showLoginModal(); return; }
-            document.getElementById('curationModal').classList.add('active');
-            loadCurationItems();
-        }
-        function hideCurationModal() { document.getElementById('curationModal').classList.remove('active'); }
-        function showDocsModal() {
-            document.getElementById('docsModal').classList.add('active');
-            loadDocsList();
-        }
-        function hideDocsModal() { document.getElementById('docsModal').classList.remove('active'); }
-
-        function quickFill(u, p) {
-            document.getElementById('usernameInput').value = u;
-            document.getElementById('passwordInput').value = p;
-        }
-
-        // Auth
-        async function handleLogin(e) {
-            e.preventDefault();
-            const u = document.getElementById('usernameInput').value.trim();
-            const p = document.getElementById('passwordInput').value.trim();
-            const errDiv = document.getElementById('loginError');
-            errDiv.style.display = 'none';
-
-            try {
-                const res = await fetch('/api/auth/login', {
-                    method: 'POST',
-                    headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify({ username: u, password: p })
-                });
-                if (!res.ok) throw new Error('Kullanıcı adı veya şifre hatalı.');
-                const data = await res.json();
-                
-                authToken = data.access_token;
-                userRole = data.role;
-                userDept = data.department;
-                userClearance = data.clearance_level;
-
-                localStorage.setItem('nirene_token', authToken);
-                localStorage.setItem('nirene_role', userRole);
-                localStorage.setItem('nirene_dept', userDept);
-                localStorage.setItem('nirene_clearance', userClearance);
-
-                hideLoginModal();
-                updateAuthUI();
-                alert(`Giriş başarılı: ${userRole.toUpperCase()} (${userDept.toUpperCase()} · Lv${userClearance})`);
-            } catch (err) {
-                errDiv.innerText = err.message;
-                errDiv.style.display = 'block';
-            }
-        }
-
-        // Query Handling (Hero -> Chat transition)
+        // Query Handling
         function handleHeroKeyDown(e) {
             if (e.key === 'Enter' && !e.shiftKey) {
                 e.preventDefault();
@@ -1330,8 +1382,10 @@
             const typingElem = appendTypingBubble();
 
             try {
-                const headers = { 'Content-Type': 'application/json' };
-                if (authToken) headers['Authorization'] = `Bearer ${authToken}`;
+                const headers = {
+                    'Content-Type': 'application/json',
+                    'Authorization': `Bearer ${authToken}`
+                };
 
                 const res = await fetch('/api/chat/query', {
                     method: 'POST',
@@ -1343,8 +1397,8 @@
 
                 if (!res.ok) {
                     if (res.status === 401) {
-                        showLoginModal();
-                        throw new Error('Lütfen önce sisteme giriş yapın.');
+                        handleSignOut();
+                        throw new Error('Oturum süresi doldu. Lütfen tekrar giriş yapın.');
                     }
                     const err = await res.json();
                     throw new Error(err.detail || 'Sorgu işlenemedi.');
@@ -1425,7 +1479,6 @@
         }
 
         async function sendFeedback(score, queryText, btn) {
-            if (!authToken) { alert('Geri bildirim için lütfen giriş yapın.'); return; }
             const parent = btn.closest('.msg-bubble');
             const answerText = parent.innerText;
             try {
@@ -1449,7 +1502,14 @@
             }
         }
 
-        // Upload PDF
+        // Modals
+        function showUploadModal() { document.getElementById('uploadModal').classList.add('active'); }
+        function hideUploadModal() { document.getElementById('uploadModal').classList.remove('active'); }
+        function showCurationModal() { document.getElementById('curationModal').classList.add('active'); loadCurationItems(); }
+        function hideCurationModal() { document.getElementById('curationModal').classList.remove('active'); }
+        function showDocsModal() { document.getElementById('docsModal').classList.add('active'); loadDocsList(); }
+        function hideDocsModal() { document.getElementById('docsModal').classList.remove('active'); }
+
         async function handleUpload(e) {
             e.preventDefault();
             const title = document.getElementById('uploadTitle').value.trim();
@@ -1492,14 +1552,13 @@
             }
         }
 
-        // Docs List
         async function loadDocsList() {
             const list = document.getElementById('docsItemsList');
             list.innerHTML = '<p style="color:var(--subtitle); font-size:0.85rem;">Dokümanlar yükleniyor...</p>';
             try {
-                const headers = {};
-                if (authToken) headers['Authorization'] = `Bearer ${authToken}`;
-                const res = await fetch('/api/documents', { headers });
+                const res = await fetch('/api/documents', {
+                    headers: { 'Authorization': `Bearer ${authToken}` }
+                });
                 const docs = await res.json();
                 if (!docs || docs.length === 0) {
                     list.innerHTML = '<p style="color:var(--subtitle); font-size:0.85rem;">Yetkiniz dahilinde aktif doküman bulunamadı.</p>';
@@ -1532,7 +1591,6 @@
             loadDocsList();
         }
 
-        // Curation Pool
         async function loadCurationItems() {
             const list = document.getElementById('curationItemsList');
             list.innerHTML = '<p style="color:var(--subtitle); font-size:0.85rem;">Bekleyen öğeler yükleniyor...</p>';
