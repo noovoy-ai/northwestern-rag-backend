@@ -1,6 +1,6 @@
-# Northwestern Staff Handbook RAG - Tam Proje, Mimari, Buton & Link Rehberi (`README.md`)
+# Nirene AI Workspace & Enterprise RAG - Proje ve Mimari Rehberi (`README.md`)
 
-Bu doküman, **Northwestern University Staff Handbook RAG** projesinin mimarisini, sistemin çalışma akışını, kurumsal RBAC/ABAC yetkilendirme modelini, veritabanı şemasını, arayüzdeki her tuşun işlevini, hata loglarının yerlerini ve sistemi sıfırdan kurma adımlarını içermektedir.
+Bu doküman, **Nirene AI Workspace & Enterprise RAG** projesinin mimarisini, sistemin çalışma akışını, kurumsal RBAC/ABAC yetkilendirme modelini, veritabanı şemasını, arayüzdeki her tuşun işlevini, hata loglarının yerlerini ve sistemi sıfırdan kurma adımlarını içermektedir.
 
 ---
 

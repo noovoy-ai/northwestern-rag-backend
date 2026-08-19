@@ -50,7 +50,7 @@ async def lifespan(app: FastAPI):
 app = FastAPI(
     title=settings.PROJECT_NAME,
     version="2.0.0",
-    description="Northwestern University Staff Handbook RAG API - Enterprise Architecture",
+    description="Nirene AI Workspace & Enterprise RAG API - Multi-Tenant Knowledge Assistant",
     lifespan=lifespan
 )
 
@@ -81,7 +81,7 @@ def read_root():
     index_path = "static/index.html"
     if os.path.exists(index_path):
         return FileResponse(index_path)
-    return {"message": "Northwestern Staff Handbook RAG API running. Access /docs for Swagger UI."}
+    return {"message": "Nirene AI Workspace running. Access /docs for Swagger UI."}
 
 @app.get("/health")
 async def healthcheck():
@@ -89,7 +89,7 @@ async def healthcheck():
     db_status = "connected" if db_pool else "disconnected"
     return {
         "status": "healthy",
-        "service": "northwestern-rag-backend",
+        "service": "nirene-ai-workspace",
         "version": "2.0.0",
         "database": db_status
     }

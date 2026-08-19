@@ -2,7 +2,7 @@ import os
 from pydantic_settings import BaseSettings
 
 class Settings(BaseSettings):
-    PROJECT_NAME: str = "Northwestern Staff Handbook RAG API"
+    PROJECT_NAME: str = "Nirene AI Workspace & Enterprise RAG API"
     HOST: str = "0.0.0.0"
     PORT: int = 8000
     HOST_PORT: int = 8005
