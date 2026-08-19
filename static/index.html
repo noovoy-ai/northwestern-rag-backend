@@ -7,6 +7,7 @@
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
     <style>
         :root {
             --bg-base: #090d16;
@@ -227,14 +228,52 @@
             white-space: pre-wrap;
         }
 
-        .user .bubble {
+        .bubble p {
+            margin-bottom: 8px;
+        }
+
+        .bubble p:last-child {
+            margin-bottom: 0;
+        }
+
+        .bubble strong {
+            font-weight: 700;
+            color: #ffffff;
+        }
+
+        .bubble ul, .bubble ol {
+            margin-left: 20px;
+            margin-bottom: 8px;
+        }
+
+        .bubble li {
+            margin-bottom: 4px;
+        }
+
+        .bubble code {
+            background: rgba(0, 0, 0, 0.3);
+            padding: 2px 6px;
+            border-radius: 4px;
+            font-family: monospace;
+            font-size: 0.88em;
+        }
+
+        .bubble pre {
+            background: rgba(0, 0, 0, 0.4);
+            padding: 10px;
+            border-radius: 8px;
+            overflow-x: auto;
+            margin-bottom: 8px;
+        }
+
+        .user .bubble, .message-row.user .bubble {
             background: var(--user-bubble);
             color: white;
             border-bottom-right-radius: 4px;
             box-shadow: 0 4px 12px rgba(79, 70, 229, 0.25);
         }
 
-        .bot .bubble {
+        .bot .bubble, .message-row.bot .bubble {
             background: var(--bot-bubble);
             color: var(--text-main);
             border-bottom-left-radius: 4px;
@@ -1027,10 +1066,31 @@
             return row;
         }
 
+        function renderMarkdown(text) {
+            if (!text) return '';
+            
+            text = text.replace(/^```(?:markdown)?\s*/i, '').replace(/\s*```$/i, '');
+            text = text.replace(/^markdown\s*\n/i, '');
+
+            if (typeof marked !== 'undefined' && typeof marked.parse === 'function') {
+                try {
+                    return marked.parse(text);
+                } catch (e) {
+                    console.error('Marked parse error:', e);
+                }
+            }
+
+            let html = escapeHtml(text);
+            html = html.replace(/\*\*(.*?)\*\*/g, '<strong>$1</strong>');
+            html = html.replace(/__(.*?)__/g, '<strong>$1</strong>');
+            html = html.replace(/\*(.*?)\*/g, '<em>$1</em>');
+            html = html.replace(/\n/g, '<br>');
+            return html;
+        }
+
         function escapeHtml(str) {
             return (str || '').replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;").replace(/"/g, "&quot;").replace(/'/g, "&#039;");
         }
     </script>
 </body>
 </html>
-
