@@ -8,18 +8,18 @@
     <!-- Google Fonts Preconnect & Inter -->
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
 
     <script>
-        // Head script for WAAPI entrance orchestration
+        // WAAPI entrance orchestration
         (function() {
             var prefersReduced = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
             if (!prefersReduced) {
-                document.documentElement.classList.add('entrance', 'entrance-s2');
+                document.documentElement.classList.add('entrance');
                 setTimeout(function() {
-                    document.documentElement.classList.remove('entrance', 'entrance-s2');
+                    document.documentElement.classList.remove('entrance');
                     document.documentElement.classList.add('hero-ready');
-                }, 3500);
+                }, 2500);
             } else {
                 document.documentElement.classList.add('hero-ready');
             }
@@ -30,29 +30,18 @@
         :root {
             --bg: #0c0c0c;
             --box: #111111;
-            --hairline: rgba(255,255,255,0.065);
+            --box-secondary: #161616;
+            --hairline: rgba(255, 255, 255, 0.07);
             --heading: #fafafa;
             --subtitle: #9e9e9e;
             --nav: #bcbcbc;
-            --placeholder: #aeaeae;
-            --chip-fill: rgba(255,255,255,0.028);
-            --chip-border: rgba(255,255,255,0.30);
-            --chip-edge: linear-gradient(135deg,
-                rgba(255,255,255,1) 0%,
-                rgba(255,255,255,0.94) 22%,
-                rgba(255,255,255,0.44) 38%,
-                rgba(255,255,255,0.28) 50%,
-                rgba(255,255,255,0.11) 63%,
-                rgba(255,255,255,0.04) 75%,
-                rgba(255,255,255,0.02) 100%);
-            --icon: #e8e8e8;
-            --mic: #e1e1e1;
+            --placeholder: #777777;
+            --chip-fill: rgba(255, 255, 255, 0.035);
+            --chip-border: rgba(255, 255, 255, 0.15);
             --strip: #5c5c5c;
-            --grad: linear-gradient(90deg,
-                rgba(255,232,120,0) 0%, #ffe776 6%, #ffd400 26%, #ffd000 42%,
-                #c9c93c 60%, #86ca8a 74%, #78d0cd 88%, rgba(120,208,205,0.55) 100%);
-            --grad-solid: linear-gradient(90deg,
-                #ffe776 0%, #ffd400 22%, #ffd000 40%, #c9c93c 60%, #86ca8a 76%, #78d0cd 100%);
+            --grad-solid: linear-gradient(90deg, #ffe776 0%, #ffd400 22%, #ffd000 40%, #c9c93c 60%, #86ca8a 76%, #78d0cd 100%);
+            --grad-subtle: linear-gradient(90deg, rgba(255,231,118,0.15) 0%, rgba(120,208,205,0.15) 100%);
+            --green: #23d92c;
         }
 
         * {
@@ -63,23 +52,12 @@
             -moz-osx-font-smoothing: grayscale;
         }
 
-        html {
-            font-size: 16px;
-            scroll-behavior: smooth;
-            background-color: var(--bg);
-            color: #ffffff;
-        }
-
-        @media (prefers-reduced-motion: reduce) {
-            html { scroll-behavior: auto; }
-        }
-
-        body {
+        html, body {
+            height: 100%;
             background-color: var(--bg);
             color: #ffffff;
             font-family: "Inter", "Helvetica Neue", Arial, system-ui, sans-serif;
-            overflow-x: hidden;
-            min-height: 100dvh;
+            overflow: hidden;
         }
 
         body.menu-open { overflow: hidden; }
@@ -87,8 +65,8 @@
         /* Typography & Mask Utilities */
         .hl-mask {
             display: block;
-            padding-bottom: 0.16em;
-            margin-bottom: -0.16em;
+            padding-bottom: 0.12em;
+            margin-bottom: -0.12em;
             overflow: hidden;
         }
         .hl-line {
@@ -104,97 +82,101 @@
             clip-path: inset(0 40% 0 40%);
             opacity: 0;
         }
-        html.entrance-s2 [data-enter-s2],
-        html.entrance-s2 .hl-line-s2 {
-            opacity: 0;
+
+        /* App Wrapper */
+        .app-wrapper {
+            display: flex;
+            flex-direction: column;
+            height: 100dvh;
+            width: 100%;
+            position: relative;
+            background-color: var(--bg);
         }
 
         /* ══════════════════════════════════════════
-           SECTION 1 — HERO
+           TOPBAR NAVIGATION
         ══════════════════════════════════════════ */
-        .section-one {
-            min-height: 100dvh;
-            background-color: var(--bg);
-            display: flex;
-            flex-direction: column;
-            position: relative;
-        }
-
-        .page {
-            min-height: 100dvh;
-            display: flex;
-            flex-direction: column;
-            padding: clamp(14px, 1.55vw, 26px) clamp(16px, 1.7vw, 28px) 0;
-            max-width: 1440px;
-            width: 100%;
-            margin: 0 auto;
-        }
-
-        /* Nav Topbar */
         .nav-topbar {
-            display: grid;
-            grid-template-columns: 1fr auto 1fr;
+            height: 64px;
+            padding: 0 clamp(16px, 2.5vw, 36px);
+            display: flex;
             align-items: center;
-            width: 100%;
+            justify-content: space-between;
+            border-bottom: 1px solid var(--hairline);
+            background: rgba(12, 12, 12, 0.85);
+            backdrop-filter: blur(20px);
             z-index: 50;
-        }
-
-        .logo-wrap {
-            display: inline-flex;
-            align-items: center;
-            gap: 12px;
-            text-decoration: none;
-            color: #ffffff;
-            justify-self: start;
-        }
-
-        .logo-svg {
-            width: clamp(34px, 3.1vw, 52px);
-            height: clamp(34px, 3.1vw, 52px);
             flex-shrink: 0;
         }
 
-        .logo-brand {
-            font-size: clamp(1.1rem, 1.5vw, 1.4rem);
-            font-weight: 600;
-            letter-spacing: -0.02em;
-            color: var(--heading);
-        }
-
-        .nav-links {
+        .nav-left {
             display: flex;
             align-items: center;
-            list-style: none;
-            gap: clamp(1.6rem, 2.63vw, 2.75rem);
-            justify-self: center;
+            gap: 16px;
         }
 
-        .nav-link {
-            color: var(--nav);
-            font-weight: 400;
-            font-size: clamp(0.95rem, 1.25vw, 1.15rem);
-            letter-spacing: 0.005em;
+        .brand-text-logo {
+            font-size: 1.45rem;
+            font-weight: 700;
+            letter-spacing: -0.03em;
+            color: var(--heading);
             text-decoration: none;
-            transition: color 0.18s ease;
             cursor: pointer;
+            transition: opacity 0.2s;
+        }
+        .brand-text-logo:hover { opacity: 0.85; }
+
+        .btn-new-chat {
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            background: rgba(255,255,255,0.05);
+            border: 1px solid var(--hairline);
+            color: #d1d5db;
+            padding: 6px 14px;
+            border-radius: 999px;
+            font-size: 0.82rem;
+            font-weight: 500;
+            cursor: pointer;
+            transition: all 0.2s ease;
+        }
+        .btn-new-chat:hover {
+            background: rgba(255,255,255,0.1);
+            color: #ffffff;
+            border-color: rgba(255,255,255,0.2);
+        }
+
+        .nav-center-links {
+            display: flex;
+            align-items: center;
+            gap: clamp(14px, 2vw, 28px);
+            list-style: none;
+        }
+
+        .nav-link-btn {
             background: none;
             border: none;
+            color: var(--nav);
+            font-size: 0.88rem;
+            font-weight: 400;
+            cursor: pointer;
+            transition: color 0.2s ease;
+            text-decoration: none;
         }
-        .nav-link:hover { color: #f2f2f2; }
+        .nav-link-btn:hover { color: #ffffff; }
 
         .nav-right {
             display: flex;
             align-items: center;
             gap: 12px;
-            justify-self: end;
         }
 
         .badge-user-status {
-            font-size: 0.8rem;
+            font-size: 0.78rem;
             color: #d1d5db;
-            background: rgba(255,255,255,0.06);
+            background: rgba(255,255,255,0.05);
             border: 1px solid var(--hairline);
-            padding: 6px 12px;
+            padding: 5px 12px;
             border-radius: 999px;
             font-weight: 500;
             display: none;
@@ -204,39 +186,38 @@
             background: transparent;
             border: 1px solid var(--hairline);
             color: var(--nav);
-            font-size: 0.82rem;
-            padding: 6px 10px;
+            font-size: 0.78rem;
+            font-weight: 500;
+            padding: 5px 10px;
             border-radius: 8px;
             cursor: pointer;
             transition: all 0.2s;
         }
         .btn-lang:hover { color: #fff; border-color: rgba(255,255,255,0.2); }
 
-        .btn-start-free {
+        .btn-auth-action {
             background: #ffffff;
             color: #0c0c0c;
-            font-weight: 500;
-            font-size: clamp(0.85rem, 1.1vw, 1rem);
+            font-weight: 600;
+            font-size: 0.85rem;
             border-radius: 999px;
-            padding: clamp(0.55em, 0.9vw, 0.62em) clamp(1.1em, 2vw, 1.35em);
-            text-decoration: none;
+            padding: 7px 18px;
             border: none;
             cursor: pointer;
             transition: background 0.18s ease, transform 0.1s ease;
         }
-        .btn-start-free:hover { background: #ededed; }
-        .btn-start-free:active { transform: scale(0.98); }
+        .btn-auth-action:hover { background: #ededed; }
+        .btn-auth-action:active { transform: scale(0.97); }
 
         .burger-btn {
             display: none;
             flex-direction: column;
             justify-content: space-between;
-            width: 26px;
-            height: 18px;
+            width: 24px;
+            height: 16px;
             background: transparent;
             border: none;
             cursor: pointer;
-            z-index: 100;
         }
         .burger-bar {
             width: 100%;
@@ -245,65 +226,79 @@
             border-radius: 2px;
             transition: transform 0.25s ease, opacity 0.2s ease;
         }
-        .burger-btn[aria-expanded="true"] .burger-bar:nth-child(1) { transform: translateY(8px) rotate(45deg); }
+        .burger-btn[aria-expanded="true"] .burger-bar:nth-child(1) { transform: translateY(7px) rotate(45deg); }
         .burger-btn[aria-expanded="true"] .burger-bar:nth-child(2) { opacity: 0; }
-        .burger-btn[aria-expanded="true"] .burger-bar:nth-child(3) { transform: translateY(-8.5px) rotate(-45deg); }
+        .burger-btn[aria-expanded="true"] .burger-bar:nth-child(3) { transform: translateY(-7.5px) rotate(-45deg); }
 
-        /* Hero Copy */
-        .hero-copy {
+        /* ══════════════════════════════════════════
+           VIEW 1: HERO / WELCOME STATE
+        ══════════════════════════════════════════ */
+        .view-container {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            overflow: hidden;
+            position: relative;
+        }
+
+        #heroView {
             display: flex;
             flex-direction: column;
             align-items: center;
+            justify-content: center;
+            height: 100%;
+            padding: 20px clamp(16px, 3vw, 36px);
+            max-width: 960px;
+            margin: 0 auto;
+            width: 100%;
             text-align: center;
-            margin-top: clamp(2.5rem, 5.5vh, 4.5rem);
+            overflow-y: auto;
+        }
+
+        .hero-copy {
+            margin-bottom: clamp(24px, 4vh, 40px);
         }
 
         .hero-title {
             font-weight: 500;
             color: var(--heading);
-            line-height: 1.04;
-            letter-spacing: -0.021em;
-            font-size: clamp(2.2rem, 5.263vw, 5.5rem);
-        }
-        @media (min-width: 1025px) {
-            .hero-title { font-size: clamp(3.25rem, 4.6vw, 4.75rem); }
+            line-height: 1.06;
+            letter-spacing: -0.025em;
+            font-size: clamp(2.4rem, 5vw, 4.5rem);
         }
 
         .hero-subtitle {
             color: var(--subtitle);
             font-weight: 400;
-            font-size: clamp(0.95rem, 1.435vw, 1.5rem);
-            line-height: 1.35;
-            letter-spacing: 0.004em;
-            margin-top: clamp(1.1rem, 2.9vw, 2.5rem);
+            font-size: clamp(0.95rem, 1.35vw, 1.35rem);
+            line-height: 1.4;
+            letter-spacing: 0.005em;
+            margin-top: 14px;
+            max-width: 600px;
+            margin-left: auto;
+            margin-right: auto;
         }
 
-        /* Composer Card */
-        .composer-shell {
+        /* Hero Composer Card */
+        .hero-composer-shell {
             width: 100%;
-            display: flex;
-            justify-content: center;
-            isolation: isolate;
-            transform: translate3d(0,0,0);
+            max-width: 820px;
             position: relative;
-            margin-top: clamp(1.2rem, 2.9vw, 2.8rem);
+            isolation: isolate;
         }
 
-        .composer {
-            width: clamp(300px, 55vw, 913px);
-            background: linear-gradient(180deg, rgba(255,255,255,0.028), rgba(255,255,255,0) 42%), #111111;
-            border: 1px solid rgba(255,255,255,0.065);
-            border-radius: clamp(14px, 1.32vw, 22px);
-            box-shadow: 0 2px 40px rgba(0,0,0,0.45), inset 0 1px 0 rgba(255,255,255,0.04);
-            padding: clamp(16px, 1.9vw, 32px);
-            min-height: clamp(160px, 16vw, 260px);
+        .hero-composer {
+            width: 100%;
+            background: linear-gradient(180deg, rgba(255,255,255,0.035), rgba(255,255,255,0) 42%), #111111;
+            border: 1px solid rgba(255,255,255,0.08);
+            border-radius: 20px;
+            box-shadow: 0 4px 50px rgba(0,0,0,0.5), inset 0 1px 0 rgba(255,255,255,0.05);
+            padding: clamp(18px, 2.2vw, 28px);
             display: flex;
             flex-direction: column;
             position: relative;
+            text-align: left;
         }
-        @media (min-width: 1025px) { .composer { width: clamp(560px, 52vw, 820px); } }
-        @media (max-width: 1024px) { .composer { width: clamp(320px, 72vw, 760px); } }
-        @media (max-width: 680px) { .composer { width: 100%; } }
 
         .composer-glow {
             position: absolute;
@@ -311,67 +306,63 @@
             left: 0;
             right: 0;
             top: 0;
-            bottom: calc(-1 * clamp(3px, 0.35vw, 6px));
+            bottom: -4px;
             border-radius: inherit;
             background: var(--grad-solid);
-            filter: blur(0.4px);
+            filter: blur(0.5px);
             opacity: 0.95;
             transition: clip-path 0.8s ease, opacity 0.8s ease;
         }
 
-        .composer-textarea {
+        .hero-textarea {
             width: 100%;
             background: transparent;
             border: none;
             outline: none;
             color: #ffffff;
-            font-size: clamp(0.95rem, 1.35vw, 1.35rem);
+            font-size: clamp(1rem, 1.3vw, 1.25rem);
             font-family: inherit;
             resize: none;
-            line-height: 1.4;
-            min-height: 60px;
+            line-height: 1.45;
+            min-height: 64px;
         }
-        .composer-textarea::placeholder {
-            color: var(--placeholder);
-        }
+        .hero-textarea::placeholder { color: var(--placeholder); }
 
-        /* Suggestions chips */
         .suggestions-row {
             display: flex;
             flex-wrap: wrap;
             gap: 8px;
-            margin-top: 12px;
-            margin-bottom: 16px;
+            margin: 12px 0 16px;
         }
 
         .chip-sugg {
             background: var(--chip-fill);
-            border: 1px solid var(--hairline);
+            border: 1px solid var(--chip-border);
             color: #d1d5db;
-            padding: 5px 12px;
+            padding: 6px 14px;
             border-radius: 999px;
             font-size: 0.8rem;
+            font-weight: 400;
             cursor: pointer;
             transition: all 0.2s ease;
             white-space: nowrap;
         }
         .chip-sugg:hover {
-            background: rgba(255,255,255,0.08);
+            background: rgba(255,255,255,0.09);
             color: #ffffff;
-            border-color: rgba(255,255,255,0.2);
+            border-color: rgba(255,255,255,0.3);
         }
 
-        /* Controls Row */
         .controls-row {
-            margin-top: auto;
             display: flex;
             align-items: center;
-            gap: clamp(8px, 1.08vw, 18px);
+            justify-content: space-between;
+            margin-top: 4px;
         }
 
-        .round-chip-btn {
-            width: clamp(38px, 3.23vw, 54px);
-            height: clamp(38px, 3.23vw, 54px);
+        .btn-attach-round {
+            width: 42px;
+            height: 42px;
             border-radius: 50%;
             background: var(--chip-fill);
             border: 1px solid var(--chip-border);
@@ -381,53 +372,19 @@
             justify-content: center;
             cursor: pointer;
             transition: all 0.2s ease;
-            position: relative;
         }
-        .round-chip-btn:hover {
-            background: rgba(255,255,255,0.08);
+        .btn-attach-round:hover {
+            background: rgba(255,255,255,0.09);
+            border-color: rgba(255,255,255,0.3);
         }
-
-        .pill-chip-btn {
-            height: clamp(38px, 3.23vw, 54px);
-            border-radius: 999px;
-            background: var(--chip-fill);
-            border: 1px solid var(--chip-border);
-            color: #ffffff;
-            padding: 0 clamp(12px, 1.4vw, 23px);
-            font-size: clamp(0.85rem, 1.15vw, 1.1rem);
-            font-weight: 500;
-            display: inline-flex;
-            align-items: center;
-            gap: 8px;
-            cursor: pointer;
-            transition: all 0.2s ease;
-        }
-        .pill-chip-btn:hover {
-            background: rgba(255,255,255,0.08);
-        }
-
-        .controls-spacer { flex: 1; }
-
-        .mic-btn {
-            background: transparent;
-            border: none;
-            color: var(--mic);
-            cursor: pointer;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            padding: 8px;
-            transition: color 0.2s;
-        }
-        .mic-btn:hover { color: #ffffff; }
 
         /* Animated Send Button */
-        .send-btn-wrap {
-            width: clamp(40px, 3.35vw, 56px);
-            height: clamp(40px, 3.35vw, 56px);
+        .btn-send-animated {
+            width: 44px;
+            height: 44px;
             border-radius: 50%;
             position: relative;
-            padding: clamp(1.1px, 0.092vw, 1.53px);
+            padding: 1.5px;
             background: var(--grad-solid);
             cursor: pointer;
             border: none;
@@ -437,7 +394,7 @@
             justify-content: center;
             transition: filter 0.2s ease, transform 0.1s ease;
         }
-        .send-btn-wrap::before {
+        .btn-send-animated::before {
             content: "";
             position: absolute;
             inset: -50%;
@@ -445,17 +402,17 @@
             background: var(--grad-solid);
             will-change: transform;
         }
-        html.hero-ready .send-btn-wrap::before {
+        html.hero-ready .btn-send-animated::before {
             animation: send-ring-sweep 10s linear infinite;
         }
         @keyframes send-ring-sweep {
             from { transform: rotate(0deg); }
             to { transform: rotate(360deg); }
         }
-        .send-btn-wrap:hover { filter: brightness(1.12); }
-        .send-btn-wrap:active { transform: scale(0.95); }
+        .btn-send-animated:hover { filter: brightness(1.15); }
+        .btn-send-animated:active { transform: scale(0.95); }
 
-        .send-inner {
+        .btn-send-inner {
             position: relative;
             z-index: 2;
             width: 100%;
@@ -466,184 +423,114 @@
             align-items: center;
             justify-content: center;
         }
-        .send-inner svg {
-            width: 44%;
-            height: 44%;
+        .btn-send-inner svg {
+            width: 18px;
+            height: 18px;
             stroke: #fafafa;
         }
 
-        /* Trust Logos Footer */
+        /* Trust Footer */
         .trust-footer {
-            margin-top: auto;
-            padding: clamp(2rem, 4vh, 3.5rem) 0 clamp(1.2rem, 2vh, 2rem);
+            margin-top: clamp(24px, 4vh, 48px);
             display: flex;
             justify-content: center;
             align-items: center;
-            gap: clamp(1.6rem, 5.6vw, 5.9rem);
+            gap: clamp(1.4rem, 4vw, 3.5rem);
             color: var(--strip);
             flex-wrap: wrap;
         }
         .trust-item {
             display: inline-flex;
             align-items: center;
-            gap: 8px;
-            font-size: 0.95rem;
+            gap: 7px;
+            font-size: 0.85rem;
             font-weight: 500;
-            letter-spacing: 0.02em;
             color: var(--strip);
         }
         .trust-item svg { fill: currentColor; }
 
         /* ══════════════════════════════════════════
-           SECTION 2 — FEATURES & LIVE REASONING
+           VIEW 2: ACTIVE CHAT CONVERSATION STATE
         ══════════════════════════════════════════ */
-        .section-two {
-            min-height: 100dvh;
-            background-color: var(--bg);
-            padding: clamp(20px, 3.2vh, 42px) clamp(16px, 6vw, 91px) clamp(16px, 2.4vh, 32px);
-            display: flex;
+        #chatView {
+            display: none;
             flex-direction: column;
-            align-items: center;
-            font-family: -apple-system, BlinkMacSystemFont, "Helvetica Neue", "Segoe UI", Arial, sans-serif;
-        }
-        @media (min-width: 1025px) {
-            .section-two { padding-top: clamp(100px, 9vw, 150px); }
-        }
-
-        .sec2-wrap {
-            max-width: 1300px;
+            height: 100%;
+            max-width: 900px;
+            margin: 0 auto;
             width: 100%;
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-        }
-
-        .sec2-title {
-            font-weight: 400;
-            letter-spacing: -0.02em;
-            font-size: clamp(1.6rem, 4.1vw, 3.3rem);
-            line-height: 1.11;
-            text-align: center;
-            color: #ffffff;
-        }
-
-        .sec2-subcopy {
-            color: #8b8b8d;
-            font-size: clamp(0.82rem, 1.25vw, 1.125rem);
-            text-align: center;
-            margin-top: 14px;
-            line-height: 1.45;
-        }
-
-        /* The Gradient Panel */
-        .gradient-panel {
-            width: 100%;
-            max-width: 960px;
-            margin-top: clamp(24px, 4vh, 48px);
-            border-radius: clamp(12px, 1.2vw, 18px);
-            padding: clamp(16px, 2.5vw, 36px);
+            padding: 0 clamp(16px, 2.5vw, 32px);
             position: relative;
-            background: 
-                radial-gradient(120% 150% at 9% 52%, #d2ae1a 0%, #bf9f28 22%, rgba(175,155,55,0) 56%),
-                radial-gradient(120% 150% at 95% 50%, #64a3a2 0%, #4d9494 34%, rgba(70,140,140,0) 64%),
-                radial-gradient(80% 110% at 42% 6%, rgba(150,160,55,.55) 0%, rgba(150,160,60,0) 42%),
-                linear-gradient(96deg, #c6a119 0%, #b0972a 32%, #7ba184 62%, #509393 100%);
-            box-shadow: 0 20px 50px rgba(0,0,0,0.5);
-            display: flex;
-            flex-direction: column;
-            gap: 16px;
-        }
-        .gradient-panel::after {
-            content: "";
-            position: absolute;
-            inset: 0;
-            border-radius: inherit;
-            pointer-events: none;
-            background: radial-gradient(135% 120% at 50% 50%, transparent 58%, rgba(0,0,0,0.30) 100%);
         }
 
-        /* Live Reasoning Status Row */
-        .live-status-row {
+        .chat-status-strip {
             display: flex;
             align-items: center;
             justify-content: space-between;
-            position: relative;
-            z-index: 2;
-            padding: 0 4px;
+            padding: 12px 0 8px;
+            border-bottom: 1px solid var(--hairline);
+            margin-bottom: 8px;
+            flex-shrink: 0;
         }
 
-        .live-status-left {
+        .status-left {
             display: flex;
             align-items: center;
             gap: 8px;
+            font-size: 0.82rem;
+            color: #d1d5db;
         }
-
-        .green-dot {
+        .green-pulse-dot {
             width: 8px;
             height: 8px;
             border-radius: 50%;
-            background: #23d92c;
-            box-shadow: 0 0 8px rgba(45, 220, 55, 0.75);
-            animation: pulse-dot 2s infinite;
+            background: var(--green);
+            box-shadow: 0 0 8px rgba(35, 217, 44, 0.7);
+            animation: pulse-green 2s infinite;
         }
-        @keyframes pulse-dot {
+        @keyframes pulse-green {
             0%, 100% { transform: scale(1); opacity: 1; }
-            50% { transform: scale(1.2); opacity: 0.8; }
+            50% { transform: scale(1.25); opacity: 0.8; }
         }
 
-        .live-label {
-            font-size: 0.88rem;
-            font-weight: 600;
-            color: #0b0c07;
-            letter-spacing: -0.01em;
-        }
-
-        .clearance-pill {
+        .status-badge {
             font-size: 0.75rem;
-            font-weight: 600;
-            background: rgba(0,0,0,0.25);
-            color: #ffffff;
-            padding: 4px 10px;
+            font-weight: 500;
+            background: rgba(255,255,255,0.06);
+            color: #d1d5db;
+            padding: 3px 10px;
             border-radius: 999px;
-            backdrop-filter: blur(4px);
+            border: 1px solid var(--hairline);
         }
 
-        /* Chat Card */
-        .chat-card {
-            background: #0d0d0d;
-            border-radius: clamp(12px, 1.4vw, 18px);
-            padding: clamp(16px, 2vw, 24px);
-            display: flex;
-            flex-direction: column;
-            gap: 16px;
-            position: relative;
-            z-index: 2;
-            box-shadow: inset 0 1px 0 rgba(255,255,255,0.06);
-            min-height: 380px;
-            max-height: 540px;
-        }
-
-        .chat-messages {
-            display: flex;
-            flex-direction: column;
-            gap: 16px;
-            overflow-y: auto;
-            padding-right: 6px;
+        /* Message Stream */
+        .chat-stream-container {
             flex: 1;
-        }
-        .chat-messages::-webkit-scrollbar { width: 5px; }
-        .chat-messages::-webkit-scrollbar-thumb { background: rgba(255,255,255,0.15); border-radius: 4px; }
-
-        .msg-row {
+            overflow-y: auto;
+            padding: 16px 0 24px;
             display: flex;
-            gap: 12px;
-            max-width: 86%;
+            flex-direction: column;
+            gap: 20px;
         }
-        .msg-row.user {
+        .chat-stream-container::-webkit-scrollbar { width: 5px; }
+        .chat-stream-container::-webkit-scrollbar-thumb { background: rgba(255,255,255,0.15); border-radius: 4px; }
+
+        .chat-msg-row {
+            display: flex;
+            gap: 14px;
+            max-width: 88%;
+            animation: msg-fade-in 0.25s ease;
+        }
+        @keyframes msg-fade-in {
+            from { opacity: 0; transform: translateY(8px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        .chat-msg-row.user {
             align-self: flex-end;
             flex-direction: row-reverse;
         }
-        .msg-row.ai {
+        .chat-msg-row.ai {
             align-self: flex-start;
         }
 
@@ -666,104 +553,85 @@
         }
 
         .msg-bubble {
-            background: #1c1c1c;
+            background: var(--box-secondary);
             color: #efefef;
-            border-radius: clamp(11px, 1.1vw, 15px);
-            padding: 12px 16px;
-            font-size: clamp(0.85rem, 1.12vw, 1.02rem);
-            line-height: 1.45;
-            border: 1px solid rgba(255,255,255,0.04);
+            border-radius: 16px;
+            padding: 14px 18px;
+            font-size: 0.95rem;
+            line-height: 1.5;
+            border: 1px solid var(--hairline);
             word-break: break-word;
         }
-        .msg-row.user .msg-bubble {
-            background: #1e2229;
-            border-color: rgba(255,255,255,0.08);
+        .chat-msg-row.user .msg-bubble {
+            background: #1c212a;
+            border-color: rgba(255,255,255,0.1);
         }
 
-        .citation-wrap {
-            margin-top: 10px;
+        .citation-container {
+            margin-top: 12px;
             display: flex;
             flex-wrap: wrap;
             gap: 6px;
         }
         .citation-tag {
-            font-size: 0.72rem;
+            font-size: 0.73rem;
             background: rgba(255,255,255,0.06);
             border: 1px solid rgba(255,255,255,0.12);
             color: #a5b4fc;
-            padding: 3px 8px;
+            padding: 4px 9px;
             border-radius: 6px;
         }
 
-        .feedback-row {
-            margin-top: 8px;
+        .feedback-actions {
+            margin-top: 10px;
             display: flex;
             gap: 8px;
             align-items: center;
         }
-        .btn-fb {
+        .btn-feedback {
             background: rgba(255,255,255,0.05);
-            border: 1px solid rgba(255,255,255,0.1);
+            border: 1px solid var(--hairline);
             color: #d1d5db;
-            font-size: 0.72rem;
-            padding: 3px 8px;
+            font-size: 0.75rem;
+            padding: 4px 10px;
             border-radius: 6px;
             cursor: pointer;
             transition: all 0.15s ease;
         }
-        .btn-fb:hover { background: rgba(255,255,255,0.12); color: #fff; }
-
-        /* White Pill Input Bar */
-        .white-input-bar {
-            height: clamp(42px, 4.4vh, 48px);
-            background: #fdfdfd;
-            border-radius: 999px;
-            display: flex;
-            align-items: center;
-            padding: 4px 6px 4px 18px;
-            gap: 10px;
-            box-shadow: 0 4px 14px rgba(0,0,0,0.15);
+        .btn-feedback:hover {
+            background: rgba(255,255,255,0.12);
+            color: #fff;
         }
 
-        .white-input-bar input {
+        /* Bottom Floating Input Bar */
+        .chat-composer-bar {
+            padding: 12px 0 20px;
+            background: transparent;
+            flex-shrink: 0;
+        }
+
+        .chat-composer-card {
+            background: linear-gradient(180deg, rgba(255,255,255,0.035), rgba(255,255,255,0) 42%), #111111;
+            border: 1px solid rgba(255,255,255,0.1);
+            border-radius: 18px;
+            padding: 8px 10px 8px 16px;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            box-shadow: 0 4px 30px rgba(0,0,0,0.5);
+            position: relative;
+        }
+
+        .chat-input-field {
             flex: 1;
             background: transparent;
             border: none;
             outline: none;
-            color: #111111;
+            color: #ffffff;
             font-size: 0.95rem;
             font-family: inherit;
         }
-        .white-input-bar input::placeholder {
-            color: #6b6b6d;
-        }
-
-        .white-input-mic {
-            background: none;
-            border: none;
-            cursor: pointer;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            color: #111111;
-            padding: 4px;
-        }
-
-        .white-input-send {
-            width: 36px;
-            height: 36px;
-            border-radius: 50%;
-            background: #0c0c0c;
-            border: none;
-            cursor: pointer;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            transition: transform 0.15s ease, background 0.15s ease;
-        }
-        .white-input-send:hover { background: #222222; }
-        .white-input-send:active { transform: scale(0.92); }
-        .white-input-send svg { width: 16px; height: 16px; stroke: #ffffff; }
+        .chat-input-field::placeholder { color: var(--placeholder); }
 
         /* ══════════════════════════════════════════
            MOBILE NAV OVERLAY
@@ -771,61 +639,34 @@
         .nav-overlay {
             position: fixed;
             inset: 0;
-            background: radial-gradient(circle at 50% 20%, rgba(255, 232, 120, 0.12) 0%, transparent 60%), rgba(12, 12, 12, 0.94);
-            backdrop-filter: blur(22px) saturate(120%);
+            background: radial-gradient(circle at 50% 20%, rgba(255, 232, 120, 0.12) 0%, transparent 60%), rgba(12, 12, 12, 0.95);
+            backdrop-filter: blur(24px) saturate(120%);
             z-index: 90;
             display: flex;
             flex-direction: column;
             padding: 90px 24px 36px;
             opacity: 0;
             pointer-events: none;
-            transition: opacity 0.34s cubic-bezier(0.22, 1, 0.36, 1);
+            transition: opacity 0.3s cubic-bezier(0.22, 1, 0.36, 1);
         }
         .nav-overlay.open {
             opacity: 1;
             pointer-events: auto;
         }
-
         .overlay-links {
             display: flex;
             flex-direction: column;
-            gap: 20px;
+            gap: 24px;
             list-style: none;
         }
         .overlay-link {
-            font-size: clamp(2rem, 9vw, 3.4rem);
+            font-size: clamp(1.8rem, 8vw, 2.8rem);
             font-weight: 500;
             color: #bcbcbc;
             text-decoration: none;
-            position: relative;
-            display: inline-block;
             transition: color 0.2s;
         }
         .overlay-link:hover { color: #ffffff; }
-        .overlay-link::after {
-            content: "";
-            position: absolute;
-            bottom: -4px;
-            left: 0;
-            width: 0;
-            height: 2px;
-            background: var(--grad);
-            transition: width 0.25s ease;
-        }
-        .overlay-link:hover::after { width: 100%; }
-
-        .overlay-footer {
-            margin-top: auto;
-            display: flex;
-            flex-direction: column;
-            gap: 16px;
-        }
-        .overlay-grad-bar {
-            height: 2px;
-            width: 100%;
-            background: var(--grad);
-            border-radius: 2px;
-        }
 
         /* ══════════════════════════════════════════
            MODALS (Login, Upload, Curation, Docs)
@@ -955,225 +796,161 @@
             display: none;
         }
 
-        /* ══════════════════════════════════════════
-           RESPONSIVE BREAKPOINTS
-        ══════════════════════════════════════════ */
+        /* Responsive */
         @media (max-width: 1024px) {
-            .nav-links, .btn-start-free { display: none; }
+            .nav-center-links { display: none; }
             .burger-btn { display: flex; }
             .badge-user-status { display: inline-block; }
         }
-        @media (max-width: 680px) {
-            .hero-subtitle br { display: none; }
-            .hero-subtitle { width: min(100%, 22rem); }
-            .round-chip-btn { width: 44px; height: 44px; }
-            .pill-chip-btn { height: 44px; }
-        }
         @media (max-width: 600px) {
-            .trust-footer { display: grid; grid-template-columns: 1fr 1fr; gap: 20px; justify-items: center; }
-        }
-        @media (max-height: 520px) {
-            .sec2-subcopy { display: none; }
+            .trust-footer { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; justify-items: center; }
+            .hero-title { font-size: 2.2rem; }
         }
     </style>
 </head>
 <body>
 
-    <!-- ══════════════════════════════════════════
-         SECTION 1 — HERO
-    ══════════════════════════════════════════ -->
-    <section class="section-one" id="home">
-        <div class="page">
-            
-            <!-- Topbar -->
-            <nav class="nav-topbar">
-                <a href="#home" class="logo-wrap" aria-label="Nirene Home" data-enter="logo">
-                    <svg class="logo-svg" viewBox="0 0 52 52">
-                        <g class="rays" stroke="#f4f4f4" stroke-width="1.4" stroke-linecap="round"></g>
-                        <circle cx="26" cy="26" r="7.4" fill="#fbfbfb"/>
-                    </svg>
-                    <span class="logo-brand">Nirene</span>
-                </a>
-
-                <ul class="nav-links">
-                    <li><a href="#features" class="nav-link" data-enter="nav-0">Features</a></li>
-                    <li><a href="#reasoning" class="nav-link" data-enter="nav-1">Reasoning</a></li>
-                    <li><button onclick="showDocsModal()" class="nav-link" data-enter="nav-2">Documents</button></li>
-                    <li><button onclick="showUploadModal()" class="nav-link" id="navUploadBtn" style="display:none;" data-enter="nav-3">Upload PDF</button></li>
-                    <li><button onclick="showCurationModal()" class="nav-link" id="navCurationBtn" style="display:none;" data-enter="nav-4">Curation</button></li>
-                </ul>
-
-                <div class="nav-right">
-                    <span class="badge-user-status" id="topUserBadge"></span>
-                    <button class="btn-lang" onclick="toggleLanguage()" id="btnLang">TR</button>
-                    <button class="btn-start-free" id="btnMainAction" onclick="handleAuthAction()" data-enter="cta">Start Free</button>
-                    <button class="burger-btn" id="burgerBtn" aria-label="Toggle menu" aria-expanded="false" onclick="toggleMobileNav()">
-                        <span class="burger-bar"></span>
-                        <span class="burger-bar"></span>
-                        <span class="burger-bar"></span>
-                    </button>
-                </div>
-            </nav>
-
-            <!-- Hero Copy -->
-            <div class="hero-copy">
-                <h1 class="hero-title">
-                    <span class="hl-mask"><span class="hl-line" data-enter="hl-0">Think clearly.</span></span>
-                    <span class="hl-mask"><span class="hl-line" data-enter="hl-1">Decide confidently</span></span>
-                </h1>
-                <p class="hero-subtitle" data-enter="sub">
-                    An AI workspace that structures your reasoning,<br>not just your answers.
-                </p>
+    <div class="app-wrapper">
+        
+        <!-- Topbar Navigation -->
+        <header class="nav-topbar">
+            <div class="nav-left">
+                <span class="brand-text-logo" onclick="resetToHeroView()" title="Nirene Home">Nirene</span>
+                <button type="button" class="btn-new-chat" onclick="resetToHeroView()">
+                    <span>+</span> <span id="txtNewChat">New Chat</span>
+                </button>
             </div>
 
-            <!-- Composer Card -->
-            <div class="composer-shell" data-enter="composer">
-                <div class="composer">
-                    <div class="composer-glow"></div>
-                    
-                    <textarea class="composer-textarea" id="heroQueryInput" placeholder="Break down a decision, policy, or problem..." rows="2"></textarea>
-                    
-                    <div class="suggestions-row" id="heroChipsContainer"></div>
+            <ul class="nav-center-links">
+                <li><button onclick="showDocsModal()" class="nav-link-btn" data-enter="nav-0">Documents</button></li>
+                <li><button onclick="showUploadModal()" class="nav-link-btn" id="navUploadBtn" style="display:none;" data-enter="nav-1">Upload PDF</button></li>
+                <li><button onclick="showCurationModal()" class="nav-link-btn" id="navCurationBtn" style="display:none;" data-enter="nav-2">Curation</button></li>
+            </ul>
 
-                    <div class="controls-row">
-                        <button type="button" class="round-chip-btn" onclick="showUploadModal()" aria-label="Add attachment" title="Upload Document" data-enter="ctrl-0">
-                            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round"><path d="M12 5v14M5 12h14"/></svg>
-                        </button>
-
-                        <button type="button" class="pill-chip-btn" onclick="toggleDeepThink()" id="btnDeepThink" data-enter="ctrl-1">
-                            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M9 18h6M10 22h4M12 2a7 7 0 0 0-7 7c0 2.5 1.5 4.5 3 6v1h8v-1c1.5-1.5 3-3.5 3-6a7 7 0 0 0-7-7z"/></svg>
-                            <span>DeepThink</span>
-                        </button>
-
-                        <div class="controls-spacer"></div>
-
-                        <button type="button" class="mic-btn" onclick="triggerMic()" aria-label="Voice input" data-enter="ctrl-2">
-                            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M12 2a3 3 0 0 0-3 3v7a3 3 0 0 0 6 0V5a3 3 0 0 0-3-3z"/><path d="M19 10v2a7 7 0 0 1-14 0v-2"/><line x1="12" y1="19" x2="12" y2="23"/><line x1="8" y1="23" x2="16" y2="23"/></svg>
-                        </button>
-
-                        <button type="button" class="send-btn-wrap" id="heroSendBtn" onclick="submitHeroQuery()" aria-label="Send Query" data-enter="ctrl-3">
-                            <div class="send-inner">
-                                <svg viewBox="0 0 24 24" fill="none" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><line x1="12" y1="19" x2="12" y2="5"/><polyline points="5 12 12 5 19 12"/></svg>
-                            </div>
-                        </button>
-                    </div>
-                </div>
+            <div class="nav-right">
+                <span class="badge-user-status" id="topUserBadge"></span>
+                <button class="btn-lang" onclick="toggleLanguage()" id="btnLang">TR</button>
+                <button class="btn-auth-action" id="btnMainAction" onclick="handleAuthAction()" data-enter="cta">Start Free</button>
+                <button class="burger-btn" id="burgerBtn" aria-label="Toggle menu" aria-expanded="false" onclick="toggleMobileNav()">
+                    <span class="burger-bar"></span>
+                    <span class="burger-bar"></span>
+                    <span class="burger-bar"></span>
+                </button>
             </div>
+        </header>
 
-            <!-- Trust Logos Footer -->
-            <footer class="trust-footer" data-enter="trust">
-                <div class="trust-item">
-                    <svg width="22" height="22" viewBox="0 0 24 24"><circle cx="12" cy="12" r="10" fill="none" stroke="currentColor" stroke-width="2"/><path d="M8 12l3 3 5-5"/></svg>
-                    <span>Enterprise RAG</span>
-                </div>
-                <div class="trust-item">
-                    <svg width="22" height="22" viewBox="0 0 24 24"><rect x="3" y="11" width="18" height="11" rx="2" fill="none" stroke="currentColor" stroke-width="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg>
-                    <span>RLS Protected<sup>®</sup></span>
-                </div>
-                <div class="trust-item">
-                    <svg width="22" height="22" viewBox="0 0 24 24"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2" fill="none" stroke="currentColor" stroke-width="2"/></svg>
-                    <span>Zero Data Leakage</span>
-                </div>
-                <div class="trust-item">
-                    <svg width="22" height="22" viewBox="0 0 24 24"><path d="M12 2v20M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6" fill="none" stroke="currentColor" stroke-width="2"/></svg>
-                    <span>Knowledge Flywheel</span>
-                </div>
-            </footer>
-
-        </div>
-    </section>
-
-    <!-- ══════════════════════════════════════════
-         SECTION 2 — FEATURES & LIVE REASONING
-    ══════════════════════════════════════════ -->
-    <section class="section-two" id="reasoning">
-        <div class="sec2-wrap">
+        <!-- Main View Container -->
+        <main class="view-container">
             
-            <h2 class="sec2-title">
-                <span class="hl-mask"><span class="hl-line-s2" data-enter-s2="h2-0">Built for human thinking.</span></span>
-                <span class="hl-mask"><span class="hl-line-s2" data-enter-s2="h2-1">Powered by structured intelligence.</span></span>
-            </h2>
-
-            <p class="sec2-subcopy" data-enter-s2="sub2">
-                Ask complex questions. Explore multiple perspectives.<br>Get structured, reliable answers — instantly.
-            </p>
-
-            <!-- Gradient Panel -->
-            <div class="gradient-panel" data-enter-s2="panel">
+            <!-- ══════════════════════════════════════════
+                 VIEW 1: HERO / WELCOME STATE
+            ══════════════════════════════════════════ -->
+            <section id="heroView">
                 
-                <div class="live-status-row">
-                    <div class="live-status-left">
-                        <span class="green-dot"></span>
-                        <span class="live-label" id="txtLiveStatus">Live reasoning active</span>
-                    </div>
-                    <span class="clearance-pill" id="panelClearance">Genel (Level 10)</span>
+                <div class="hero-copy">
+                    <h1 class="hero-title">
+                        <span class="hl-mask"><span class="hl-line" data-enter="hl-0">Think clearly.</span></span>
+                        <span class="hl-mask"><span class="hl-line" data-enter="hl-1">Decide confidently</span></span>
+                    </h1>
+                    <p class="hero-subtitle" data-enter="sub">
+                        An AI workspace that structures your reasoning,<br>not just your answers.
+                    </p>
                 </div>
 
-                <!-- Chat Card -->
-                <div class="chat-card">
-                    <div class="chat-messages" id="chatHistory">
+                <!-- Hero Composer Card -->
+                <div class="hero-composer-shell" data-enter="composer">
+                    <div class="hero-composer">
+                        <div class="composer-glow"></div>
                         
-                        <!-- Initial Sample / Welcome Messages -->
-                        <div class="msg-row user">
-                            <div class="msg-avatar user-av">
-                                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#f2f2f2" stroke-width="1.8"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>
-                            </div>
-                            <div class="msg-bubble">
-                                Northwestern personel politikalarına göre yıllık izin hakları ve uzaktan çalışma kuralları nedir?
-                            </div>
-                        </div>
+                        <textarea class="hero-textarea" id="heroQueryInput" placeholder="Break down a decision, policy, or problem..." rows="2" onkeydown="handleHeroKeyDown(event)"></textarea>
+                        
+                        <div class="suggestions-row" id="heroChipsContainer"></div>
 
-                        <div class="msg-row ai">
-                            <div class="msg-avatar ai-av">
-                                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#000" stroke-width="2"><path d="M12 2L2 7l10 5 10-5-10-5zM2 17l10 5 10-5M2 12l10 5 10-5"/></svg>
-                            </div>
-                            <div class="msg-bubble">
-                                <strong>Personel El Kitabı Politikaları Özeti:</strong><br><br>
-                                • <strong>Yıllık İzin (Vacation):</strong> Tüm tam zamanlı personel yılda 20 iş günü ücretli izin hakkına sahiptir. Azami 5 gün bir sonraki yıla devredilebilir.<br>
-                                • <strong>Uzaktan Çalışma (Remote Work):</strong> Haftada azami 2 gün doğrudan yönetici onayı ile mümkündür.
-                                <div class="citation-wrap">
-                                    <span class="citation-tag">📄 Bölüm: İK (Lv10) - Eşleşme: %94</span>
-                                </div>
-                                <div class="feedback-row">
-                                    <button class="btn-fb" onclick="sendFeedbackSample(1, this)">👍 Doğru & Faydalı</button>
-                                    <button class="btn-fb" onclick="sendFeedbackSample(-1, this)">👎 Eksik / Hatalı</button>
-                                </div>
-                            </div>
-                        </div>
+                        <div class="controls-row">
+                            <button type="button" class="btn-attach-round" onclick="showUploadModal()" aria-label="Add attachment" title="Upload Document" data-enter="ctrl-0">
+                                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M12 5v14M5 12h14"/></svg>
+                            </button>
 
+                            <button type="button" class="btn-send-animated" id="heroSendBtn" onclick="submitHeroQuery()" aria-label="Send Query" data-enter="ctrl-1">
+                                <div class="btn-send-inner">
+                                    <svg viewBox="0 0 24 24" fill="none" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><line x1="12" y1="19" x2="12" y2="5"/><polyline points="5 12 12 5 19 12"/></svg>
+                                </div>
+                            </button>
+                        </div>
                     </div>
+                </div>
 
-                    <!-- White Pill Input Bar -->
-                    <form class="white-input-bar" onsubmit="handleSec2Send(event)">
-                        <input type="text" id="sec2Input" placeholder="What should we analyze today?" autocomplete="off">
-                        <button type="button" class="white-input-mic" onclick="triggerMic()" aria-label="Mic">
-                            <svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor"><path d="M12 14c1.66 0 3-1.34 3-3V5c0-1.66-1.34-3-3-3S9 3.34 9 5v6c0 1.66 1.34 3 3 3z"/><path d="M17 11c0 2.76-2.24 5-5 5s-5-2.24-5-5H5c0 3.53 2.61 6.43 6 6.92V21h2v-3.08c3.39-.49 6-3.39 6-6.92h-2z"/></svg>
+                <!-- Trust Logos Footer -->
+                <footer class="trust-footer" data-enter="trust">
+                    <div class="trust-item">
+                        <svg width="20" height="20" viewBox="0 0 24 24"><circle cx="12" cy="12" r="10" fill="none" stroke="currentColor" stroke-width="2"/><path d="M8 12l3 3 5-5"/></svg>
+                        <span>Enterprise RAG</span>
+                    </div>
+                    <div class="trust-item">
+                        <svg width="20" height="20" viewBox="0 0 24 24"><rect x="3" y="11" width="18" height="11" rx="2" fill="none" stroke="currentColor" stroke-width="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg>
+                        <span>RLS Protected<sup>®</sup></span>
+                    </div>
+                    <div class="trust-item">
+                        <svg width="20" height="20" viewBox="0 0 24 24"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2" fill="none" stroke="currentColor" stroke-width="2"/></svg>
+                        <span>Zero Data Leakage</span>
+                    </div>
+                    <div class="trust-item">
+                        <svg width="20" height="20" viewBox="0 0 24 24"><path d="M12 2v20M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6" fill="none" stroke="currentColor" stroke-width="2"/></svg>
+                        <span>Knowledge Flywheel</span>
+                    </div>
+                </footer>
+
+            </section>
+
+            <!-- ══════════════════════════════════════════
+                 VIEW 2: ACTIVE CHAT CONVERSATION STATE
+            ══════════════════════════════════════════ -->
+            <section id="chatView">
+                
+                <!-- Status Strip -->
+                <div class="chat-status-strip">
+                    <div class="status-left">
+                        <span class="green-pulse-dot"></span>
+                        <span id="txtChatStatus">Live reasoning active</span>
+                    </div>
+                    <span class="status-badge" id="chatClearanceBadge">Genel (Clearance Lv10)</span>
+                </div>
+
+                <!-- Chat Stream Container -->
+                <div class="chat-stream-container" id="chatStream"></div>
+
+                <!-- Floating Bottom Input Bar -->
+                <div class="chat-composer-bar">
+                    <form class="chat-composer-card" onsubmit="handleChatSubmit(event)">
+                        <button type="button" class="btn-attach-round" style="width:36px; height:36px;" onclick="showUploadModal()" title="Upload Document">
+                            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M12 5v14M5 12h14"/></svg>
                         </button>
-                        <button type="submit" class="white-input-send" aria-label="Send">
-                            <svg viewBox="0 0 24 24" fill="none" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><line x1="12" y1="19" x2="12" y2="5"/><polyline points="5 12 12 5 19 12"/></svg>
+                        
+                        <input type="text" class="chat-input-field" id="chatInputField" placeholder="Ask a follow-up or explore another perspective..." autocomplete="off">
+                        
+                        <button type="submit" class="btn-send-animated" style="width:38px; height:38px;" aria-label="Send">
+                            <div class="btn-send-inner">
+                                <svg viewBox="0 0 24 24" fill="none" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" style="width:16px; height:16px;"><line x1="12" y1="19" x2="12" y2="5"/><polyline points="5 12 12 5 19 12"/></svg>
+                            </div>
                         </button>
                     </form>
                 </div>
 
-            </div>
+            </section>
 
-        </div>
-    </section>
+        </main>
+
+    </div>
 
     <!-- ══════════════════════════════════════════
          MOBILE NAV OVERLAY
     ══════════════════════════════════════════ -->
     <div class="nav-overlay" id="navOverlay">
         <ul class="overlay-links">
-            <li><a href="#home" class="overlay-link" onclick="toggleMobileNav()">Home</a></li>
-            <li><a href="#features" class="overlay-link" onclick="toggleMobileNav()">Features</a></li>
-            <li><a href="#reasoning" class="overlay-link" onclick="toggleMobileNav()">Reasoning</a></li>
+            <li><a href="javascript:void(0)" class="overlay-link" onclick="resetToHeroView(); toggleMobileNav();">New Chat</a></li>
             <li><a href="javascript:void(0)" class="overlay-link" onclick="showDocsModal(); toggleMobileNav();">Documents</a></li>
+            <li><a href="javascript:void(0)" class="overlay-link" onclick="showLoginModal(); toggleMobileNav();">Sign In / Switch Role</a></li>
         </ul>
-        <div class="overlay-footer">
-            <div class="overlay-grad-bar"></div>
-            <button class="btn-start-free" style="width:100%; text-align:center; padding:14px;" onclick="showLoginModal(); toggleMobileNav();">Sign In / Switch Role</button>
-        </div>
     </div>
 
     <!-- ══════════════════════════════════════════
@@ -1282,7 +1059,7 @@
     </div>
 
     <!-- ══════════════════════════════════════════
-         CLIENT JAVASCRIPT & WAAPI TIMELINE
+         CLIENT LOGIC & API INTEGRATION
     ══════════════════════════════════════════ -->
     <script>
         // State
@@ -1291,12 +1068,11 @@
         let userRole = localStorage.getItem('nirene_role') || null;
         let userDept = localStorage.getItem('nirene_dept') || 'genel';
         let userClearance = parseInt(localStorage.getItem('nirene_clearance') || '10');
-        let deepThinkActive = false;
+        let currentConversation = [];
 
         const i18n = {
             tr: {
-                brand: "Nirene",
-                heroSub: "Yalnızca yanıtlarınızı değil, muhakeme sürecinizi yapılandıran yapay zeka çalışma alanı.",
+                newChat: "+ Yeni Sohbet",
                 chips: [
                     { label: "🏖️ İzin Politikası", query: "Yıllık izin hakları ve devir kuralları nelerdir?" },
                     { label: "🏠 Uzaktan Çalışma", query: "Uzaktan çalışma şartları ve onay süreçleri nasıldır?" },
@@ -1305,11 +1081,10 @@
                 ],
                 liveStatus: "Canlı RAG Muhakemesi Aktif",
                 placeholderHero: "Bir karar, politika veya problem hakkında soru sorun...",
-                placeholderSec2: "Bugün neyi analiz edelim?"
+                placeholderChat: "Bir takip sorusu sorun veya başka bir konuyu inceleyin..."
             },
             en: {
-                brand: "Nirene",
-                heroSub: "An AI workspace that structures your reasoning, not just your answers.",
+                newChat: "+ New Chat",
                 chips: [
                     { label: "🏖️ Vacation Policy", query: "What is the vacation accrual rate and carryover rule?" },
                     { label: "🏠 Remote Work", query: "What are the requirements for remote work approval?" },
@@ -1318,33 +1093,11 @@
                 ],
                 liveStatus: "Live Reasoning Active",
                 placeholderHero: "Break down a decision, policy, or problem...",
-                placeholderSec2: "What should we analyze today?"
+                placeholderChat: "Ask a follow-up or explore another perspective..."
             }
         };
 
-        // 24 Radial Rays Generator for Logo
-        function generateLogoRays() {
-            const g = document.querySelector('.logo-svg .rays');
-            if (!g || g.children.length > 0) return;
-            const count = 24;
-            const cx = 26, cy = 26;
-            const rInner = 10.4, rOuter = 22.6;
-            for (let i = 0; i < count; i++) {
-                const angle = -Math.PI / 2 + (i * 2 * Math.PI / count);
-                const x1 = cx + rInner * Math.cos(angle);
-                const y1 = cy + rInner * Math.sin(angle);
-                const x2 = cx + rOuter * Math.cos(angle);
-                const y2 = cy + rOuter * Math.sin(angle);
-                const line = document.createElementNS('http://www.w3.org/2000/svg', 'line');
-                line.setAttribute('x1', x1.toFixed(2));
-                line.setAttribute('y1', y1.toFixed(2));
-                line.setAttribute('x2', x2.toFixed(2));
-                line.setAttribute('y2', y2.toFixed(2));
-                g.appendChild(line);
-            }
-        }
-
-        // WAAPI Choreography
+        // WAAPI Choreography for Hero Entrance
         function initAnimations() {
             const prefersReduced = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
             if (prefersReduced) return;
@@ -1354,35 +1107,11 @@
             const REVEAL = 'cubic-bezier(0.16, 1, 0.3, 1)';
             const LIFT = 'cubic-bezier(0.22, 1, 0.36, 1)';
 
-            // Section 1 Master Timeline
-            const logo = document.querySelector('[data-enter="logo"]');
-            if (logo) {
-                logo.animate([
-                    { opacity: 0, transform: 'scale(0.92)' },
-                    { opacity: 1, transform: 'scale(1)' }
-                ], { duration: 600, easing: LIFT, fill: 'forwards' });
-            }
-
-            document.querySelectorAll('[data-enter^="nav-"]').forEach((el, i) => {
-                el.animate([
-                    { opacity: 0, transform: `translateY(${10 * D}px)` },
-                    { opacity: 1, transform: 'translateY(0)' }
-                ], { duration: 500, delay: 100 + i * 50, easing: LIFT, fill: 'forwards' });
-            });
-
-            const cta = document.querySelector('[data-enter="cta"]');
-            if (cta) {
-                cta.animate([
-                    { opacity: 0, transform: `translateY(${10 * D}px)` },
-                    { opacity: 1, transform: 'translateY(0)' }
-                ], { duration: 500, delay: 260, easing: LIFT, fill: 'forwards' });
-            }
-
             document.querySelectorAll('.hl-line').forEach((el, i) => {
                 el.animate([
                     { opacity: 0, transform: 'translateY(108%)' },
                     { opacity: 1, transform: 'translateY(0)' }
-                ], { duration: 950, delay: 200 + i * 90, easing: REVEAL, fill: 'forwards' });
+                ], { duration: 900, delay: 150 + i * 90, easing: REVEAL, fill: 'forwards' });
             });
 
             const sub = document.querySelector('[data-enter="sub"]');
@@ -1390,30 +1119,23 @@
                 sub.animate([
                     { opacity: 0, transform: `translateY(${14 * D}px)` },
                     { opacity: 1, transform: 'translateY(0)' }
-                ], { duration: 650, delay: 520, easing: LIFT, fill: 'forwards' });
+                ], { duration: 650, delay: 450, easing: LIFT, fill: 'forwards' });
             }
 
             const composer = document.querySelector('[data-enter="composer"]');
             if (composer) {
                 composer.animate([
-                    { opacity: 0, transform: `translateY(${22 * D}px) scale(0.985)` },
+                    { opacity: 0, transform: `translateY(${20 * D}px) scale(0.985)` },
                     { opacity: 1, transform: 'translateY(0) scale(1)' }
-                ], { duration: 950, delay: 640, easing: REVEAL, fill: 'forwards' });
+                ], { duration: 900, delay: 550, easing: REVEAL, fill: 'forwards' });
             }
-
-            document.querySelectorAll('[data-enter^="ctrl-"]').forEach((el, i) => {
-                el.animate([
-                    { opacity: 0, transform: `translateY(${10 * D}px)` },
-                    { opacity: 1, transform: 'translateY(0)' }
-                ], { duration: 500, delay: 840 + i * 55, easing: LIFT, fill: 'forwards' });
-            });
 
             const glow = document.querySelector('.composer-glow');
             if (glow) {
                 glow.animate([
                     { clipPath: 'inset(0 40% 0 40%)', opacity: 0 },
                     { clipPath: 'inset(0 0% 0 0%)', opacity: 0.95 }
-                ], { duration: 800, delay: 940, easing: REVEAL, fill: 'forwards' });
+                ], { duration: 800, delay: 850, easing: REVEAL, fill: 'forwards' });
             }
 
             const trust = document.querySelector('[data-enter="trust"]');
@@ -1421,65 +1143,36 @@
                 trust.animate([
                     { opacity: 0, transform: `translateY(${12 * D}px)` },
                     { opacity: 1, transform: 'translateY(0)' }
-                ], { duration: 600, delay: 1080, easing: LIFT, fill: 'forwards' });
+                ], { duration: 600, delay: 950, easing: LIFT, fill: 'forwards' });
             }
 
             setTimeout(() => {
                 document.documentElement.classList.remove('entrance');
                 document.documentElement.classList.add('hero-ready');
-            }, 1800);
-
-            // Section 2 Observer
-            const sec2 = document.getElementById('reasoning');
-            if (sec2) {
-                const observer = new IntersectionObserver((entries) => {
-                    entries.forEach(entry => {
-                        if (entry.isIntersecting) {
-                            animateSection2(D, REVEAL, LIFT);
-                            observer.disconnect();
-                        }
-                    });
-                }, { rootMargin: '0px 0px -15% 0px', threshold: 0 });
-                observer.observe(sec2);
-            }
-        }
-
-        function animateSection2(D, REVEAL, LIFT) {
-            document.querySelectorAll('.hl-line-s2').forEach((el, i) => {
-                el.animate([
-                    { opacity: 0, transform: 'translateY(108%)' },
-                    { opacity: 1, transform: 'translateY(0)' }
-                ], { duration: 950, delay: i * 90, easing: REVEAL, fill: 'forwards' });
-            });
-
-            const sub2 = document.querySelector('[data-enter-s2="sub2"]');
-            if (sub2) {
-                sub2.animate([
-                    { opacity: 0, transform: `translateY(${14 * D}px)` },
-                    { opacity: 1, transform: 'translateY(0)' }
-                ], { duration: 650, delay: 300, easing: LIFT, fill: 'forwards' });
-            }
-
-            const panel = document.querySelector('[data-enter-s2="panel"]');
-            if (panel) {
-                panel.animate([
-                    { opacity: 0, transform: `translateY(${26 * D}px) scale(0.985)` },
-                    { opacity: 1, transform: 'translateY(0) scale(1)' }
-                ], { duration: 1000, delay: 400, easing: REVEAL, fill: 'forwards' });
-            }
-
-            setTimeout(() => {
-                document.documentElement.classList.remove('entrance-s2');
-            }, 1200);
+            }, 1600);
         }
 
         // Lifecycle Init
         document.addEventListener('DOMContentLoaded', () => {
-            generateLogoRays();
             renderChips();
             updateAuthUI();
             initAnimations();
         });
+
+        // Switch Views (Hero vs Chat)
+        function switchToChatView() {
+            document.getElementById('heroView').style.display = 'none';
+            document.getElementById('chatView').style.display = 'flex';
+        }
+
+        function resetToHeroView() {
+            document.getElementById('chatView').style.display = 'none';
+            document.getElementById('heroView').style.display = 'flex';
+            document.getElementById('chatStream').innerHTML = '';
+            document.getElementById('heroQueryInput').value = '';
+            document.getElementById('chatInputField').value = '';
+            currentConversation = [];
+        }
 
         // UI & Auth Sync
         function updateAuthUI() {
@@ -1487,20 +1180,20 @@
             const btnAction = document.getElementById('btnMainAction');
             const navUpload = document.getElementById('navUploadBtn');
             const navCuration = document.getElementById('navCurationBtn');
-            const panelClearance = document.getElementById('panelClearance');
+            const chatClearance = document.getElementById('chatClearanceBadge');
 
             if (authToken && userRole) {
                 badge.style.display = 'inline-block';
                 badge.innerText = `👤 ${userRole} (${userDept.toUpperCase()} · Lv${userClearance})`;
                 btnAction.innerText = "Switch Role";
-                panelClearance.innerText = `${userDept.toUpperCase()} (Clearance Lv${userClearance})`;
+                chatClearance.innerText = `${userDept.toUpperCase()} (Clearance Lv${userClearance})`;
 
                 navUpload.style.display = (userRole === 'super_admin') ? 'inline-block' : 'none';
                 navCuration.style.display = (userRole === 'super_admin' || userRole.includes('admin')) ? 'inline-block' : 'none';
             } else {
                 badge.style.display = 'none';
                 btnAction.innerText = "Start Free";
-                panelClearance.innerText = "Genel (Clearance Lv10)";
+                chatClearance.innerText = "Genel (Clearance Lv10)";
                 navUpload.style.display = 'none';
                 navCuration.style.display = 'none';
             }
@@ -1510,9 +1203,11 @@
             currentLang = currentLang === 'tr' ? 'en' : 'tr';
             localStorage.setItem('nirene_lang', currentLang);
             document.getElementById('btnLang').innerText = currentLang.toUpperCase();
+            document.getElementById('txtNewChat').innerText = i18n[currentLang].newChat;
             renderChips();
             document.getElementById('heroQueryInput').placeholder = i18n[currentLang].placeholderHero;
-            document.getElementById('sec2Input').placeholder = i18n[currentLang].placeholderSec2;
+            document.getElementById('chatInputField').placeholder = i18n[currentLang].placeholderChat;
+            document.getElementById('txtChatStatus').innerText = i18n[currentLang].liveStatus;
         }
 
         function renderChips() {
@@ -1530,24 +1225,6 @@
                 };
                 container.appendChild(btn);
             });
-        }
-
-        function toggleDeepThink() {
-            deepThinkActive = !deepThinkActive;
-            const btn = document.getElementById('btnDeepThink');
-            if (deepThinkActive) {
-                btn.style.background = 'rgba(255, 232, 120, 0.2)';
-                btn.style.borderColor = '#ffe776';
-                btn.style.color = '#ffe776';
-            } else {
-                btn.style.background = 'var(--chip-fill)';
-                btn.style.borderColor = 'var(--chip-border)';
-                btn.style.color = '#ffffff';
-            }
-        }
-
-        function triggerMic() {
-            alert(currentLang === 'tr' ? 'Sesli komut mikrofonu aktif ediliyor...' : 'Listening via microphone...');
         }
 
         function toggleMobileNav() {
@@ -1584,7 +1261,7 @@
             document.getElementById('passwordInput').value = p;
         }
 
-        // API Calls
+        // Auth
         async function handleLogin(e) {
             e.preventDefault();
             const u = document.getElementById('usernameInput').value.trim();
@@ -1620,29 +1297,37 @@
             }
         }
 
+        // Query Handling (Hero -> Chat transition)
+        function handleHeroKeyDown(e) {
+            if (e.key === 'Enter' && !e.shiftKey) {
+                e.preventDefault();
+                submitHeroQuery();
+            }
+        }
+
         async function submitHeroQuery() {
             const input = document.getElementById('heroQueryInput');
             const query = input.value.trim();
             if (!query) return;
 
-            // Scroll down to Section 2 chat
-            document.getElementById('reasoning').scrollIntoView({ behavior: 'smooth' });
             input.value = '';
-            await processQuery(query);
+            switchToChatView();
+            await processChatMessage(query);
         }
 
-        async function handleSec2Send(e) {
+        async function handleChatSubmit(e) {
             if (e) e.preventDefault();
-            const input = document.getElementById('sec2Input');
+            const input = document.getElementById('chatInputField');
             const query = input.value.trim();
             if (!query) return;
+
             input.value = '';
-            await processQuery(query);
+            await processChatMessage(query);
         }
 
-        async function processQuery(query) {
-            appendUserMsg(query);
-            const typingElem = appendTypingMsg();
+        async function processChatMessage(query) {
+            appendUserBubble(query);
+            const typingElem = appendTypingBubble();
 
             try {
                 const headers = { 'Content-Type': 'application/json' };
@@ -1666,44 +1351,44 @@
                 }
 
                 const data = await res.json();
-                appendAiMsg(data.answer, data.citations, query);
+                appendAiBubble(data.answer, data.citations, query);
             } catch (err) {
                 typingElem.remove();
-                appendAiMsg(`⚠️ Hata: ${err.message}`, [], query);
+                appendAiBubble(`⚠️ Hata: ${err.message}`, [], query);
             }
         }
 
-        function appendUserMsg(text) {
-            const chat = document.getElementById('chatHistory');
+        function appendUserBubble(text) {
+            const stream = document.getElementById('chatStream');
             const div = document.createElement('div');
-            div.className = 'msg-row user';
+            div.className = 'chat-msg-row user';
             div.innerHTML = `
                 <div class="msg-avatar user-av">
                     <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#f2f2f2" stroke-width="1.8"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>
                 </div>
                 <div class="msg-bubble">${escapeHtml(text)}</div>
             `;
-            chat.appendChild(div);
-            chat.scrollTop = chat.scrollHeight;
+            stream.appendChild(div);
+            stream.scrollTop = stream.scrollHeight;
         }
 
-        function appendAiMsg(text, citations = [], queryText = "") {
-            const chat = document.getElementById('chatHistory');
+        function appendAiBubble(text, citations = [], queryText = "") {
+            const stream = document.getElementById('chatStream');
             const div = document.createElement('div');
-            div.className = 'msg-row ai';
+            div.className = 'chat-msg-row ai';
 
             let citationHtml = '';
             if (citations && citations.length > 0) {
                 const tags = citations.map(c => `<span class="citation-tag">📄 ${c.department.toUpperCase()} (Lv${c.min_clearance_level}) · %${(c.similarity * 100).toFixed(0)}</span>`).join('');
-                citationHtml = `<div class="citation-wrap">${tags}</div>`;
+                citationHtml = `<div class="citation-container">${tags}</div>`;
             }
 
             let feedbackHtml = '';
             if (queryText) {
                 feedbackHtml = `
-                    <div class="feedback-row">
-                        <button class="btn-fb" onclick="sendFeedback(1, '${escapeHtml(queryText)}', this)">👍 Faydalı</button>
-                        <button class="btn-fb" onclick="sendFeedback(-1, '${escapeHtml(queryText)}', this)">👎 Hatalı</button>
+                    <div class="feedback-actions">
+                        <button class="btn-feedback" onclick="sendFeedback(1, '${escapeHtml(queryText)}', this)">👍 Faydalı</button>
+                        <button class="btn-feedback" onclick="sendFeedback(-1, '${escapeHtml(queryText)}', this)">👎 Hatalı</button>
                     </div>
                 `;
             }
@@ -1718,14 +1403,14 @@
                     ${feedbackHtml}
                 </div>
             `;
-            chat.appendChild(div);
-            chat.scrollTop = chat.scrollHeight;
+            stream.appendChild(div);
+            stream.scrollTop = stream.scrollHeight;
         }
 
-        function appendTypingMsg() {
-            const chat = document.getElementById('chatHistory');
+        function appendTypingBubble() {
+            const stream = document.getElementById('chatStream');
             const div = document.createElement('div');
-            div.className = 'msg-row ai';
+            div.className = 'chat-msg-row ai';
             div.innerHTML = `
                 <div class="msg-avatar ai-av">
                     <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#000" stroke-width="2"><path d="M12 2L2 7l10 5 10-5-10-5zM2 17l10 5 10-5M2 12l10 5 10-5"/></svg>
@@ -1734,8 +1419,8 @@
                     Nirene muhakeme yürütüyor...
                 </div>
             `;
-            chat.appendChild(div);
-            chat.scrollTop = chat.scrollHeight;
+            stream.appendChild(div);
+            stream.scrollTop = stream.scrollHeight;
             return div;
         }
 
@@ -1764,10 +1449,7 @@
             }
         }
 
-        function sendFeedbackSample(score, btn) {
-            btn.parentElement.innerHTML = `<span style="font-size:0.75rem; color:#86ca8a;">✓ Geri bildirim kaydedildi</span>`;
-        }
-
+        // Upload PDF
         async function handleUpload(e) {
             e.preventDefault();
             const title = document.getElementById('uploadTitle').value.trim();
@@ -1810,6 +1492,7 @@
             }
         }
 
+        // Docs List
         async function loadDocsList() {
             const list = document.getElementById('docsItemsList');
             list.innerHTML = '<p style="color:var(--subtitle); font-size:0.85rem;">Dokümanlar yükleniyor...</p>';
@@ -1849,6 +1532,7 @@
             loadDocsList();
         }
 
+        // Curation Pool
         async function loadCurationItems() {
             const list = document.getElementById('curationItemsList');
             list.innerHTML = '<p style="color:var(--subtitle); font-size:0.85rem;">Bekleyen öğeler yükleniyor...</p>';
