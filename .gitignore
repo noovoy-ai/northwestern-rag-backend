@@ -9,4 +9,6 @@ tunnel_watcher.py
 last_tunnel_url.txt
 *.tunnel.log
 cloudflared.log
+tunnel_watcher.log
+tunnel_watcher.err.log
 
