@@ -1263,11 +1263,90 @@
             document.getElementById('txtChatStatus').innerText = i18n[currentLang].liveStatus;
         }
 
+        function getRoleChips() {
+            if (currentLang === 'en') {
+                if (userRole === 'admin-finans' || userDept === 'finans') {
+                    return [
+                        { label: "💰 300k & 1M+ Spending Approvals", query: "Who must approve expenses of 300,000 TL and over 1,000,000 TL?" },
+                        { label: "💳 Corporate Credit Card Expenses", query: "What is the deadline for submitting corporate credit card expense forms?" },
+                        { label: "✈️ Foreign Per Diem & Advance", query: "What is the daily per diem for foreign travel and advance reconciliation period?" },
+                        { label: "🏠 Remote Work Policy", query: "How many days per week is remote work permitted?" }
+                    ];
+                } else if (userRole === 'admin-hukuk' || userDept === 'hukuk') {
+                    return [
+                        { label: "⚖️ Standard NDA & IP Rights", query: "What is the standard NDA confidentiality duration and who owns IP rights?" },
+                        { label: "🏛️ Litigation Thresholds", query: "Who must approve lawsuits and claims over 500,000 TL?" },
+                        { label: "📑 200k+ Contract Termination", query: "What legal clearance is required to terminate contracts exceeding 200,000 TL?" },
+                        { label: "🏖️ Annual Leave Entitlement", query: "What is the annual paid leave entitlement for staff?" }
+                    ];
+                } else if (userRole === 'admin-ik' || userDept === 'ik') {
+                    return [
+                        { label: "🏆 Executive Performance Bonus", query: "What percentage bonus does an executive receive for Outstanding Performance?" },
+                        { label: "🔍 Ethics Investigation", query: "How many business days does an ethics investigation take to complete?" },
+                        { label: "🏖️ Leave Carryover Rule", query: "How many unused annual leave days can be carried over to next year?" },
+                        { label: "💍 Marriage & Paternity Leave", query: "How many days are granted for marriage and paternity leave?" }
+                    ];
+                } else if (userRole === 'super_admin' || userClearance === 100) {
+                    return [
+                        { label: "💰 Finance Spending Matrix", query: "Who must approve expenses of 300,000 TL and over 1,000,000 TL?" },
+                        { label: "⚖️ Legal NDA & Litigation", query: "What is the standard NDA confidentiality duration and who approves 500k+ lawsuits?" },
+                        { label: "🏆 HR Executive Bonus", query: "What bonus percentage is awarded for Outstanding Performance?" },
+                        { label: "🏠 General Hybrid Work", query: "How many days per week can staff work remotely and what is marriage leave?" }
+                    ];
+                } else {
+                    return [
+                        { label: "🏠 Working Hours & Remote", query: "What are the weekly working hours and remote work rules?" },
+                        { label: "🏖️ Annual Paid Leave", query: "How many days of paid vacation are granted for 1-5 years and 5+ years seniority?" },
+                        { label: "💍 Special Compassionate Leave", query: "How many days are granted for marriage, paternity, and bereavement leave?" },
+                        { label: "🍽️ Meal & Commute Card", query: "When are Ticket Restaurant meal allowances and transit cards loaded?" }
+                    ];
+                }
+            } else {
+                if (userRole === 'admin-finans' || userDept === 'finans') {
+                    return [
+                        { label: "💰 300k & 1M+ Harcama Onayı", query: "300.000 TL ve 1.000.000 TL üzeri harcamalarda kimlerin onayı gereklidir?" },
+                        { label: "💳 Şirket Kredi Kartı Masrafı", query: "Şirket kredi kartı masraflarının sisteme girilme süresi kaç iş günüdür?" },
+                        { label: "✈️ Yurt Dışı Harcırah & Avans", query: "Yurt dışı seyahatlerinde günlük azami harcırah ve avans kapatma süresi nedir?" },
+                        { label: "🏠 Hibrit Çalışma Düzeni", query: "Haftada kaç gün uzaktan çalışılabilir?" }
+                    ];
+                } else if (userRole === 'admin-hukuk' || userDept === 'hukuk') {
+                    return [
+                        { label: "⚖️ Standart NDA & Gizlilik Süresi", query: "Standart NDA gizlilik süresi kaç yıldır ve fikri haklar kime aittir?" },
+                        { label: "🏛️ Dava Açma Yetki Limitleri", query: "500.000 TL üzeri davalarda kimin onayı şarttır?" },
+                        { label: "📑 200k+ Sözleşme Feshi", query: "200.000 TL üzeri sözleşmelerin tek taraflı feshinde hangi onay gereklidir?" },
+                        { label: "🏖️ Yıllık İzin Hakları", query: "1-5 yıl kıdemli ve 5 yıldan fazla kıdemli personelin yıllık izin hakları nedir?" }
+                    ];
+                } else if (userRole === 'admin-ik' || userDept === 'ik') {
+                    return [
+                        { label: "🏆 Yönetici Performans Primi", query: "Yönetici kadrosunda Üstün Başarı alan yönetici yıllık brüt maaşının yüzde kaçı oranında prim alır?" },
+                        { label: "🔍 Gizli Etik Soruşturma", query: "Şirket içi Seviye 3 etik ihlal soruşturması kaç iş gününde tamamlanır?" },
+                        { label: "🏖️ İzin & Devir Hakları", query: "Kullanılmayan yıllık izinlerden en fazla kaç gün devredilebilir?" },
+                        { label: "💍 Evlilik & Babalık İzni", query: "Evlilik ve babalık izinleri kaç iş günüdür?" }
+                    ];
+                } else if (userRole === 'super_admin' || userClearance === 100) {
+                    return [
+                        { label: "💰 Finans Harcama Onayları", query: "300.000 TL ve 1.000.000 TL üzeri harcamalarda kimlerin onayı gereklidir?" },
+                        { label: "⚖️ Hukuk Dava & NDA", query: "Standart NDA gizlilik süresi kaç yıldır ve 500.000 TL üzeri davalarda kimin onayı şarttır?" },
+                        { label: "🏆 İK Yönetici Primi", query: "Yönetici kadrosunda Üstün Başarı alan yönetici yıllık brüt maaşının yüzde kaçı oranında prim alır?" },
+                        { label: "🏠 Genel Çalışma Esasları", query: "Haftada kaç gün uzaktan çalışılabilir ve evlilik izni kaç gündür?" }
+                    ];
+                } else {
+                    return [
+                        { label: "🏠 Çalışma Saatleri & Hibrit", query: "Haftalık çalışma saatleri ve uzaktan çalışma kuralları nelerdir?" },
+                        { label: "🏖️ Yıllık Ücretli İzin", query: "1-5 yıl ve 5 yıldan fazla kıdemli personelin yıllık izin hak edişleri nedir?" },
+                        { label: "💍 Özel Mazeret İzinleri", query: "Evlilik, babalık ve 1. derece yakın vefat izinleri kaç gündür?" },
+                        { label: "🍽️ Yemek & Ulaşım Desteği", query: "Ticket Restaurant yemek kartı ve ulaşım desteği ne zaman yüklenir?" }
+                    ];
+                }
+            }
+        }
+
         function renderChips() {
             const container = document.getElementById('heroChipsContainer');
             if (!container) return;
             container.innerHTML = '';
-            i18n[currentLang].chips.forEach(c => {
+            const chips = getRoleChips();
+            chips.forEach(c => {
                 const btn = document.createElement('button');
                 btn.className = 'chip-sugg';
                 btn.type = 'button';

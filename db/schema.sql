@@ -115,6 +115,13 @@ ALTER TABLE document_chunks ENABLE ROW LEVEL SECURITY;
 ALTER TABLE audit_logs ENABLE ROW LEVEL SECURITY;
 ALTER TABLE knowledge_staging ENABLE ROW LEVEL SECURITY;
 
+ALTER TABLE documents FORCE ROW LEVEL SECURITY;
+ALTER TABLE document_chunks FORCE ROW LEVEL SECURITY;
+
+GRANT ALL ON ALL TABLES IN SCHEMA public TO authenticated, service_role, anon;
+GRANT ALL ON ALL FUNCTIONS IN SCHEMA public TO authenticated, service_role, anon;
+GRANT ALL ON ALL SEQUENCES IN SCHEMA public TO authenticated, service_role, anon;
+
 -- documents Tablosu RLS
 DROP POLICY IF EXISTS "Documents_Select_Policy" ON documents;
 CREATE POLICY "Documents_Select_Policy" ON documents

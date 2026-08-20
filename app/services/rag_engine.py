@@ -31,6 +31,7 @@ async def search_relevant_chunks(
     async with db_pool.acquire() as conn:
         async with conn.transaction():
             # Session seviyesinde JWT claims enjeksiyonu (Sıfır Sızıntı İlkesi)
+            await conn.execute("SET LOCAL ROLE authenticated;")
             await conn.execute(f"SET LOCAL request.jwt.claims = '{claims_escaped}';")
             
             # match_documents RPC çağrısı
@@ -60,27 +61,27 @@ def build_system_prompt(citations: List[ChunkCitation], lang: str) -> str:
     context_text = "\n\n---\n\n".join([c.content for c in citations])
     
     if lang == "tr":
-        return f"""Sen Northwestern Üniversitesi Personel El Kitabı Yetkili Yapay Zeka Asistanısın.
-Aşağıda veritabanından güvenli olarak filtrelenmiş 'BAĞLAM METNİ' (CONTEXT TEXT) yer almaktadır.
+        return f"""Sen Nirene AI Workspace & Enterprise RAG Yetkili Kurumsal Asistanısın.
+Aşağıda veritabanından kullanıcının güvenlik yetkisine göre filtrelenmiş 'BAĞLAM METNİ' (CONTEXT TEXT) yer almaktadır.
 
 KESİN VE TAVİZSİZ KURALLAR:
 1. Yalnızca ve sadece aşağıda verilen BAĞLAM METNİ içindeki bilgilere dayanarak TÜRKÇE yanıt ver.
 2. Bağlamda yer almayan veya doğrulanmamış şirket politikalarını asla uydurma.
-3. Eğer sorunun cevabı bağlam metninde kesin olarak bulunmuyorsa, sadece: "Bu bilgi personel el kitabında veya yetkiniz dahilindeki belgelerde bulunmamaktadır." yanıtını ver.
-4. Yanıtı net, profesyonel ve anlaşılır tut.
+3. Eğer sorunun cevabı bağlam metninde kesin olarak bulunmuyorsa, sadece: "Bu bilgi şirket politikalarında veya yetkiniz dahilindeki belgelerde bulunmamaktadır." yanıtını ver.
+4. Yanıtı net, profesyonel, maddeli ve anlaşılır tut.
 
 BAĞLAM METNİ:
 {context_text}
 """
     else:
-        return f"""You are the official Northwestern University Staff Handbook AI Assistant.
-Below is the securely filtered 'CONTEXT TEXT' extracted from the official handbook.
+        return f"""You are the official Nirene AI Workspace & Enterprise RAG Assistant.
+Below is the securely filtered 'CONTEXT TEXT' extracted from the official policy database.
 
 STRICT RULES TO FOLLOW:
 1. Answer the user's question accurately, concisely, and clearly based ONLY on the provided 'CONTEXT TEXT'.
 2. Do NOT use outside knowledge, assumptions, or unverified claims.
-3. If the answer is NOT present in the provided context text, respond strictly with: "This information is not available in the staff handbook or your authorized documents."
-4. Keep answers concise, helpful, and direct.
+3. If the answer is NOT present in the provided context text, respond strictly with: "This information is not available in the company policies or your authorized documents."
+4. Keep answers concise, structured, and direct.
 
 CONTEXT TEXT:
 {context_text}
@@ -99,9 +100,9 @@ async def execute_rag_query(
     
     if not citations:
         no_info = (
-            "Bu bilgi personel el kitabında veya yetkiniz dahilindeki belgelerde bulunmamaktadır." 
+            "Bu bilgi şirket politikalarında veya yetkiniz dahilindeki belgelerde bulunmamaktadır." 
             if lang == "tr" else 
-            "This information is not available in the staff handbook or your authorized documents."
+            "This information is not available in company policies or your authorized documents."
         )
         return QueryResponse(
             answer=no_info,
