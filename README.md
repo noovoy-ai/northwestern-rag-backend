@@ -63,6 +63,11 @@ Soru-Cevap servisi ve yönetim arayüzü yerel ve tünel ortamında şu portlar 
 
 ### 💬 Web Sohbet ve Yönetim Arayüzü (`index.html`) Tuşları & Rozetleri:
 
+- **🛡️ Admin Filo & Panel Butonu (`Admin Filosu & Panel`):**
+  - *Kim Görebilir?* Sadece `super_admin` rolüne sahip kullanıcılar.
+  - *Ne Yapar?* **2 Aşamalı Çoklu Ajan Komuta Merkezini** açar:
+    - **1. Aşama (Agent Fleet Hub):** Şirketin tüm yapay zeka ajan filosunu (Agent-1 Onboarding [Aktif], Agent-2 Hukuk [Yakında], Agent-3 Finans [Yakında], Agent-4 Destek [Yakında]) kartlar halinde listeler; toplam filo boyutunu ve genel sistem sağlığını özetler.
+    - **2. Aşama (Agent-1 Dedicated Workspace):** Agent-1 kartına tıklandığında açılan derin kontrol panelidir; Genel Bakış (Canlı KPI'lar, yanıt hızı, memnuniyet oranı), Kullanıcı Yönetimi (Yeni kullanıcı oluşturma, şifre sıfırlama, rol/yetki güncelleme), Doküman & Vektör Havuzu (Parçaları inceleme, re-index, silme), Kürasyon Havuzu ve Canlı Denetim İzi (Audit Logları) sekmelerini barındırır.
 - **🕒 Sohbet Geçmişi Butonu (`Geçmiş`):**
   - Sol üst köşedeki bu butona tıklandığında sol taraftan açılan şık bir çekmece (Drawer) ile kullanıcının önceki soru-cevap oturumları listelenir. Tıklanan oturumun tüm mesaj akışı ekrana anında geri yüklenir.
 - **🏷️ Tıklanabilir Kaynak Atıf Butonları (`[POL-IK-01] Personel El Kitabı · S.1 (%94)`):**

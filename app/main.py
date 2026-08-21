@@ -1,5 +1,6 @@
 import os
 import uuid
+import json
 from typing import List, Optional
 from contextlib import asynccontextmanager
 import asyncpg
@@ -12,7 +13,8 @@ from app.config import settings
 from app.schemas.models import (
     LoginRequest, TokenResponse, UserContext, DocumentResponse,
     QueryRequest, QueryResponse, FeedbackRequest, FeedbackResponse,
-    CurationApproveRequest, CurationItemResponse
+    CurationApproveRequest, CurationItemResponse,
+    AdminUserCreateRequest, AdminUserUpdateRequest, AdminUserResponse
 )
 from app.middleware.auth import (
     get_current_user, require_super_admin, require_admin,
@@ -424,3 +426,297 @@ async def get_chat_session_history(
             }
             for r in rows
         ]
+
+# -------------------------------------------------------------
+# SUPER ADMIN 2 AŞAMALI MULTI-AGENT & DASHBOARD ROTALARI
+# -------------------------------------------------------------
+@app.get("/api/admin/fleet-overview")
+async def get_fleet_overview(user: UserContext = Depends(require_super_admin), pool = Depends(get_db)):
+    """Tüm yapay zeka ajan filosunun durumunu ve metriklerini döner (Aşama 1)."""
+    async with pool.acquire() as conn:
+        doc_count = await conn.fetchval("SELECT COUNT(*) FROM documents WHERE is_active = TRUE") or 0
+        query_count = await conn.fetchval("SELECT COUNT(*) FROM audit_logs") or 0
+        user_count = await conn.fetchval("SELECT COUNT(*) FROM user_profiles") or 0
+        
+    fleet = [
+        {
+            "agent_id": "agent-1-onboarding",
+            "agent_name": "Agent-1: Kurumsal Onboarding & Politika",
+            "code": "agent_1_onboarding",
+            "icon": "onboarding",
+            "is_active": True,
+            "status": "active",
+            "status_label": "Aktif & Canlı",
+            "model": settings.LLM_MODEL,
+            "embedding_model": settings.EMBEDDING_MODEL,
+            "description": "Şirket içi çalışma kuralları, İK izin politikaları, finans harcama onayları ve hukuk standartları konusunda personeli asiste eden ana kurumsal rehber.",
+            "stats": {
+                "total_docs": doc_count,
+                "total_queries": query_count,
+                "authorized_users": user_count
+            }
+        },
+        {
+            "agent_id": "agent-2-legal",
+            "agent_name": "Agent-2: Hukuk & Sözleşme Analiz Ajanı",
+            "code": "agent_2_legal",
+            "icon": "scale",
+            "is_active": False,
+            "status": "in_development",
+            "status_label": "Geliştirme Aşamasında",
+            "model": "qwen2.5:14b (Planlanan)",
+            "embedding_model": settings.EMBEDDING_MODEL,
+            "description": "Tedarikçi sözleşmeleri, gizlilik anlaşmaları (NDA), fikri mülkiyet ve hukuki risk analizleri için özelleştirilmiş derin analiz motoru.",
+            "stats": {
+                "total_docs": 0,
+                "total_queries": 0,
+                "authorized_users": 0
+            }
+        },
+        {
+            "agent_id": "agent-3-finance",
+            "agent_name": "Agent-3: Finans & Bütçe Onay Ajanı",
+            "code": "agent_3_finance",
+            "icon": "wallet",
+            "is_active": False,
+            "status": "in_development",
+            "status_label": "Geliştirme Aşamasında",
+            "model": "qwen2.5:7b-math (Planlanan)",
+            "embedding_model": settings.EMBEDDING_MODEL,
+            "description": "Şirket harcama onay matrisleri, fatura denetimi, bütçe aşım alarmları ve SAP entegrasyonu yönetim ajanı.",
+            "stats": {
+                "total_docs": 0,
+                "total_queries": 0,
+                "authorized_users": 0
+            }
+        },
+        {
+            "agent_id": "agent-4-support",
+            "agent_name": "Agent-4: Müşteri Destek & Saha Ajanı",
+            "code": "agent_4_support",
+            "icon": "headset",
+            "is_active": False,
+            "status": "planned",
+            "status_label": "Planlama Aşamasında",
+            "model": "qwen2.5:7b (Planlanan)",
+            "embedding_model": settings.EMBEDDING_MODEL,
+            "description": "Müşteri talep yönetimi, saha servis rehberleri ve SLA çözüm sürelerini optimize eden otonom destek motoru.",
+            "stats": {
+                "total_docs": 0,
+                "total_queries": 0,
+                "authorized_users": 0
+            }
+        }
+    ]
+    return {
+        "total_fleet_count": len(fleet),
+        "active_count": 1,
+        "system_status": "healthy",
+        "fleet": fleet
+    }
+
+@app.get("/api/admin/metrics")
+async def get_admin_metrics(user: UserContext = Depends(require_super_admin), pool = Depends(get_db)):
+    """Super Admin için detaylı sistem ve agent-1 performans KPI'larını döner."""
+    async with pool.acquire() as conn:
+        total_users = await conn.fetchval("SELECT COUNT(*) FROM user_profiles") or 0
+        total_docs = await conn.fetchval("SELECT COUNT(*) FROM documents WHERE is_active = TRUE") or 0
+        total_chunks = await conn.fetchval("SELECT COUNT(*) FROM document_chunks WHERE is_active = TRUE") or 0
+        total_queries = await conn.fetchval("SELECT COUNT(*) FROM audit_logs") or 0
+        
+        avg_latency = await conn.fetchval("SELECT COALESCE(AVG(execution_time_ms), 0) FROM audit_logs") or 0
+        pos_feedback = await conn.fetchval("SELECT COUNT(*) FROM audit_logs WHERE user_feedback = 1") or 0
+        neg_feedback = await conn.fetchval("SELECT COUNT(*) FROM audit_logs WHERE user_feedback = -1") or 0
+        pending_curation = await conn.fetchval("SELECT COUNT(*) FROM knowledge_staging WHERE status = 'pending'") or 0
+        
+        # Departman kullanıcı dağılımı
+        dept_rows = await conn.fetch("SELECT department, COUNT(*) as count FROM user_profiles GROUP BY department")
+        dept_dist = {r["department"]: r["count"] for r in dept_rows}
+        
+        # Son 24 saat aktif kullanıcı sayısı
+        active_24h = await conn.fetchval("SELECT COUNT(DISTINCT user_id) FROM audit_logs WHERE created_at >= NOW() - INTERVAL '24 HOURS'") or 0
+        
+        satisfaction_rate = 100.0 if (pos_feedback + neg_feedback) == 0 else round((pos_feedback / (pos_feedback + neg_feedback)) * 100, 1)
+        
+        return {
+            "total_users": total_users,
+            "active_users_24h": active_24h,
+            "total_docs": total_docs,
+            "total_chunks": total_chunks,
+            "total_queries": total_queries,
+            "avg_latency_ms": int(avg_latency),
+            "pos_feedback": pos_feedback,
+            "neg_feedback": neg_feedback,
+            "satisfaction_rate": satisfaction_rate,
+            "pending_curation": pending_curation,
+            "dept_distribution": dept_dist,
+            "model_name": settings.LLM_MODEL,
+            "embedding_model": settings.EMBEDDING_MODEL
+        }
+
+@app.get("/api/admin/users", response_model=List[AdminUserResponse])
+async def list_admin_users(user: UserContext = Depends(require_super_admin), pool = Depends(get_db)):
+    """Kayıtlı tüm kullanıcıları ve kullanım metriklerini listeler."""
+    async with pool.acquire() as conn:
+        rows = await conn.fetch(
+            """
+            SELECT user_id, username, role_name, department, clearance_level, created_at,
+                   COALESCE(total_queries, 0) as total_queries
+            FROM user_profiles
+            ORDER BY clearance_level DESC, created_at ASC
+            """
+        )
+        return [
+            AdminUserResponse(
+                user_id=str(r["user_id"]),
+                username=r["username"],
+                role_name=r["role_name"],
+                department=r["department"],
+                clearance_level=r["clearance_level"],
+                created_at=str(r["created_at"]) if r["created_at"] else None,
+                total_queries=r["total_queries"]
+            )
+            for r in rows
+        ]
+
+@app.post("/api/admin/users")
+async def create_admin_user(
+    req: AdminUserCreateRequest,
+    user: UserContext = Depends(require_super_admin),
+    pool = Depends(get_db)
+):
+    """Yeni bir kullanıcı tanımlar ve parolasını PBKDF2 ile hash'ler."""
+    async with pool.acquire() as conn:
+        clean_user = req.username.strip().lower()
+        existing = await conn.fetchval("SELECT username FROM user_profiles WHERE username = $1", clean_user)
+        if existing:
+            raise HTTPException(status_code=400, detail="Bu kullanıcı adı zaten mevcut.")
+        
+        pwd_hash = get_password_hash(req.password)
+        new_uid = uuid.uuid4()
+        user_email = f"{clean_user}@northwestern.edu"
+        await conn.execute(
+            """
+            INSERT INTO user_profiles (user_id, username, email, password_hash, role_name, department, clearance_level)
+            VALUES ($1, $2, $3, $4, $5, $6, $7)
+            """,
+            new_uid, clean_user, user_email, pwd_hash, req.role_name, req.department.lower(), req.clearance_level
+        )
+        return {"status": "success", "message": f"Kullanıcı '{clean_user}' başarıyla oluşturuldu.", "user_id": str(new_uid)}
+
+@app.put("/api/admin/users/{user_id}")
+async def update_admin_user(
+    user_id: str,
+    req: AdminUserUpdateRequest,
+    user: UserContext = Depends(require_super_admin),
+    pool = Depends(get_db)
+):
+    """Kullanıcının rolünü, departmanını, yetki seviyesini veya şifresini günceller."""
+    clean_uid = uuid.UUID(user_id)
+    async with pool.acquire() as conn:
+        target = await conn.fetchrow("SELECT username, role_name FROM user_profiles WHERE user_id = $1", clean_uid)
+        if not target:
+            raise HTTPException(status_code=404, detail="Kullanıcı bulunamadı.")
+        
+        if req.password:
+            new_hash = get_password_hash(req.password)
+            await conn.execute("UPDATE user_profiles SET password_hash = $1 WHERE user_id = $2", new_hash, clean_uid)
+        if req.role_name is not None:
+            await conn.execute("UPDATE user_profiles SET role_name = $1 WHERE user_id = $2", req.role_name, clean_uid)
+        if req.department is not None:
+            await conn.execute("UPDATE user_profiles SET department = $1 WHERE user_id = $2", req.department.lower(), clean_uid)
+        if req.clearance_level is not None:
+            await conn.execute("UPDATE user_profiles SET clearance_level = $1 WHERE user_id = $2", req.clearance_level, clean_uid)
+            
+        return {"status": "success", "message": f"Kullanıcı '{target['username']}' güncellendi."}
+
+@app.delete("/api/admin/users/{user_id}")
+async def delete_admin_user(
+    user_id: str,
+    user: UserContext = Depends(require_super_admin),
+    pool = Depends(get_db)
+):
+    """Kullanıcı hesabını siler (Ana admin silinemez)."""
+    clean_uid = uuid.UUID(user_id)
+    async with pool.acquire() as conn:
+        target = await conn.fetchrow("SELECT username FROM user_profiles WHERE user_id = $1", clean_uid)
+        if not target:
+            raise HTTPException(status_code=404, detail="Kullanıcı bulunamadı.")
+        if target["username"] == "admin":
+            raise HTTPException(status_code=400, detail="Ana 'admin' hesabı silinemez.")
+        await conn.execute("DELETE FROM user_profiles WHERE user_id = $1", clean_uid)
+        return {"status": "success", "message": f"Kullanıcı '{target['username']}' silindi."}
+
+@app.get("/api/admin/audit-logs")
+async def get_admin_audit_logs(
+    limit: int = Query(50, ge=1, le=200),
+    user: UserContext = Depends(require_super_admin),
+    pool = Depends(get_db)
+):
+    """Tüm sistem denetim izini ve sorgu loglarını getirir."""
+    async with pool.acquire() as conn:
+        rows = await conn.fetch(
+            """
+            SELECT a.id, a.user_id, u.username, a.session_id, a.query_text, a.response_text,
+                   a.execution_time_ms, a.user_feedback, a.created_at
+            FROM audit_logs a
+            LEFT JOIN user_profiles u ON a.user_id = u.user_id
+            ORDER BY a.created_at DESC
+            LIMIT $1
+            """,
+            limit
+        )
+        return [
+            {
+                "id": str(r["id"]),
+                "username": r["username"] or "Anonim/Silinmiş",
+                "session_id": str(r["session_id"]) if r["session_id"] else None,
+                "query_text": r["query_text"],
+                "response_text": r["response_text"],
+                "execution_time_ms": r["execution_time_ms"],
+                "feedback": r["user_feedback"],
+                "created_at": str(r["created_at"])
+            }
+            for r in rows
+        ]
+
+@app.get("/api/admin/documents/{doc_id}/chunks")
+async def get_admin_document_chunks(
+    doc_id: str,
+    user: UserContext = Depends(require_super_admin),
+    pool = Depends(get_db)
+):
+    """Belirli bir dokümanın tüm vektör parçalarını (chunks) listeler."""
+    clean_id = uuid.UUID(doc_id)
+    async with pool.acquire() as conn:
+        doc = await conn.fetchrow("SELECT title, document_code FROM documents WHERE id = $1", clean_id)
+        if not doc:
+            raise HTTPException(status_code=404, detail="Doküman bulunamadı.")
+            
+        rows = await conn.fetch(
+            """
+            SELECT id, chunk_index, content, metadata, min_clearance_level, is_active
+            FROM document_chunks
+            WHERE document_id = $1
+            ORDER BY chunk_index ASC
+            """,
+            clean_id
+        )
+        return {
+            "document_id": doc_id,
+            "title": doc["title"],
+            "document_code": doc["document_code"],
+            "total_chunks": len(rows),
+            "chunks": [
+                {
+                    "id": str(r["id"]),
+                    "chunk_index": r["chunk_index"],
+                    "content": r["content"],
+                    "snippet": r["content"][:200] + ("..." if len(r["content"]) > 200 else ""),
+                    "metadata": json.loads(r["metadata"]) if isinstance(r["metadata"], str) else (r["metadata"] or {}),
+                    "min_clearance_level": r["min_clearance_level"],
+                    "is_active": r["is_active"]
+                }
+                for r in rows
+            ]
+        }

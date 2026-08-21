@@ -962,6 +962,260 @@
             justify-content: space-between;
         }
 
+        /* ══════════════════════════════════════════
+           2-STAGE SUPER ADMIN FLEET DASHBOARD CSS
+        ══════════════════════════════════════════ */
+        .admin-modal-card {
+            width: 1120px !important;
+            max-width: 95vw !important;
+            max-height: 90vh !important;
+            display: flex !important;
+            flex-direction: column !important;
+            padding: 24px !important;
+            overflow: hidden !important;
+        }
+        .admin-modal-body {
+            flex: 1;
+            overflow-y: auto;
+            margin-top: 16px;
+            padding-right: 4px;
+        }
+        .fleet-summary-bar {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 12px;
+            margin-bottom: 20px;
+        }
+        .fleet-stat-box {
+            background: rgba(255, 255, 255, 0.03);
+            border: 1px solid rgba(255, 255, 255, 0.06);
+            border-radius: 12px;
+            padding: 14px 18px;
+            display: flex;
+            flex-direction: column;
+            gap: 4px;
+        }
+        .fleet-stat-label {
+            font-size: 0.75rem;
+            color: var(--subtitle);
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+            font-weight: 500;
+        }
+        .fleet-stat-val {
+            font-size: 1.35rem;
+            font-weight: 700;
+            color: #fff;
+        }
+        .agent-fleet-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
+            gap: 16px;
+        }
+        .agent-card {
+            background: #141414;
+            border: 1px solid rgba(255, 255, 255, 0.08);
+            border-radius: 14px;
+            padding: 20px;
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
+            transition: all 0.2s ease;
+            position: relative;
+        }
+        .agent-card.active-agent {
+            border-color: rgba(120, 208, 205, 0.35);
+            box-shadow: 0 0 25px rgba(120, 208, 205, 0.06);
+        }
+        .agent-card.active-agent:hover {
+            border-color: #78d0cd;
+            transform: translateY(-2px);
+        }
+        .agent-card.disabled-agent {
+            opacity: 0.65;
+            background: rgba(255, 255, 255, 0.02);
+            border-style: dashed;
+        }
+        .agent-badge {
+            font-size: 0.72rem;
+            font-weight: 600;
+            padding: 3px 8px;
+            border-radius: 6px;
+            display: inline-flex;
+            align-items: center;
+            gap: 4px;
+        }
+        .badge-active {
+            background: rgba(74, 222, 128, 0.15);
+            color: #4ade80;
+            border: 1px solid rgba(74, 222, 128, 0.3);
+        }
+        .badge-dev {
+            background: rgba(251, 191, 36, 0.15);
+            color: #fbbf24;
+            border: 1px solid rgba(251, 191, 36, 0.3);
+        }
+        .badge-planned {
+            background: rgba(165, 180, 252, 0.15);
+            color: #a5b4fc;
+            border: 1px solid rgba(165, 180, 252, 0.3);
+        }
+        .agent-title {
+            font-size: 1.05rem;
+            font-weight: 600;
+            color: #fff;
+            margin-top: 10px;
+        }
+        .agent-desc {
+            font-size: 0.82rem;
+            color: var(--subtitle);
+            line-height: 1.45;
+            margin-top: 6px;
+            flex: 1;
+        }
+        .agent-footer {
+            margin-top: 16px;
+            padding-top: 14px;
+            border-top: 1px solid rgba(255, 255, 255, 0.06);
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+        }
+        .agent-tech-pill {
+            font-size: 0.7rem;
+            color: var(--subtitle);
+            background: rgba(255, 255, 255, 0.05);
+            padding: 3px 7px;
+            border-radius: 4px;
+        }
+        .btn-agent-launch {
+            background: #78d0cd;
+            color: #0c0c0c;
+            font-weight: 600;
+            font-size: 0.8rem;
+            padding: 6px 14px;
+            border-radius: 8px;
+            border: none;
+            cursor: pointer;
+            transition: opacity 0.15s ease;
+        }
+        .btn-agent-launch:hover {
+            opacity: 0.9;
+        }
+
+        /* Stage 2 Tabs & Workspaces */
+        .stage2-topbar {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+            padding-bottom: 14px;
+            margin-bottom: 16px;
+        }
+        .btn-back-fleet {
+            background: rgba(255, 255, 255, 0.06);
+            color: #efefef;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            padding: 6px 12px;
+            border-radius: 8px;
+            font-size: 0.8rem;
+            font-weight: 500;
+            cursor: pointer;
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+        }
+        .btn-back-fleet:hover {
+            background: rgba(255, 255, 255, 0.12);
+        }
+        .admin-nav-tabs {
+            display: flex;
+            gap: 6px;
+            background: rgba(255, 255, 255, 0.03);
+            padding: 4px;
+            border-radius: 10px;
+            border: 1px solid rgba(255, 255, 255, 0.06);
+        }
+        .admin-tab-btn {
+            background: transparent;
+            border: none;
+            color: var(--subtitle);
+            padding: 6px 12px;
+            border-radius: 7px;
+            font-size: 0.8rem;
+            font-weight: 500;
+            cursor: pointer;
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            transition: all 0.15s ease;
+        }
+        .admin-tab-btn:hover {
+            color: #fff;
+        }
+        .admin-tab-btn.active {
+            background: rgba(255, 255, 255, 0.12);
+            color: #fff;
+            font-weight: 600;
+        }
+
+        /* KPI Grid */
+        .kpi-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+            gap: 12px;
+            margin-bottom: 20px;
+        }
+        .kpi-card {
+            background: rgba(255, 255, 255, 0.025);
+            border: 1px solid rgba(255, 255, 255, 0.06);
+            border-radius: 10px;
+            padding: 14px;
+        }
+        .kpi-title {
+            font-size: 0.72rem;
+            color: var(--subtitle);
+            text-transform: uppercase;
+        }
+        .kpi-num {
+            font-size: 1.4rem;
+            font-weight: 700;
+            color: #fff;
+            margin-top: 4px;
+        }
+
+        /* Tables */
+        .admin-table-container {
+            border: 1px solid rgba(255, 255, 255, 0.08);
+            border-radius: 10px;
+            overflow: hidden;
+            background: rgba(255, 255, 255, 0.02);
+        }
+        .admin-data-table {
+            width: 100%;
+            border-collapse: collapse;
+            font-size: 0.82rem;
+            text-align: left;
+        }
+        .admin-data-table th {
+            background: rgba(255, 255, 255, 0.04);
+            padding: 10px 14px;
+            color: var(--subtitle);
+            font-weight: 600;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+        }
+        .admin-data-table td {
+            padding: 10px 14px;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.04);
+            color: #efefef;
+        }
+        .admin-data-table tr:last-child td {
+            border-bottom: none;
+        }
+        .admin-data-table tr:hover td {
+            background: rgba(255, 255, 255, 0.03);
+        }
+
         /* Responsive */
         @media (max-width: 1024px) {
             .nav-center-links { display: none; }
@@ -1063,6 +1317,7 @@
             </div>
 
             <ul class="nav-center-links">
+                <li><button onclick="openAdminFleetModal()" class="nav-link-btn" id="navAdminFleetBtn" style="display:none; color:#f6c042; font-weight:600;" data-enter="nav-3"><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="vertical-align:-2px; margin-right:4px;"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg> <span>Admin Filosu & Panel</span></button></li>
                 <li><button onclick="showDocsModal()" class="nav-link-btn" data-enter="nav-0">Documents</button></li>
                 <li><button onclick="showUploadModal()" class="nav-link-btn" id="navUploadBtn" style="display:none;" data-enter="nav-1">Upload PDF</button></li>
                 <li><button onclick="showCurationModal()" class="nav-link-btn" id="navCurationBtn" style="display:none;" data-enter="nav-2">Curation</button></li>
@@ -1275,6 +1530,308 @@
     </div>
 
     <!-- ══════════════════════════════════════════
+         SUPER ADMIN 2-STAGE MULTI-AGENT FLEET MODAL
+    ══════════════════════════════════════════ -->
+    <div class="modal-overlay" id="adminFleetModal">
+        <div class="modal-card admin-modal-card">
+            <!-- Modal Header -->
+            <div style="display:flex; justify-content:space-between; align-items:center; border-bottom:1px solid rgba(255,255,255,0.08); padding-bottom:14px;">
+                <div style="display:flex; align-items:center; gap:10px;">
+                    <div style="background:rgba(246,192,66,0.15); color:#f6c042; padding:6px; border-radius:8px; display:inline-flex;">
+                        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>
+                    </div>
+                    <div>
+                        <h2 style="font-size:1.15rem; color:#fff; margin:0;" id="txtAdminModalTitle">Nirene Çoklu Ajan Filosu & Komuta Merkezi</h2>
+                        <div style="font-size:0.75rem; color:var(--subtitle); margin-top:2px;" id="adminBreadcrumb">Aşama 1: Kurumsal Ajan Filosu</div>
+                    </div>
+                </div>
+                <button type="button" class="modal-close" onclick="hideAdminFleetModal()" style="background:transparent; border:none; color:var(--subtitle); cursor:pointer;">
+                    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
+                </button>
+            </div>
+
+            <div class="admin-modal-body">
+                <!-- ════════════════════════════════════
+                     AŞAMA 1: AGENT FLEET HUB (FİLO SEÇİMİ)
+                ════════════════════════════════════ -->
+                <div id="adminStage1View">
+                    <!-- Fleet Summary Bar -->
+                    <div class="fleet-summary-bar">
+                        <div class="fleet-stat-box">
+                            <span class="fleet-stat-label">Toplam Ajan Filosu</span>
+                            <span class="fleet-stat-val" id="stg1TotalFleet">4 Ajan (1 Aktif)</span>
+                        </div>
+                        <div class="fleet-stat-box">
+                            <span class="fleet-stat-label">Yüklü Kurumsal Doküman</span>
+                            <span class="fleet-stat-val" id="stg1TotalDocs">4 PDF</span>
+                        </div>
+                        <div class="fleet-stat-box">
+                            <span class="fleet-stat-label">Toplam Cevaplanan Soru</span>
+                            <span class="fleet-stat-val" id="stg1TotalQueries">40 Sorgu</span>
+                        </div>
+                        <div class="fleet-stat-box">
+                            <span class="fleet-stat-label">Sistem Sağlık Durumu</span>
+                            <span class="fleet-stat-val" style="color:#4ade80; display:inline-flex; align-items:center; gap:6px; font-size:1.05rem;">
+                                <span class="green-pulse-dot" style="margin:0;"></span> 7/24 Canlı
+                            </span>
+                        </div>
+                    </div>
+
+                    <div style="font-size:0.82rem; font-weight:600; color:var(--subtitle); text-transform:uppercase; letter-spacing:0.05em; margin-bottom:12px;">Kurumsal Yapay Zeka Ajanları</div>
+                    
+                    <!-- Fleet Grid -->
+                    <div class="agent-fleet-grid" id="adminFleetCardsContainer">
+                        <!-- Dynamic rendered by JS -->
+                    </div>
+                </div>
+
+                <!-- ════════════════════════════════════
+                     AŞAMA 2: AGENT-1 DEDICATED WORKSPACE
+                ════════════════════════════════════ -->
+                <div id="adminStage2View" style="display:none;">
+                    <!-- Stage 2 Navigation Topbar -->
+                    <div class="stage2-topbar">
+                        <div style="display:flex; align-items:center; gap:12px;">
+                            <button type="button" class="btn-back-fleet" onclick="switchToAdminStage(1)">
+                                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="15 18 9 12 15 6"/></svg>
+                                <span>← Filoya Dön</span>
+                            </button>
+                            <div style="display:inline-flex; align-items:center; gap:6px; background:rgba(74,222,128,0.1); color:#4ade80; border:1px solid rgba(74,222,128,0.25); padding:4px 10px; border-radius:8px; font-size:0.78rem; font-weight:600;">
+                                <span class="green-pulse-dot" style="margin:0;"></span>
+                                <span id="stg2AgentBadge">Agent-1: Kurumsal Onboarding & Politika</span>
+                            </div>
+                        </div>
+
+                        <!-- Sub-Tabs Navigation -->
+                        <div class="admin-nav-tabs">
+                            <button type="button" class="admin-tab-btn active" id="tabBtn_overview" onclick="switchAdminTab('overview')">
+                                <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="7" height="7"/><rect x="14" y="3" width="7" height="7"/><rect x="14" y="14" width="7" height="7"/><rect x="3" y="14" width="7" height="7"/></svg>
+                                <span>Genel Bakış</span>
+                            </button>
+                            <button type="button" class="admin-tab-btn" id="tabBtn_users" onclick="switchAdminTab('users')">
+                                <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg>
+                                <span>Kullanıcılar</span>
+                            </button>
+                            <button type="button" class="admin-tab-btn" id="tabBtn_docs" onclick="switchAdminTab('docs')">
+                                <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/></svg>
+                                <span>Dokümanlar & Vektörler</span>
+                            </button>
+                            <button type="button" class="admin-tab-btn" id="tabBtn_curation" onclick="switchAdminTab('curation')">
+                                <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="20 6 9 17 4 12"/></svg>
+                                <span>Kürasyon Havuzu</span>
+                            </button>
+                            <button type="button" class="admin-tab-btn" id="tabBtn_audit" onclick="switchAdminTab('audit')">
+                                <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>
+                                <span>Denetim İzi (Audit)</span>
+                            </button>
+                        </div>
+                    </div>
+
+                    <!-- TAB 1: OVERVIEW PANE -->
+                    <div id="pane_overview" class="admin-tab-pane">
+                        <div class="kpi-grid">
+                            <div class="kpi-card">
+                                <div class="kpi-title">Toplam Kayıtlı Kullanıcı</div>
+                                <div class="kpi-num" id="kpiTotalUsers">-</div>
+                            </div>
+                            <div class="kpi-card">
+                                <div class="kpi-title">Son 24 Saat Aktif Personel</div>
+                                <div class="kpi-num" id="kpiActive24h" style="color:#78d0cd;">-</div>
+                            </div>
+                            <div class="kpi-card">
+                                <div class="kpi-title">Toplam İndeksli Parça (Chunk)</div>
+                                <div class="kpi-num" id="kpiTotalChunks">-</div>
+                            </div>
+                            <div class="kpi-card">
+                                <div class="kpi-title">Toplam Soru Hacmi</div>
+                                <div class="kpi-num" id="kpiTotalQueries">-</div>
+                            </div>
+                            <div class="kpi-card">
+                                <div class="kpi-title">Ortalama Yanıt Süresi</div>
+                                <div class="kpi-num" id="kpiAvgLatency">-</div>
+                            </div>
+                            <div class="kpi-card">
+                                <div class="kpi-title">Kullanıcı Memnuniyet Oranı</div>
+                                <div class="kpi-num" id="kpiSatisfaction" style="color:#4ade80;">-</div>
+                            </div>
+                        </div>
+
+                        <!-- System Telemetry & Model Specs Card -->
+                        <div style="background:rgba(255,255,255,0.02); border:1px solid rgba(255,255,255,0.06); border-radius:12px; padding:18px;">
+                            <div style="font-weight:600; font-size:0.9rem; color:#fff; margin-bottom:12px; display:flex; align-items:center; gap:8px;">
+                                <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect width="20" height="14" x="2" y="3" rx="2"/><line x1="8" x2="16" y1="21" y2="21"/><line x1="12" x2="12" y1="17" y2="21"/></svg>
+                                <span>Agent-1 Donanım & Çıkarım (Inference) Parametreleri</span>
+                            </div>
+                            <div style="display:grid; grid-template-columns:repeat(auto-fit, minmax(220px, 1fr)); gap:12px; font-size:0.82rem;">
+                                <div><span style="color:var(--subtitle);">LLM Modeli:</span> <strong id="specLlmModel" style="color:#efefef;">qwen2.5:7b</strong></div>
+                                <div><span style="color:var(--subtitle);">Embedding Modeli:</span> <strong id="specEmbModel" style="color:#efefef;">nomic-embed-text (768-Dim)</strong></div>
+                                <div><span style="color:var(--subtitle);">Arama Motoru:</span> <strong style="color:#78d0cd;">pgvector HNSW + FTS BM25 (Hibrit)</strong></div>
+                                <div><span style="color:var(--subtitle);">Donanım Hızlandırma:</span> <strong style="color:#4ade80;">Apple Silicon M2 (Metal GPU)</strong></div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- TAB 2: USERS PANE -->
+                    <div id="pane_users" class="admin-tab-pane" style="display:none;">
+                        <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:12px;">
+                            <div style="font-size:0.84rem; color:var(--subtitle);">Kayıtlı kullanıcı hesapları ve güvenlik yetki matrisi:</div>
+                            <button type="button" class="btn-agent-launch" onclick="openCreateUserModal()" style="display:inline-flex; align-items:center; gap:6px;">
+                                <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
+                                <span>Yeni Kullanıcı Ekle</span>
+                            </button>
+                        </div>
+                        <div class="admin-table-container">
+                            <table class="admin-data-table">
+                                <thead>
+                                    <tr>
+                                        <th>Kullanıcı Adı</th>
+                                        <th>Rol</th>
+                                        <th>Departman</th>
+                                        <th>Yetki Seviyesi</th>
+                                        <th>Toplam Soru</th>
+                                        <th>İşlemler</th>
+                                    </tr>
+                                </thead>
+                                <tbody id="adminUsersTableBody">
+                                    <!-- Rendered dynamically -->
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+
+                    <!-- TAB 3: DOCUMENTS PANE -->
+                    <div id="pane_docs" class="admin-tab-pane" style="display:none;">
+                        <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:12px;">
+                            <div style="font-size:0.84rem; color:var(--subtitle);">Agent-1 bilgi tabanındaki aktif PDF dokümanları ve parçaları:</div>
+                            <button type="button" class="btn-agent-launch" onclick="showUploadModal()" style="display:inline-flex; align-items:center; gap:6px;">
+                                <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="17 8 12 3 7 8"/><line x1="12" y1="3" x2="12" y2="15"/></svg>
+                                <span>Yeni PDF İndeksle</span>
+                            </button>
+                        </div>
+                        <div class="admin-table-container">
+                            <table class="admin-data-table">
+                                <thead>
+                                    <tr>
+                                        <th>Belge Kodu</th>
+                                        <th>Belge Adı</th>
+                                        <th>Departman</th>
+                                        <th>Min. Yetki</th>
+                                        <th>Parça (Chunks)</th>
+                                        <th>İşlemler</th>
+                                    </tr>
+                                </thead>
+                                <tbody id="adminDocsTableBody">
+                                    <!-- Rendered dynamically -->
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+
+                    <!-- TAB 4: CURATION PANE -->
+                    <div id="pane_curation" class="admin-tab-pane" style="display:none;">
+                        <div style="font-size:0.84rem; color:var(--subtitle); margin-bottom:12px;">Kullanıcıların geri bildirimde bulunduğu ve onay bekleyen soru-cevap havuzu:</div>
+                        <div id="adminCurationCardsContainer" style="display:flex; flex-direction:column; gap:10px;">
+                            <!-- Rendered dynamically -->
+                        </div>
+                    </div>
+
+                    <!-- TAB 5: AUDIT LOGS PANE -->
+                    <div id="pane_audit" class="admin-tab-pane" style="display:none;">
+                        <div style="font-size:0.84rem; color:var(--subtitle); margin-bottom:12px;">Son 50 soru-cevap denetim izi ve yanıt süreleri:</div>
+                        <div class="admin-table-container">
+                            <table class="admin-data-table">
+                                <thead>
+                                    <tr>
+                                        <th>Tarih</th>
+                                        <th>Kullanıcı</th>
+                                        <th>Soru</th>
+                                        <th>Süre</th>
+                                        <th>Geri Bildirim</th>
+                                    </tr>
+                                </thead>
+                                <tbody id="adminAuditTableBody">
+                                    <!-- Rendered dynamically -->
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- ══════════════════════════════════════════
+         SUB-MODAL: USER CREATE / EDIT MODAL
+    ══════════════════════════════════════════ -->
+    <div class="modal-overlay" id="adminUserModal" style="z-index: 210;">
+        <div class="modal-card" style="max-width: 440px;">
+            <h2 id="txtUserModalTitle">Yeni Kullanıcı Tanımla</h2>
+            <form onsubmit="handleSaveAdminUser(event)">
+                <input type="hidden" id="adminUserEditId">
+                <div class="form-group">
+                    <label>Kullanıcı Adı</label>
+                    <input type="text" id="adminUserUsername" class="auth-input" placeholder="örn: ahmet_yilmaz" required>
+                </div>
+                <div class="form-group">
+                    <label id="lblUserPassword">Parola (Boş bırakılırsa değişmez)</label>
+                    <input type="password" id="adminUserPassword" class="auth-input" placeholder="••••••••">
+                </div>
+                <div class="form-group">
+                    <label>Rol</label>
+                    <select id="adminUserRole" class="form-select">
+                        <option value="user-genel">Genel Personel (user-genel)</option>
+                        <option value="admin-ik">İK Admini (admin-ik)</option>
+                        <option value="admin-hukuk">Hukuk Admini (admin-hukuk)</option>
+                        <option value="admin-finans">Finans Admini (admin-finans)</option>
+                        <option value="super_admin">Super Admin (super_admin)</option>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label>Departman</label>
+                    <select id="adminUserDept" class="form-select">
+                        <option value="genel">Genel</option>
+                        <option value="ik">İnsan Kaynakları (IK)</option>
+                        <option value="hukuk">Hukuk</option>
+                        <option value="finans">Finans</option>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label>Güvenlik Yetki Seviyesi (Clearance Level)</label>
+                    <select id="adminUserClearance" class="form-select">
+                        <option value="10">10 - Standart Personel</option>
+                        <option value="50">50 - Departman Yöneticisi</option>
+                        <option value="100">100 - Üst Düzey Yönetici (Super Admin)</option>
+                    </select>
+                </div>
+                <button type="submit" class="btn-modal-submit" id="btnSubmitUserModal">Kaydet</button>
+                <button type="button" class="btn-modal-close" onclick="hideUserModal()">İptal</button>
+                <div class="error-badge" id="adminUserError"></div>
+            </form>
+        </div>
+    </div>
+
+    <!-- ══════════════════════════════════════════
+         SUB-MODAL: DOCUMENT CHUNKS INSPECTOR
+    ══════════════════════════════════════════ -->
+    <div class="modal-overlay" id="adminChunksModal" style="z-index: 210;">
+        <div class="modal-card" style="max-width: 720px; max-height: 85vh; display:flex; flex-direction:column;">
+            <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:12px;">
+                <div>
+                    <h2 style="font-size:1.1rem; color:#fff; margin:0;" id="txtChunksDocTitle">Parça Detayları</h2>
+                    <div style="font-size:0.75rem; color:var(--subtitle); margin-top:2px;" id="txtChunksDocSub">Vektör parçaları listeleniyor...</div>
+                </div>
+                <button type="button" class="modal-close" onclick="hideChunksModal()" style="background:transparent; border:none; color:var(--subtitle); cursor:pointer;">
+                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
+                </button>
+            </div>
+            <div id="adminChunksList" style="flex:1; overflow-y:auto; display:flex; flex-direction:column; gap:10px; padding-right:4px;">
+                <!-- Dynamically loaded chunks -->
+            </div>
+            <button type="button" class="btn-modal-close" onclick="hideChunksModal()" style="margin-top:14px;">Kapat</button>
+        </div>
+    </div>
+
+    <!-- ══════════════════════════════════════════
          CLIENT LOGIC & API INTEGRATION
     ══════════════════════════════════════════ -->
     <script>
@@ -1350,6 +1907,7 @@
 
         function updateWorkspaceAuthUI() {
             const badge = document.getElementById('topUserBadge');
+            const navAdminFleet = document.getElementById('navAdminFleetBtn');
             const navUpload = document.getElementById('navUploadBtn');
             const navCuration = document.getElementById('navCurationBtn');
             const heroAttach = document.getElementById('heroAttachBtn');
@@ -1364,7 +1922,8 @@
                 const isSuperAdmin = (userRole === 'super_admin');
                 const isAdmin = isSuperAdmin || userRole.includes('admin');
 
-                // Dosya yükleme butonu ve kontrolleri yalnızca super admine açıktır
+                // Super admin özel kontrolleri
+                if (navAdminFleet) navAdminFleet.style.display = isSuperAdmin ? 'inline-block' : 'none';
                 if (navUpload) navUpload.style.display = isSuperAdmin ? 'inline-block' : 'none';
                 if (heroAttach) heroAttach.style.display = isSuperAdmin ? 'inline-flex' : 'none';
                 if (chatAttach) chatAttach.style.display = isSuperAdmin ? 'inline-flex' : 'none';
@@ -2050,6 +2609,463 @@
 
         function escapeHtml(str) {
             return (str || '').replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;").replace(/"/g, "&quot;").replace(/'/g, "&#039;");
+        }
+
+        // ══════════════════════════════════════════
+        // 2-STAGE SUPER ADMIN MULTI-AGENT DASHBOARD
+        // ══════════════════════════════════════════
+        let currentAdminStage = 1;
+        let selectedAgentId = 'agent-1-onboarding';
+
+        function openAdminFleetModal() {
+            document.getElementById('adminFleetModal').classList.add('active');
+            switchToAdminStage(1);
+        }
+
+        function hideAdminFleetModal() {
+            document.getElementById('adminFleetModal').classList.remove('active');
+        }
+
+        function switchToAdminStage(stageNum, agentId = 'agent-1-onboarding') {
+            currentAdminStage = stageNum;
+            selectedAgentId = agentId;
+
+            const stg1 = document.getElementById('adminStage1View');
+            const stg2 = document.getElementById('adminStage2View');
+            const breadcrumb = document.getElementById('adminBreadcrumb');
+            const modalTitle = document.getElementById('txtAdminModalTitle');
+
+            if (stageNum === 1) {
+                stg1.style.display = 'block';
+                stg2.style.display = 'none';
+                breadcrumb.innerText = 'Aşama 1: Kurumsal Ajan Filosu (Agent Fleet Hub)';
+                modalTitle.innerText = 'Nirene Çoklu Ajan Filosu & Komuta Merkezi';
+                loadFleetOverview();
+            } else {
+                stg1.style.display = 'none';
+                stg2.style.display = 'block';
+                breadcrumb.innerText = 'Aşama 2: Agent-1 (Onboarding & Kurumsal Politika) Derin Yönetim Konsolu';
+                modalTitle.innerText = 'Agent-1 Özel Yönetim Konsolu';
+                switchAdminTab('overview');
+            }
+        }
+
+        async function loadFleetOverview() {
+            if (!authToken) return;
+            const container = document.getElementById('adminFleetCardsContainer');
+            container.innerHTML = '<p style="color:var(--subtitle); font-size:0.85rem; text-align:center; grid-column:span 2;">Ajan filosu yükleniyor...</p>';
+
+            try {
+                const res = await fetch('/api/admin/fleet-overview', {
+                    headers: { 'Authorization': `Bearer ${authToken}` }
+                });
+                if (!res.ok) throw new Error('Filo bilgileri alınamadı.');
+                const data = await res.json();
+
+                document.getElementById('stg1TotalFleet').innerText = `${data.total_fleet_count} Ajan (${data.active_count} Aktif)`;
+                
+                const agent1 = data.fleet.find(f => f.code === 'agent_1_onboarding');
+                if (agent1) {
+                    document.getElementById('stg1TotalDocs').innerText = `${agent1.stats.total_docs} PDF`;
+                    document.getElementById('stg1TotalQueries').innerText = `${agent1.stats.total_queries} Sorgu`;
+                }
+
+                container.innerHTML = '';
+                data.fleet.forEach(agent => {
+                    const card = document.createElement('div');
+                    const isActive = agent.is_active;
+                    card.className = `agent-card ${isActive ? 'active-agent' : 'disabled-agent'}`;
+
+                    let badgeClass = 'badge-active';
+                    let badgeIcon = `<svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3"><polyline points="20 6 9 17 4 12"/></svg>`;
+                    if (agent.status === 'in_development') {
+                        badgeClass = 'badge-dev';
+                        badgeIcon = `<svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><rect width="18" height="18" x="3" y="3" rx="2"/><path d="m9 12 2 2 4-4"/></svg>`;
+                    } else if (agent.status === 'planned') {
+                        badgeClass = 'badge-planned';
+                        badgeIcon = `<svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>`;
+                    }
+
+                    let actionBtnHtml = '';
+                    if (isActive) {
+                        actionBtnHtml = `<button type="button" class="btn-agent-launch" onclick="switchToAdminStage(2, '${agent.agent_id}')">Ajanı Yönet →</button>`;
+                    } else {
+                        actionBtnHtml = `<button type="button" class="btn-agent-launch" style="background:rgba(255,255,255,0.06); color:var(--subtitle); cursor:not-allowed;" disabled>Devre Dışı (Yakında)</button>`;
+                    }
+
+                    card.innerHTML = `
+                        <div>
+                            <div style="display:flex; justify-content:space-between; align-items:center;">
+                                <span class="agent-tech-pill">${escapeHtml(agent.model)}</span>
+                                <span class="agent-badge ${badgeClass}">${badgeIcon} ${escapeHtml(agent.status_label)}</span>
+                            </div>
+                            <div class="agent-title">${escapeHtml(agent.agent_name)}</div>
+                            <div class="agent-desc">${escapeHtml(agent.description)}</div>
+                        </div>
+
+                        <div>
+                            <div style="display:grid; grid-template-columns:1fr 1fr 1fr; gap:6px; margin-top:14px; background:rgba(255,255,255,0.025); padding:8px; border-radius:8px; text-align:center;">
+                                <div>
+                                    <div style="font-size:0.7rem; color:var(--subtitle);">Doküman</div>
+                                    <div style="font-weight:600; font-size:0.85rem; color:#fff;">${agent.stats.total_docs}</div>
+                                </div>
+                                <div>
+                                    <div style="font-size:0.7rem; color:var(--subtitle);">Sorgu</div>
+                                    <div style="font-weight:600; font-size:0.85rem; color:#fff;">${agent.stats.total_queries}</div>
+                                </div>
+                                <div>
+                                    <div style="font-size:0.7rem; color:var(--subtitle);">Kullanıcı</div>
+                                    <div style="font-weight:600; font-size:0.85rem; color:#fff;">${agent.stats.authorized_users}</div>
+                                </div>
+                            </div>
+                            <div class="agent-footer">
+                                <span style="font-size:0.72rem; color:var(--subtitle);">${escapeHtml(agent.code)}</span>
+                                ${actionBtnHtml}
+                            </div>
+                        </div>
+                    `;
+                    container.appendChild(card);
+                });
+            } catch (err) {
+                container.innerHTML = `<p style="color:#f87171; font-size:0.85rem;">Hata: ${err.message}</p>`;
+            }
+        }
+
+        function switchAdminTab(tabName) {
+            document.querySelectorAll('.admin-tab-btn').forEach(btn => btn.classList.remove('active'));
+            document.querySelectorAll('.admin-tab-pane').forEach(pane => pane.style.display = 'none');
+
+            const activeBtn = document.getElementById(`tabBtn_${tabName}`);
+            const activePane = document.getElementById(`pane_${tabName}`);
+            if (activeBtn) activeBtn.classList.add('active');
+            if (activePane) activePane.style.display = 'block';
+
+            if (tabName === 'overview') loadAdminOverviewTab();
+            else if (tabName === 'users') loadAdminUsersTab();
+            else if (tabName === 'docs') loadAdminDocsTab();
+            else if (tabName === 'curation') loadAdminCurationTab();
+            else if (tabName === 'audit') loadAdminAuditTab();
+        }
+
+        async function loadAdminOverviewTab() {
+            try {
+                const res = await fetch('/api/admin/metrics', {
+                    headers: { 'Authorization': `Bearer ${authToken}` }
+                });
+                if (!res.ok) return;
+                const m = await res.json();
+                document.getElementById('kpiTotalUsers').innerText = m.total_users;
+                document.getElementById('kpiActive24h').innerText = m.active_users_24h;
+                document.getElementById('kpiTotalChunks').innerText = m.total_chunks;
+                document.getElementById('kpiTotalQueries').innerText = m.total_queries;
+                document.getElementById('kpiAvgLatency').innerText = `${m.avg_latency_ms} ms`;
+                document.getElementById('kpiSatisfaction').innerText = `%${m.satisfaction_rate}`;
+                document.getElementById('specLlmModel').innerText = m.model_name;
+                document.getElementById('specEmbModel').innerText = `${m.embedding_model} (768-Boyut)`;
+            } catch (e) {
+                console.error("Metrikler yüklenemedi:", e);
+            }
+        }
+
+        async function loadAdminUsersTab() {
+            const tbody = document.getElementById('adminUsersTableBody');
+            tbody.innerHTML = '<tr><td colspan="6" style="text-align:center; color:var(--subtitle);">Kullanıcılar yükleniyor...</td></tr>';
+            try {
+                const res = await fetch('/api/admin/users', {
+                    headers: { 'Authorization': `Bearer ${authToken}` }
+                });
+                if (!res.ok) throw new Error('Kullanıcılar alınamadı.');
+                const users = await res.json();
+                tbody.innerHTML = '';
+                users.forEach(u => {
+                    const tr = document.createElement('tr');
+                    tr.innerHTML = `
+                        <td><strong>${escapeHtml(u.username)}</strong></td>
+                        <td><span style="background:rgba(255,255,255,0.06); padding:2px 8px; border-radius:4px; font-size:0.75rem;">${escapeHtml(u.role_name)}</span></td>
+                        <td>${escapeHtml(u.department.toUpperCase())}</td>
+                        <td><span style="color:#78d0cd; font-weight:600;">Lv${u.clearance_level}</span></td>
+                        <td>${u.total_queries}</td>
+                        <td>
+                            <button type="button" onclick="openEditUserModal('${u.user_id}', '${escapeHtml(u.username)}', '${escapeHtml(u.role_name)}', '${escapeHtml(u.department)}', ${u.clearance_level})" style="background:rgba(255,255,255,0.08); border:none; color:#fff; padding:4px 8px; border-radius:4px; font-size:0.75rem; cursor:pointer; margin-right:4px;">Düzenle</button>
+                            ${u.username !== 'admin' ? `<button type="button" onclick="deleteAdminUser('${u.user_id}', '${escapeHtml(u.username)}')" style="background:#ef4444; border:none; color:#fff; padding:4px 8px; border-radius:4px; font-size:0.75rem; cursor:pointer;">Sil</button>` : ''}
+                        </td>
+                    `;
+                    tbody.appendChild(tr);
+                });
+            } catch (err) {
+                tbody.innerHTML = `<tr><td colspan="6" style="text-align:center; color:#f87171;">Hata: ${err.message}</td></tr>`;
+            }
+        }
+
+        function openCreateUserModal() {
+            document.getElementById('txtUserModalTitle').innerText = 'Yeni Kullanıcı Tanımla';
+            document.getElementById('adminUserEditId').value = '';
+            document.getElementById('adminUserUsername').value = '';
+            document.getElementById('adminUserUsername').disabled = false;
+            document.getElementById('adminUserPassword').value = '';
+            document.getElementById('adminUserPassword').required = true;
+            document.getElementById('lblUserPassword').innerText = 'Parola';
+            document.getElementById('adminUserRole').value = 'user-genel';
+            document.getElementById('adminUserDept').value = 'genel';
+            document.getElementById('adminUserClearance').value = '10';
+            document.getElementById('adminUserError').style.display = 'none';
+            document.getElementById('adminUserModal').classList.add('active');
+        }
+
+        function openEditUserModal(uid, username, role, dept, clearance) {
+            document.getElementById('txtUserModalTitle').innerText = `Kullanıcı Düzenle: ${username}`;
+            document.getElementById('adminUserEditId').value = uid;
+            document.getElementById('adminUserUsername').value = username;
+            document.getElementById('adminUserUsername').disabled = true;
+            document.getElementById('adminUserPassword').value = '';
+            document.getElementById('adminUserPassword').required = false;
+            document.getElementById('lblUserPassword').innerText = 'Yeni Parola (Değiştirmek istemiyorsanız boş bırakın)';
+            document.getElementById('adminUserRole').value = role;
+            document.getElementById('adminUserDept').value = dept;
+            document.getElementById('adminUserClearance').value = clearance;
+            document.getElementById('adminUserError').style.display = 'none';
+            document.getElementById('adminUserModal').classList.add('active');
+        }
+
+        function hideUserModal() {
+            document.getElementById('adminUserModal').classList.remove('active');
+        }
+
+        async function handleSaveAdminUser(e) {
+            e.preventDefault();
+            const editId = document.getElementById('adminUserEditId').value;
+            const username = document.getElementById('adminUserUsername').value.trim();
+            const password = document.getElementById('adminUserPassword').value.trim();
+            const role = document.getElementById('adminUserRole').value;
+            const dept = document.getElementById('adminUserDept').value;
+            const clearance = parseInt(document.getElementById('adminUserClearance').value);
+            const errDiv = document.getElementById('adminUserError');
+            errDiv.style.display = 'none';
+
+            try {
+                let res;
+                if (!editId) {
+                    // Create
+                    res = await fetch('/api/admin/users', {
+                        method: 'POST',
+                        headers: {
+                            'Content-Type': 'application/json',
+                            'Authorization': `Bearer ${authToken}`
+                        },
+                        body: JSON.stringify({
+                            username: username,
+                            password: password,
+                            role_name: role,
+                            department: dept,
+                            clearance_level: clearance
+                        })
+                    });
+                } else {
+                    // Update
+                    const updatePayload = {
+                        role_name: role,
+                        department: dept,
+                        clearance_level: clearance
+                    };
+                    if (password) updatePayload.password = password;
+
+                    res = await fetch(`/api/admin/users/${editId}`, {
+                        method: 'PUT',
+                        headers: {
+                            'Content-Type': 'application/json',
+                            'Authorization': `Bearer ${authToken}`
+                        },
+                        body: JSON.stringify(updatePayload)
+                    });
+                }
+
+                if (!res.ok) {
+                    const err = await res.json();
+                    throw new Error(err.detail || 'İşlem başarısız.');
+                }
+
+                hideUserModal();
+                loadAdminUsersTab();
+            } catch (err) {
+                errDiv.innerText = err.message;
+                errDiv.style.display = 'block';
+            }
+        }
+
+        async function deleteAdminUser(uid, username) {
+            if (!confirm(`'${username}' kullanıcısını silmek istediğinize emin misiniz?`)) return;
+            try {
+                const res = await fetch(`/api/admin/users/${uid}`, {
+                    method: 'DELETE',
+                    headers: { 'Authorization': `Bearer ${authToken}` }
+                });
+                if (!res.ok) {
+                    const err = await res.json();
+                    throw new Error(err.detail || 'Silinemedi.');
+                }
+                loadAdminUsersTab();
+            } catch (err) {
+                alert(`Hata: ${err.message}`);
+            }
+        }
+
+        async function loadAdminDocsTab() {
+            const tbody = document.getElementById('adminDocsTableBody');
+            tbody.innerHTML = '<tr><td colspan="6" style="text-align:center; color:var(--subtitle);">Dokümanlar yükleniyor...</td></tr>';
+            try {
+                const res = await fetch('/api/documents', {
+                    headers: { 'Authorization': `Bearer ${authToken}` }
+                });
+                const docs = await res.json();
+                tbody.innerHTML = '';
+                if (!docs || docs.length === 0) {
+                    tbody.innerHTML = '<tr><td colspan="6" style="text-align:center; color:var(--subtitle);">Yüklü doküman bulunamadı.</td></tr>';
+                    return;
+                }
+                docs.forEach(d => {
+                    const tr = document.createElement('tr');
+                    tr.innerHTML = `
+                        <td><span style="background:rgba(120,208,205,0.12); color:#78d0cd; padding:2px 8px; border-radius:4px; font-weight:600; font-size:0.75rem;">${escapeHtml(d.document_code || 'KODSUZ')}</span></td>
+                        <td><strong>${escapeHtml(d.title)}</strong> (v${d.version})</td>
+                        <td>${escapeHtml(d.department.toUpperCase())}</td>
+                        <td>Lv${d.min_clearance_level}</td>
+                        <td><strong>${d.total_chunks}</strong> parça</td>
+                        <td>
+                            <button type="button" onclick="inspectDocChunks('${d.id}')" style="background:#78d0cd; color:#0c0c0c; font-weight:600; border:none; padding:4px 8px; border-radius:4px; font-size:0.75rem; cursor:pointer; margin-right:4px;">Parçaları İncele</button>
+                            <button type="button" onclick="deleteAdminDoc('${d.id}')" style="background:#ef4444; color:#fff; border:none; padding:4px 8px; border-radius:4px; font-size:0.75rem; cursor:pointer;">Sil</button>
+                        </td>
+                    `;
+                    tbody.appendChild(tr);
+                });
+            } catch (err) {
+                tbody.innerHTML = `<tr><td colspan="6" style="text-align:center; color:#f87171;">Hata: ${err.message}</td></tr>`;
+            }
+        }
+
+        async function deleteAdminDoc(docId) {
+            if (!confirm("Bu dokümanı ve tüm parçalarını arşivlemek/silmek istediğinize emin misiniz?")) return;
+            await fetch(`/api/documents/${docId}`, {
+                method: 'DELETE',
+                headers: { 'Authorization': `Bearer ${authToken}` }
+            });
+            loadAdminDocsTab();
+        }
+
+        async function inspectDocChunks(docId) {
+            const modal = document.getElementById('adminChunksModal');
+            const list = document.getElementById('adminChunksList');
+            list.innerHTML = '<p style="color:var(--subtitle); font-size:0.85rem; text-align:center;">Vektör parçaları getiriliyor...</p>';
+            modal.classList.add('active');
+
+            try {
+                const res = await fetch(`/api/admin/documents/${docId}/chunks`, {
+                    headers: { 'Authorization': `Bearer ${authToken}` }
+                });
+                if (!res.ok) throw new Error('Parçalar alınamadı.');
+                const data = await res.json();
+
+                document.getElementById('txtChunksDocTitle').innerText = data.title;
+                document.getElementById('txtChunksDocSub').innerText = `${data.document_code || 'KODSUZ'} · Toplam ${data.total_chunks} Vektör Parçası`;
+
+                list.innerHTML = '';
+                data.chunks.forEach(c => {
+                    const div = document.createElement('div');
+                    div.style = "background:rgba(255,255,255,0.03); border:1px solid rgba(255,255,255,0.06); border-radius:8px; padding:12px;";
+                    div.innerHTML = `
+                        <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:6px; font-size:0.75rem;">
+                            <span style="font-weight:600; color:#78d0cd;">Parça #${c.chunk_index + 1}</span>
+                            <span style="color:var(--subtitle);">Yetki: Lv${c.min_clearance_level} · Vektör: 768-Dim</span>
+                        </div>
+                        <div style="font-size:0.82rem; color:#efefef; line-height:1.5; white-space:pre-wrap;">${escapeHtml(c.content)}</div>
+                    `;
+                    list.appendChild(div);
+                });
+            } catch (err) {
+                list.innerHTML = `<p style="color:#f87171; font-size:0.85rem;">Hata: ${err.message}</p>`;
+            }
+        }
+
+        function hideChunksModal() {
+            document.getElementById('adminChunksModal').classList.remove('active');
+        }
+
+        async function loadAdminCurationTab() {
+            const container = document.getElementById('adminCurationCardsContainer');
+            container.innerHTML = '<p style="color:var(--subtitle); font-size:0.85rem; text-align:center;">Kürasyon öğeleri yükleniyor...</p>';
+            try {
+                const res = await fetch('/api/curation/pending', {
+                    headers: { 'Authorization': `Bearer ${authToken}` }
+                });
+                const items = await res.json();
+                if (!items || items.length === 0) {
+                    container.innerHTML = '<div style="background:rgba(255,255,255,0.02); border:1px dashed rgba(255,255,255,0.08); border-radius:10px; padding:24px; text-align:center; color:var(--subtitle); font-size:0.85rem;">Onay bekleyen kürasyon kaydı bulunmuyor.</div>';
+                    return;
+                }
+                container.innerHTML = '';
+                items.forEach(it => {
+                    const div = document.createElement('div');
+                    div.style = "background:rgba(255,255,255,0.03); border:1px solid rgba(255,255,255,0.06); border-radius:10px; padding:14px;";
+                    div.innerHTML = `
+                        <div style="font-weight:600; font-size:0.85rem; color:#f6c042;">Soru: ${escapeHtml(it.original_query)}</div>
+                        <div style="font-size:0.82rem; margin-top:6px; color:#efefef;">Cevap: ${escapeHtml(it.verified_answer)}</div>
+                        <div style="display:flex; justify-content:space-between; align-items:center; margin-top:10px; font-size:0.75rem; color:var(--subtitle);">
+                            <span>Departman: ${escapeHtml(it.department.toUpperCase())} · Seviye: ${it.min_clearance_level}</span>
+                            <button onclick="approveAdminCuration('${it.id}')" style="background:#4ade80; color:#0c0c0c; border:none; padding:4px 12px; border-radius:6px; font-size:0.75rem; font-weight:600; cursor:pointer;">Onayla & Vektörleştir</button>
+                        </div>
+                    `;
+                    container.appendChild(div);
+                });
+            } catch (err) {
+                container.innerHTML = `<p style="color:#f87171; font-size:0.85rem;">Hata: ${err.message}</p>`;
+            }
+        }
+
+        async function approveAdminCuration(stagingId) {
+            await fetch('/api/curation/approve', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'Authorization': `Bearer ${authToken}`
+                },
+                body: JSON.stringify({ staging_id: stagingId })
+            });
+            loadAdminCurationTab();
+        }
+
+        async function loadAdminAuditTab() {
+            const tbody = document.getElementById('adminAuditTableBody');
+            tbody.innerHTML = '<tr><td colspan="5" style="text-align:center; color:var(--subtitle);">Denetim logları yükleniyor...</td></tr>';
+            try {
+                const res = await fetch('/api/admin/audit-logs?limit=50', {
+                    headers: { 'Authorization': `Bearer ${authToken}` }
+                });
+                const logs = await res.json();
+                tbody.innerHTML = '';
+                if (!logs || logs.length === 0) {
+                    tbody.innerHTML = '<tr><td colspan="5" style="text-align:center; color:var(--subtitle);">Kayıt bulunamadı.</td></tr>';
+                    return;
+                }
+                logs.forEach(l => {
+                    const dateStr = new Date(l.created_at).toLocaleString(currentLang === 'tr' ? 'tr-TR' : 'en-US', {
+                        month: 'short', day: 'numeric', hour: '2-digit', minute: '2-digit'
+                    });
+                    let fbLabel = 'Nötr';
+                    if (l.feedback === 1) fbLabel = '<span style="color:#4ade80;">👍 Faydalı</span>';
+                    else if (l.feedback === -1) fbLabel = '<span style="color:#f87171;">👎 Hatalı</span>';
+
+                    const tr = document.createElement('tr');
+                    tr.innerHTML = `
+                        <td style="white-space:nowrap; color:var(--subtitle); font-size:0.75rem;">${dateStr}</td>
+                        <td><strong>${escapeHtml(l.username)}</strong></td>
+                        <td style="max-width:280px; overflow:hidden; text-overflow:ellipsis; white-space:nowrap;">${escapeHtml(l.query_text)}</td>
+                        <td>${l.execution_time_ms} ms</td>
+                        <td>${fbLabel}</td>
+                    `;
+                    tbody.appendChild(tr);
+                });
+            } catch (err) {
+                tbody.innerHTML = `<tr><td colspan="5" style="text-align:center; color:#f87171;">Hata: ${err.message}</td></tr>`;
+            }
         }
     </script>
 </body>

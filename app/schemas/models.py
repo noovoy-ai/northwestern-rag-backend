@@ -86,3 +86,26 @@ class CurationItemResponse(BaseModel):
     min_clearance_level: int
     status: str
     created_at: str
+
+# Super Admin Yönetim Modelleri
+class AdminUserCreateRequest(BaseModel):
+    username: str = Field(..., min_length=3, example="yeni_personel")
+    password: str = Field(..., min_length=6, example="Pass*2026!")
+    role_name: str = Field(default="user-genel", example="user-genel")
+    department: str = Field(default="genel", example="ik")
+    clearance_level: int = Field(default=10, example=10)
+
+class AdminUserUpdateRequest(BaseModel):
+    role_name: Optional[str] = None
+    department: Optional[str] = None
+    clearance_level: Optional[int] = None
+    password: Optional[str] = None
+
+class AdminUserResponse(BaseModel):
+    user_id: str
+    username: str
+    role_name: str
+    department: str
+    clearance_level: int
+    created_at: Optional[str] = None
+    total_queries: int = 0
