@@ -66,8 +66,8 @@ Soru-Cevap servisi ve yönetim arayüzü yerel ve tünel ortamında şu portlar 
 - **🛡️ Admin Filo & Panel Butonu (`Admin Filosu & Panel`):**
   - *Kim Görebilir?* Sadece `super_admin` rolüne sahip kullanıcılar.
   - *Ne Yapar?* **2 Aşamalı Çoklu Ajan Komuta Merkezini** açar:
-    - **1. Aşama (Agent Fleet Hub):** Şirketin tüm yapay zeka ajan filosunu (Agent-1 Onboarding [Aktif], Agent-2 Hukuk [Yakında], Agent-3 Finans [Yakında], Agent-4 Destek [Yakında]) kartlar halinde listeler; toplam filo boyutunu ve genel sistem sağlığını özetler.
-    - **2. Aşama (Agent-1 Dedicated Workspace):** Agent-1 kartına tıklandığında açılan derin kontrol panelidir; Genel Bakış (Canlı KPI'lar, yanıt hızı, memnuniyet oranı), Kullanıcı Yönetimi (Yeni kullanıcı oluşturma, şifre sıfırlama, rol/yetki güncelleme), Doküman & Vektör Havuzu (Parçaları inceleme, re-index, silme), Kürasyon Havuzu ve Canlı Denetim İzi (Audit Logları) sekmelerini barındırır.
+    - **1. Aşama (Agent Fleet Hub):** Şirketin tüm yapay zeka ajan filosunu (Nirene Onboarding [Aktif MVP] ve 7 Yol Haritası Ajanı [Yakında]) listeler; toplam filo boyutunu ve genel sistem sağlığını özetler.
+    - **2. Aşama (Nirene Dedicated Workspace):** Nirene kartına tıklandığında açılan derin kontrol panelidir; Genel Bakış (Chart.js İnteraktif Pasta ve Bar Grafikleri, Canlı KPI'lar, yanıt hızı, memnuniyet oranı), Kullanıcı Yönetimi (Yeni kullanıcı oluşturma, şifre sıfırlama, rol/yetki güncelleme), Doküman & Vektör Havuzu (Parçaları inceleme, re-index, silme), Kürasyon Havuzu ve Canlı Denetim İzi (Audit Logları) sekmelerini barındırır.
 - **🕒 Sohbet Geçmişi Butonu (`Geçmiş`):**
   - Sol üst köşedeki bu butona tıklandığında sol taraftan açılan şık bir çekmece (Drawer) ile kullanıcının önceki soru-cevap oturumları listelenir. Tıklanan oturumun tüm mesaj akışı ekrana anında geri yüklenir.
 - **🏷️ Tıklanabilir Kaynak Atıf Butonları (`[POL-IK-01] Personel El Kitabı · S.1 (%94)`):**
@@ -408,23 +408,23 @@ Köklü bir değişiklik gerektiğinde izlenecek adımlar:
 
 ## 13. 2 Aşamalı Çoklu Ajan Filosu ve Super Admin Komuta Merkezi (Agent Fleet Hub & Governance Console)
 
-Sisteme gelecekte eklenecek farklı uzmanlık alanlarındaki yapay zeka ajanlarını (Hukuk, Finans, Saha Destek vb.) tek merkezden yönetmek ve mevcut **Agent-1 (Onboarding & Kurumsal Politika)** ajanının tam denetimini sağlamak için **2 Aşamalı Çoklu Ajan Komuta Merkezi** geliştirilmiştir.
+Sisteme gelecekte eklenecek farklı uzmanlık alanlarındaki yapay zeka ajanlarını (Wellness, İK İstihbarat, Yönetici, Kültür, Öğrenme, Kriz, Elde Tutma vb.) tek merkezden yönetmek ve mevcut **Nirene (Onboarding Agent)** asistanının tam denetimini sağlamak için **2 Aşamalı Çoklu Ajan Komuta Merkezi & SaaS Dashboard** geliştirilmiştir.
 
 ```mermaid
 graph TD
     A[Super Admin - Lv100 Girişi] --> B[Aşama 1: Kurumsal Ajan Filosu - 8 Ajanlı Fleet Hub]
     
-    B --> C1[🟢 1. Onboarding Agent - AKTİF & CANLI MVP]
-    B --> C2[🟡 2. Wellness Agent - SOON]
-    B --> C3[🟡 3. HR Intelligence Agent - SOON]
-    B --> C4[🟡 4. Manager Agent - SOON]
-    B --> C5[🟡 5. Culture Agent - SOON]
-    B --> C6[🟡 6. Learning Agent - SOON]
-    B --> C7[🟡 7. Crisis Agent - SOON]
-    B --> C8[🟡 8. Retention Agent - SOON]
+    B --> C1[🟢 Nirene - AKTİF & CANLI MVP]
+    B --> C2[🟡 Wellness Agent - YAKINDA]
+    B --> C3[🟡 HR Intelligence Agent - YAKINDA]
+    B --> C4[🟡 Manager Agent - YAKINDA]
+    B --> C5[🟡 Culture Agent - YAKINDA]
+    B --> C6[🟡 Learning Agent - YAKINDA]
+    B --> C7[🟡 Crisis Agent - YAKINDA]
+    B --> C8[🟡 Retention Agent - YAKINDA]
     
-    C1 --> D[Aşama 2: Onboarding Agent Özel Yönetim Konsolu]
-    D --> E1[📊 Sekme 1: Genel Bakış & Canlı KPI'lar]
+    C1 --> D[Aşama 2: Nirene Özel Yönetim Dashboard'u]
+    D --> E1[📊 Sekme 1: Genel Bakış, KPI'lar & Chart.js Analitik Grafikleri]
     D --> E2[👥 Sekme 2: Kullanıcı & PBKDF2 Parola/Yetki Yönetimi]
     D --> E3[📁 Sekme 3: Doküman & Vektör Parça Denetimi]
     D --> E4[✅ Sekme 4: Kürasyon Havuzu & Flywheel]
@@ -433,32 +433,31 @@ graph TD
 
 ### 🎛️ 13.1 Aşama 1: Kurumsal Ajan Filosu (8 Ajanlı Fleet Hub)
 - **Erişim:** Üst navigasyon çubuğundaki **"Admin Filosu & Panel"** butonuna basıldığında açılır.
-- **Filo Özet Çubuğu:** Toplam Ajan Sayısı (8 Ajan, 1 Aktif), Toplam İndeksli PDF, Toplam Cevaplanan Soru Sayısı ve 7/24 Sistem Sağlık Durumu (`Healthy`).
-- **Kurumsal Ajan Kartları:**
-  1. 🟢 **Onboarding Agent (İşe Alım & Kurumsal Politika):** **[AKTİF & CANLI MVP]** Yeni işe başlayan personelin şirket kültürüne, izin haklarına, çalışma prosedürlerine ve departman onay matrislerine adaptasyonunu sağlayan ana onboarding rehberi. Model: `qwen2.5:7b`, Embedding: `nomic-embed-text`. **"Ajanı Yönet →"** butonu ile 2. Aşamaya geçilir.
-  2. 🟡 **Wellness Agent (Esenlik/Sağlık Ajanı):** **[Yakında Gelecek (Soon)]** Çalışanların fiziksel/zihinsel esenlik, ergonomi ve sağlık sigortası destek asistanı.
-  3. 🟡 **HR Intelligence Agent (İK İstihbarat/Veri Ajanı):** **[Yakında Gelecek (Soon)]** Turnover tahminleri, yetenek açığı ve organizasyonel analitik motoru.
-  4. 🟡 **Manager Agent (Yönetici Destek Ajanı):** **[Yakında Gelecek (Soon)]** 1-on-1 görüşme rehberleri, performans değerlendirme ve liderlik asistanı.
-  5. 🟡 **Culture Agent (Kurumsal Kültür Ajanı):** **[Yakında Gelecek (Soon)]** Şirket değerleri, iç topluluklar ve sosyal kulüpler rehberi.
-  6. 🟡 **Learning Agent (Öğrenme & Eğitim Ajanı):** **[Yakında Gelecek (Soon)]** Kişisel eğitim patikaları ve yetkinlik geliştirme motoru.
-  7. 🟡 **Crisis Agent (Kriz & Acil Durum Ajanı):** **[Yakında Gelecek (Soon)]** İş sürekliliği, acil durum protokolleri ve kriz iletişim yönergeleri.
-  8. 🟡 **Retention Agent (Çalışan Bağlılığı/Elde Tutma Ajanı):** **[Yakında Gelecek (Soon)]** Memnuniyet ölçümü, tükenmişlik erken uyarı sinyalleri ve bağlılık stratejileri.
+- **Filo Özet Çubuğu:** Toplam Ajan Sayısı (8 Ajan, 1 Aktif MVP), Toplam İndeksli Doküman, Toplam Soru Hacmi ve 7/24 Sistem Sağlık Durumu (`7/24 Canlı`).
+- **Öne Çıkan Canlı Ajan Kartı (Featured Hero Card):**
+  - 🟢 **Nirene (Onboarding Agent):** **[AKTİF & CANLI MVP]** Yeni işe başlayan personelin şirket kültürüne, izin haklarına, çalışma prosedürlerine ve departman onay matrislerine adaptasyonunu sağlayan ana onboarding rehberi. Model: `qwen2.5:7b`, Embedding: `nomic-embed-text`. **"Ajanı Yönet (Dashboard) →"** butonu ile 2. Aşamaya geçilir.
+- **Minimalist Yol Haritası Kartları (7 Uzman Ajan):**
+  - Sade, modern ve ferah bir UI ile sadece ajan adı, ikonu ve **"Yakında Gelecek"** rozeti görüntülenir:
+  1. 🟡 **Wellness Agent:** Çalışan esenliği ve sağlık asistanı.
+  2. 🟡 **HR Intelligence Agent:** İK analitiği ve veri içgörü motoru.
+  3. 🟡 **Manager Agent:** Yönetici koçluğu ve 1-on-1 görüşme rehberi.
+  4. 🟡 **Culture Agent:** Kurumsal kültür ve değerler rehberi.
+  5. 🟡 **Learning Agent:** Eğitim ve yetkinlik geliştirme motoru.
+  6. 🟡 **Crisis Agent:** Kriz yönetimi ve acil durum tahliye rehberi.
+  7. 🟡 **Retention Agent:** Çalışan bağlılığı ve elde tutma stratejileri.
 
 ---
 
-### 🔬 13.2 Aşama 2: Onboarding Agent Derin Yönetim Konsolu (5 Alt Sekme)
-Onboarding Agent kartına tıklandığında açılan ve sol üstteki **"← Filoya Dön"** butonuyla her an 1. Aşamaya geri dönülebilen tam kapsamlı yönetim alanıdır:
+### 🔬 13.2 Aşama 2: Nirene Derin Yönetim Konsolu & Dashboard (5 Alt Sekme)
+Nirene kartına tıklandığında açılan ve sol üstteki **"← Filoya Dön"** butonuyla her an 1. Aşamaya geri dönülebilen tam kapsamlı yönetim alanıdır:
 
-1. **📊 1. Sekme: Genel Bakış & Canlı KPI'lar (`Overview`):**
-   - Toplam Kayıtlı Kullanıcı Sayısı
-   - Son 24 Saat İçinde Aktif Personel Sayısı
-   - Toplam İndeksli Vektör Parçası (Chunk) Sayısı
-   - Toplam Yanıtlanan Soru Hacmi
-   - Ortalama Çıkarım / Yanıt Süresi (ms)
-   - Kullanıcı Memnuniyet Oranı (%100)
-   - Donanım (Apple Silicon GPU), LLM (`qwen2.5:7b`) ve Embedding (`nomic-embed-text`) parametreleri.
+1. **📊 1. Sekme: Genel Bakış & İnteraktif Analitik Grafikleri (`Overview & Analytics`):**
+   - **6 Canlı KPI Kartı:** Toplam Kullanıcı, Son 24 Saat Aktif Personel, Toplam Vektör Parçası (Chunk), Toplam Soru Hacmi, Ortalama Çıkarım Süresi (ms), Kullanıcı Memnuniyet Oranı (%100).
+   - **🍩 Chart.js Pasta / Donut Grafiği:** Departman bazlı personel dağılımı (Genel, İK, Hukuk, Finans oranları).
+   - **📊 Chart.js Bar Grafiği:** Departmanlara göre yönlendirilen soru hacmi ve aktivite analitiği.
+   - **Sistem Telemetri Kartı:** Host Ollama LLM (`qwen2.5:7b`), Embedding (`nomic-embed-text 768-Dim`), pgvector (HNSW + FTS Hibrit) ve Apple Silicon Metal GPU Hızlandırması.
 2. **👥 2. Sekme: Kullanıcılar & Güvenlik Yetki Yönetimi (`Users`):**
-   - Sistemdeki tüm kayıtlı kullanıcıların rolleri, departmanları, yetki seviyeleri ve soru sayıları tablo halinde listelenir.
+   - Kullanıcı avatarları, rol çipleri, departman etiketleri, güvenlik seviyeleri ve soru sayaçlarıyla zenginleştirilmiş veri tablosu.
    - **Yeni Kullanıcı Ekle Modalı:** Super Admin istediği kullanıcı adıyla yeni hesap tanımlayabilir; parola veritabanına salted PBKDF2 (SHA-256 + 100.000 iterasyon) ile hash'lenerek kaydedilir.
    - **Kullanıcı Düzenleme / Parola Sıfırlama:** Personelin departmanı, rolü, güvenlik seviyesi güncellenebilir veya yeni parola atanabilir.
    - **Kullanıcı Silme:** Tek tıkla hesap sistemden kaldırılır (`admin` hesabı silinmeye karşı kilitlidir).

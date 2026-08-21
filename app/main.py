@@ -440,8 +440,8 @@ async def get_fleet_overview(user: UserContext = Depends(require_super_admin), p
         
     fleet = [
         {
-            "agent_id": "agent-1-onboarding",
-            "agent_name": "Onboarding Agent (İşe Alım & Kurumsal Politika)",
+            "agent_id": "onboarding-nirene",
+            "agent_name": "Nirene (Onboarding Agent)",
             "code": "agent_onboarding",
             "icon": "onboarding",
             "is_active": True,
@@ -449,7 +449,7 @@ async def get_fleet_overview(user: UserContext = Depends(require_super_admin), p
             "status_label": "Aktif & Canlı (MVP)",
             "model": settings.LLM_MODEL,
             "embedding_model": settings.EMBEDDING_MODEL,
-            "description": "İlk MVP'nin odak noktası: Yeni işe başlayan personelin şirket kültürüne, izin ve çalışma prosedürlerine, donanım ve departman onay süreçlerine adaptasyonunu sağlayan ana onboarding rehberi.",
+            "description": "Yeni işe başlayan personelin şirket kültürüne, izin ve çalışma prosedürlerine, donanım ve departman onay süreçlerine adaptasyonunu sağlayan ana kurumsal onboarding asistanı.",
             "stats": {
                 "total_docs": doc_count,
                 "total_queries": query_count,
@@ -457,16 +457,16 @@ async def get_fleet_overview(user: UserContext = Depends(require_super_admin), p
             }
         },
         {
-            "agent_id": "agent-2-wellness",
-            "agent_name": "Wellness Agent (Esenlik & Çalışan Sağlığı)",
+            "agent_id": "wellness-agent",
+            "agent_name": "Wellness Agent",
             "code": "agent_wellness",
             "icon": "heart",
             "is_active": False,
             "status": "soon",
-            "status_label": "Yakında Gelecek (Soon)",
+            "status_label": "Yakında Gelecek",
             "model": "qwen2.5:7b (Planlanan)",
             "embedding_model": settings.EMBEDDING_MODEL,
-            "description": "Çalışanların fiziksel ve zihinsel esenlik, ergonomi standartları, özel sağlık sigortası kapsamı ve iş-yaşam dengesi destek asistanı.",
+            "description": "",
             "stats": {
                 "total_docs": 0,
                 "total_queries": 0,
@@ -474,16 +474,16 @@ async def get_fleet_overview(user: UserContext = Depends(require_super_admin), p
             }
         },
         {
-            "agent_id": "agent-3-hr-intelligence",
-            "agent_name": "HR Intelligence Agent (İK İstihbarat & Analitik)",
+            "agent_id": "hr-intelligence-agent",
+            "agent_name": "HR Intelligence Agent",
             "code": "agent_hr_intelligence",
             "icon": "brain",
             "is_active": False,
             "status": "soon",
-            "status_label": "Yakında Gelecek (Soon)",
+            "status_label": "Yakında Gelecek",
             "model": "qwen2.5:14b (Planlanan)",
             "embedding_model": settings.EMBEDDING_MODEL,
-            "description": "Departman bazlı turnover analizleri, yetenek açığı tespiti, çalışan duygu durumu ve organizasyonel veri içgörü motoru.",
+            "description": "",
             "stats": {
                 "total_docs": 0,
                 "total_queries": 0,
@@ -491,16 +491,16 @@ async def get_fleet_overview(user: UserContext = Depends(require_super_admin), p
             }
         },
         {
-            "agent_id": "agent-4-manager",
-            "agent_name": "Manager Agent (Yönetici Destek & Liderlik)",
+            "agent_id": "manager-agent",
+            "agent_name": "Manager Agent",
             "code": "agent_manager",
             "icon": "user-check",
             "is_active": False,
             "status": "soon",
-            "status_label": "Yakında Gelecek (Soon)",
+            "status_label": "Yakında Gelecek",
             "model": "qwen2.5:14b (Planlanan)",
             "embedding_model": settings.EMBEDDING_MODEL,
-            "description": "Takım liderleri için 1-on-1 görüşme rehberleri, performans değerlendirme kriterleri, terfi matrisleri ve geri bildirim asistanı.",
+            "description": "",
             "stats": {
                 "total_docs": 0,
                 "total_queries": 0,
@@ -508,16 +508,16 @@ async def get_fleet_overview(user: UserContext = Depends(require_super_admin), p
             }
         },
         {
-            "agent_id": "agent-5-culture",
-            "agent_name": "Culture Agent (Kurumsal Kültür & Değerler)",
+            "agent_id": "culture-agent",
+            "agent_name": "Culture Agent",
             "code": "agent_culture",
             "icon": "sparkles",
             "is_active": False,
             "status": "soon",
-            "status_label": "Yakında Gelecek (Soon)",
+            "status_label": "Yakında Gelecek",
             "model": "qwen2.5:7b (Planlanan)",
             "embedding_model": settings.EMBEDDING_MODEL,
-            "description": "Şirket vizyonu, etik değerler, kapsayıcılık ilkeleri, sosyal kulüpler ve kurum içi topluluk aktiviteleri rehberi.",
+            "description": "",
             "stats": {
                 "total_docs": 0,
                 "total_queries": 0,
@@ -525,16 +525,16 @@ async def get_fleet_overview(user: UserContext = Depends(require_super_admin), p
             }
         },
         {
-            "agent_id": "agent-6-learning",
-            "agent_name": "Learning Agent (Eğitim & Kariyer Gelişimi)",
+            "agent_id": "learning-agent",
+            "agent_name": "Learning Agent",
             "code": "agent_learning",
             "icon": "book-open",
             "is_active": False,
             "status": "soon",
-            "status_label": "Yakında Gelecek (Soon)",
+            "status_label": "Yakında Gelecek",
             "model": "qwen2.5:7b (Planlanan)",
             "embedding_model": settings.EMBEDDING_MODEL,
-            "description": "Kişiselleştirilmiş eğitim patikaları, sertifikasyon programları, iç mentorluk eşleşmeleri ve yetkinlik geliştirme motoru.",
+            "description": "",
             "stats": {
                 "total_docs": 0,
                 "total_queries": 0,
@@ -542,16 +542,16 @@ async def get_fleet_overview(user: UserContext = Depends(require_super_admin), p
             }
         },
         {
-            "agent_id": "agent-7-crisis",
-            "agent_name": "Crisis Agent (Kriz & Acil Durum Yönetimi)",
+            "agent_id": "crisis-agent",
+            "agent_name": "Crisis Agent",
             "code": "agent_crisis",
             "icon": "alert-triangle",
             "is_active": False,
             "status": "soon",
-            "status_label": "Yakında Gelecek (Soon)",
+            "status_label": "Yakında Gelecek",
             "model": "qwen2.5:14b (Planlanan)",
             "embedding_model": settings.EMBEDDING_MODEL,
-            "description": "İş sürekliliği, siber güvenlik alarmları, afet koordinasyonu, acil durum tahliye protokolleri ve kriz iletişim yönergeleri.",
+            "description": "",
             "stats": {
                 "total_docs": 0,
                 "total_queries": 0,
@@ -559,16 +559,16 @@ async def get_fleet_overview(user: UserContext = Depends(require_super_admin), p
             }
         },
         {
-            "agent_id": "agent-8-retention",
-            "agent_name": "Retention Agent (Bağlılık & Elde Tutma)",
+            "agent_id": "retention-agent",
+            "agent_name": "Retention Agent",
             "code": "agent_retention",
             "icon": "shield-check",
             "is_active": False,
             "status": "soon",
-            "status_label": "Yakında Gelecek (Soon)",
+            "status_label": "Yakında Gelecek",
             "model": "qwen2.5:7b (Planlanan)",
             "embedding_model": settings.EMBEDDING_MODEL,
-            "description": "Çalışan memnuniyeti ve tükenmişlik erken uyarı sinyalleri, ödüllendirme önerileri ve yetenek kaybını önleme stratejileri.",
+            "description": "",
             "stats": {
                 "total_docs": 0,
                 "total_queries": 0,
@@ -585,7 +585,7 @@ async def get_fleet_overview(user: UserContext = Depends(require_super_admin), p
 
 @app.get("/api/admin/metrics")
 async def get_admin_metrics(user: UserContext = Depends(require_super_admin), pool = Depends(get_db)):
-    """Super Admin için detaylı sistem ve agent-1 performans KPI'larını döner."""
+    """Super Admin için detaylı sistem ve Nirene performans KPI'larını döner."""
     async with pool.acquire() as conn:
         total_users = await conn.fetchval("SELECT COUNT(*) FROM user_profiles") or 0
         total_docs = await conn.fetchval("SELECT COUNT(*) FROM documents WHERE is_active = TRUE") or 0
@@ -600,6 +600,17 @@ async def get_admin_metrics(user: UserContext = Depends(require_super_admin), po
         # Departman kullanıcı dağılımı
         dept_rows = await conn.fetch("SELECT department, COUNT(*) as count FROM user_profiles GROUP BY department")
         dept_dist = {r["department"]: r["count"] for r in dept_rows}
+        
+        # Departman sorgu dağılımı
+        dept_query_rows = await conn.fetch(
+            """
+            SELECT COALESCE(u.department, 'genel') as department, COUNT(a.id) as query_count
+            FROM audit_logs a
+            LEFT JOIN user_profiles u ON a.user_id = u.user_id
+            GROUP BY COALESCE(u.department, 'genel')
+            """
+        )
+        dept_query_dist = {r["department"]: r["query_count"] for r in dept_query_rows}
         
         # Son 24 saat aktif kullanıcı sayısı
         active_24h = await conn.fetchval("SELECT COUNT(DISTINCT user_id) FROM audit_logs WHERE created_at >= NOW() - INTERVAL '24 HOURS'") or 0
@@ -618,6 +629,7 @@ async def get_admin_metrics(user: UserContext = Depends(require_super_admin), po
             "satisfaction_rate": satisfaction_rate,
             "pending_curation": pending_curation,
             "dept_distribution": dept_dist,
+            "dept_query_distribution": dept_query_dist,
             "model_name": settings.LLM_MODEL,
             "embedding_model": settings.EMBEDDING_MODEL
         }

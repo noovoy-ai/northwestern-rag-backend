@@ -10,6 +10,9 @@
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
 
+    <!-- Chart.js for Enterprise Analytics -->
+    <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.1/dist/chart.umd.min.js"></script>
+
     <script>
         // WAAPI entrance orchestration
         (function() {
@@ -966,13 +969,16 @@
            2-STAGE SUPER ADMIN FLEET DASHBOARD CSS
         ══════════════════════════════════════════ */
         .admin-modal-card {
-            width: 1120px !important;
-            max-width: 95vw !important;
-            max-height: 90vh !important;
+            width: 1180px !important;
+            max-width: 96vw !important;
+            max-height: 92vh !important;
             display: flex !important;
             flex-direction: column !important;
-            padding: 24px !important;
+            padding: 24px 28px !important;
             overflow: hidden !important;
+            background: #0e0e0e !important;
+            border: 1px solid rgba(255, 255, 255, 0.1) !important;
+            box-shadow: 0 25px 60px rgba(0, 0, 0, 0.9) !important;
         }
         .admin-modal-body {
             flex: 1;
@@ -982,151 +988,206 @@
         }
         .fleet-summary-bar {
             display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            grid-template-columns: repeat(auto-fit, minmax(210px, 1fr));
             gap: 12px;
-            margin-bottom: 20px;
+            margin-bottom: 22px;
         }
         .fleet-stat-box {
-            background: rgba(255, 255, 255, 0.03);
+            background: rgba(255, 255, 255, 0.025);
             border: 1px solid rgba(255, 255, 255, 0.06);
             border-radius: 12px;
             padding: 14px 18px;
             display: flex;
             flex-direction: column;
             gap: 4px;
+            transition: all 0.15s ease;
+        }
+        .fleet-stat-box:hover {
+            background: rgba(255, 255, 255, 0.04);
+            border-color: rgba(255, 255, 255, 0.1);
         }
         .fleet-stat-label {
-            font-size: 0.75rem;
+            font-size: 0.72rem;
             color: var(--subtitle);
             text-transform: uppercase;
-            letter-spacing: 0.05em;
-            font-weight: 500;
+            letter-spacing: 0.06em;
+            font-weight: 600;
         }
         .fleet-stat-val {
             font-size: 1.35rem;
             font-weight: 700;
             color: #fff;
         }
-        .agent-fleet-grid {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
-            gap: 16px;
-        }
-        .agent-card {
-            background: #141414;
-            border: 1px solid rgba(255, 255, 255, 0.08);
-            border-radius: 14px;
-            padding: 20px;
+
+        /* Stage 1: Featured Active Agent (Nirene) */
+        .featured-agent-card {
+            background: linear-gradient(145deg, rgba(120, 208, 205, 0.06) 0%, rgba(20, 20, 20, 0.95) 100%);
+            border: 1px solid rgba(120, 208, 205, 0.35);
+            border-radius: 16px;
+            padding: 22px 26px;
             display: flex;
             flex-direction: column;
             justify-content: space-between;
-            transition: all 0.2s ease;
+            box-shadow: 0 0 35px rgba(120, 208, 205, 0.08);
+            margin-bottom: 24px;
             position: relative;
         }
-        .agent-card.active-agent {
-            border-color: rgba(120, 208, 205, 0.35);
-            box-shadow: 0 0 25px rgba(120, 208, 205, 0.06);
-        }
-        .agent-card.active-agent:hover {
-            border-color: #78d0cd;
-            transform: translateY(-2px);
-        }
-        .agent-card.disabled-agent {
-            opacity: 0.65;
-            background: rgba(255, 255, 255, 0.02);
-            border-style: dashed;
-        }
-        .agent-badge {
-            font-size: 0.72rem;
-            font-weight: 600;
-            padding: 3px 8px;
-            border-radius: 6px;
-            display: inline-flex;
+        .featured-agent-header {
+            display: flex;
+            justify-content: space-between;
             align-items: center;
-            gap: 4px;
         }
-        .badge-active {
-            background: rgba(74, 222, 128, 0.15);
-            color: #4ade80;
-            border: 1px solid rgba(74, 222, 128, 0.3);
+        .featured-title-wrap {
+            display: flex;
+            align-items: center;
+            gap: 12px;
         }
-        .badge-dev {
-            background: rgba(251, 191, 36, 0.15);
-            color: #fbbf24;
-            border: 1px solid rgba(251, 191, 36, 0.3);
+        .featured-icon-box {
+            width: 44px;
+            height: 44px;
+            border-radius: 12px;
+            background: rgba(120, 208, 205, 0.15);
+            color: #78d0cd;
+            display: flex;
+            align-items: center;
+            justify-content: center;
         }
-        .badge-planned {
-            background: rgba(165, 180, 252, 0.15);
-            color: #a5b4fc;
-            border: 1px solid rgba(165, 180, 252, 0.3);
-        }
-        .agent-title {
-            font-size: 1.05rem;
-            font-weight: 600;
+        .featured-agent-title {
+            font-size: 1.25rem;
+            font-weight: 700;
             color: #fff;
-            margin-top: 10px;
         }
-        .agent-desc {
-            font-size: 0.82rem;
-            color: var(--subtitle);
-            line-height: 1.45;
-            margin-top: 6px;
-            flex: 1;
+        .featured-agent-desc {
+            font-size: 0.86rem;
+            color: #bcbcbc;
+            line-height: 1.5;
+            margin: 14px 0 18px 0;
+            max-width: 850px;
         }
-        .agent-footer {
-            margin-top: 16px;
-            padding-top: 14px;
-            border-top: 1px solid rgba(255, 255, 255, 0.06);
+        .featured-stats-row {
             display: flex;
             align-items: center;
             justify-content: space-between;
+            padding-top: 14px;
+            border-top: 1px solid rgba(255, 255, 255, 0.06);
+            flex-wrap: wrap;
+            gap: 12px;
         }
-        .agent-tech-pill {
-            font-size: 0.7rem;
-            color: var(--subtitle);
-            background: rgba(255, 255, 255, 0.05);
-            padding: 3px 7px;
-            border-radius: 4px;
+        .featured-pill-group {
+            display: flex;
+            gap: 10px;
+            flex-wrap: wrap;
         }
-        .btn-agent-launch {
-            background: #78d0cd;
-            color: #0c0c0c;
-            font-weight: 600;
-            font-size: 0.8rem;
+        .featured-stat-pill {
+            background: rgba(255, 255, 255, 0.04);
+            border: 1px solid rgba(255, 255, 255, 0.08);
             padding: 6px 14px;
             border-radius: 8px;
+            font-size: 0.8rem;
+            color: #efefef;
+        }
+        .featured-stat-pill strong {
+            color: #78d0cd;
+        }
+        .btn-launch-primary {
+            background: #78d0cd;
+            color: #0c0c0c;
+            font-weight: 700;
+            font-size: 0.85rem;
+            padding: 10px 22px;
+            border-radius: 10px;
             border: none;
             cursor: pointer;
-            transition: opacity 0.15s ease;
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            transition: all 0.2s ease;
+            box-shadow: 0 4px 15px rgba(120, 208, 205, 0.3);
         }
-        .btn-agent-launch:hover {
-            opacity: 0.9;
+        .btn-launch-primary:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 20px rgba(120, 208, 205, 0.45);
         }
 
-        /* Stage 2 Tabs & Workspaces */
+        /* Stage 1: Compact Upcoming Agents Grid */
+        .compact-agents-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
+            gap: 12px;
+        }
+        .compact-agent-card {
+            background: rgba(255, 255, 255, 0.02);
+            border: 1px dashed rgba(255, 255, 255, 0.08);
+            border-radius: 12px;
+            padding: 14px 16px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            transition: all 0.15s ease;
+        }
+        .compact-agent-card:hover {
+            background: rgba(255, 255, 255, 0.035);
+            border-color: rgba(255, 255, 255, 0.14);
+        }
+        .compact-card-left {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+        .compact-icon {
+            width: 32px;
+            height: 32px;
+            border-radius: 8px;
+            background: rgba(255, 255, 255, 0.04);
+            color: var(--subtitle);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        .compact-name {
+            font-size: 0.88rem;
+            font-weight: 600;
+            color: #efefef;
+        }
+        .badge-soon-pill {
+            font-size: 0.7rem;
+            font-weight: 600;
+            padding: 4px 8px;
+            border-radius: 6px;
+            background: rgba(251, 191, 36, 0.1);
+            color: #fbbf24;
+            border: 1px solid rgba(251, 191, 36, 0.25);
+            white-space: nowrap;
+        }
+
+        /* Stage 2: Navigation & Header */
         .stage2-topbar {
             display: flex;
             align-items: center;
             justify-content: space-between;
             border-bottom: 1px solid rgba(255, 255, 255, 0.08);
             padding-bottom: 14px;
-            margin-bottom: 16px;
+            margin-bottom: 18px;
+            flex-wrap: wrap;
+            gap: 12px;
         }
         .btn-back-fleet {
-            background: rgba(255, 255, 255, 0.06);
+            background: rgba(255, 255, 255, 0.05);
             color: #efefef;
             border: 1px solid rgba(255, 255, 255, 0.1);
-            padding: 6px 12px;
-            border-radius: 8px;
-            font-size: 0.8rem;
-            font-weight: 500;
+            padding: 8px 14px;
+            border-radius: 9px;
+            font-size: 0.82rem;
+            font-weight: 600;
             cursor: pointer;
             display: inline-flex;
             align-items: center;
             gap: 6px;
+            transition: all 0.15s ease;
         }
         .btn-back-fleet:hover {
-            background: rgba(255, 255, 255, 0.12);
+            background: rgba(255, 255, 255, 0.1);
+            border-color: rgba(255, 255, 255, 0.2);
         }
         .admin-nav-tabs {
             display: flex;
@@ -1140,9 +1201,9 @@
             background: transparent;
             border: none;
             color: var(--subtitle);
-            padding: 6px 12px;
+            padding: 7px 14px;
             border-radius: 7px;
-            font-size: 0.8rem;
+            font-size: 0.82rem;
             font-weight: 500;
             cursor: pointer;
             display: inline-flex;
@@ -1159,53 +1220,117 @@
             font-weight: 600;
         }
 
-        /* KPI Grid */
+        /* Stage 2: Analytics & Charts Grid */
+        .analytics-charts-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 16px;
+            margin-bottom: 20px;
+        }
+        .chart-card {
+            background: rgba(255, 255, 255, 0.025);
+            border: 1px solid rgba(255, 255, 255, 0.07);
+            border-radius: 14px;
+            padding: 18px 20px;
+            display: flex;
+            flex-direction: column;
+        }
+        .chart-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 14px;
+        }
+        .chart-title {
+            font-size: 0.88rem;
+            font-weight: 600;
+            color: #fff;
+        }
+        .chart-subtitle {
+            font-size: 0.74rem;
+            color: var(--subtitle);
+            margin-top: 2px;
+        }
+        .chart-canvas-wrap {
+            position: relative;
+            height: 220px;
+            width: 100%;
+        }
+
+        /* Stage 2: KPI Grid */
         .kpi-grid {
             display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+            grid-template-columns: repeat(auto-fit, minmax(170px, 1fr));
             gap: 12px;
             margin-bottom: 20px;
         }
         .kpi-card {
             background: rgba(255, 255, 255, 0.025);
             border: 1px solid rgba(255, 255, 255, 0.06);
-            border-radius: 10px;
-            padding: 14px;
+            border-radius: 12px;
+            padding: 16px 18px;
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
+            position: relative;
+            overflow: hidden;
         }
+        .kpi-card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 2px;
+            background: rgba(255, 255, 255, 0.1);
+        }
+        .kpi-card.accent-cyan::before { background: #78d0cd; }
+        .kpi-card.accent-green::before { background: #4ade80; }
+        .kpi-card.accent-gold::before { background: #fbbf24; }
         .kpi-title {
             font-size: 0.72rem;
             color: var(--subtitle);
             text-transform: uppercase;
+            font-weight: 600;
+            letter-spacing: 0.05em;
         }
         .kpi-num {
-            font-size: 1.4rem;
+            font-size: 1.45rem;
             font-weight: 700;
             color: #fff;
+            margin-top: 6px;
+        }
+        .kpi-subtext {
+            font-size: 0.72rem;
+            color: var(--subtitle);
             margin-top: 4px;
         }
 
-        /* Tables */
+        /* Tables & Lists */
         .admin-table-container {
             border: 1px solid rgba(255, 255, 255, 0.08);
-            border-radius: 10px;
+            border-radius: 12px;
             overflow: hidden;
             background: rgba(255, 255, 255, 0.02);
         }
         .admin-data-table {
             width: 100%;
             border-collapse: collapse;
-            font-size: 0.82rem;
+            font-size: 0.84rem;
             text-align: left;
         }
         .admin-data-table th {
             background: rgba(255, 255, 255, 0.04);
-            padding: 10px 14px;
+            padding: 12px 16px;
             color: var(--subtitle);
             font-weight: 600;
             border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+            font-size: 0.76rem;
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
         }
         .admin-data-table td {
-            padding: 10px 14px;
+            padding: 12px 16px;
             border-bottom: 1px solid rgba(255, 255, 255, 0.04);
             color: #efefef;
         }
@@ -1214,6 +1339,19 @@
         }
         .admin-data-table tr:hover td {
             background: rgba(255, 255, 255, 0.03);
+        }
+        .user-avatar-pill {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            width: 28px;
+            height: 28px;
+            border-radius: 50%;
+            background: rgba(120, 208, 205, 0.15);
+            color: #78d0cd;
+            font-size: 0.75rem;
+            font-weight: 700;
+            margin-right: 8px;
         }
 
         /* Responsive */
@@ -1532,21 +1670,24 @@
     <!-- ══════════════════════════════════════════
          SUPER ADMIN 2-STAGE MULTI-AGENT FLEET MODAL
     ══════════════════════════════════════════ -->
+    <!-- ══════════════════════════════════════════
+         SUPER ADMIN 2-STAGE MULTI-AGENT FLEET MODAL
+    ══════════════════════════════════════════ -->
     <div class="modal-overlay" id="adminFleetModal">
         <div class="modal-card admin-modal-card">
             <!-- Modal Header -->
-            <div style="display:flex; justify-content:space-between; align-items:center; border-bottom:1px solid rgba(255,255,255,0.08); padding-bottom:14px;">
-                <div style="display:flex; align-items:center; gap:10px;">
-                    <div style="background:rgba(246,192,66,0.15); color:#f6c042; padding:6px; border-radius:8px; display:inline-flex;">
-                        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>
+            <div style="display:flex; justify-content:space-between; align-items:center; border-bottom:1px solid rgba(255,255,255,0.08); padding-bottom:16px;">
+                <div style="display:flex; align-items:center; gap:12px;">
+                    <div style="background:rgba(246,192,66,0.15); color:#f6c042; padding:8px; border-radius:10px; display:inline-flex;">
+                        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>
                     </div>
                     <div>
-                        <h2 style="font-size:1.15rem; color:#fff; margin:0;" id="txtAdminModalTitle">Nirene Çoklu Ajan Filosu & Komuta Merkezi</h2>
-                        <div style="font-size:0.75rem; color:var(--subtitle); margin-top:2px;" id="adminBreadcrumb">Aşama 1: Kurumsal Ajan Filosu</div>
+                        <h2 style="font-size:1.2rem; color:#fff; margin:0;" id="txtAdminModalTitle">Nirene Ajan Filosu & Komuta Merkezi</h2>
+                        <div style="font-size:0.76rem; color:var(--subtitle); margin-top:2px;" id="adminBreadcrumb">Aşama 1: Kurumsal Ajan Filosu (Fleet Hub)</div>
                     </div>
                 </div>
-                <button type="button" class="modal-close" onclick="hideAdminFleetModal()" style="background:transparent; border:none; color:var(--subtitle); cursor:pointer;">
-                    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
+                <button type="button" class="modal-close" onclick="hideAdminFleetModal()" style="background:transparent; border:none; color:var(--subtitle); cursor:pointer; padding:6px;">
+                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
                 </button>
             </div>
 
@@ -1559,34 +1700,42 @@
                     <div class="fleet-summary-bar">
                         <div class="fleet-stat-box">
                             <span class="fleet-stat-label">Toplam Ajan Filosu</span>
-                            <span class="fleet-stat-val" id="stg1TotalFleet">4 Ajan (1 Aktif)</span>
+                            <span class="fleet-stat-val" id="stg1TotalFleet">8 Ajan (1 Aktif MVP)</span>
                         </div>
                         <div class="fleet-stat-box">
-                            <span class="fleet-stat-label">Yüklü Kurumsal Doküman</span>
-                            <span class="fleet-stat-val" id="stg1TotalDocs">4 PDF</span>
+                            <span class="fleet-stat-label">İndeksli Kurumsal PDF</span>
+                            <span class="fleet-stat-val" id="stg1TotalDocs">4 Doküman</span>
                         </div>
                         <div class="fleet-stat-box">
-                            <span class="fleet-stat-label">Toplam Cevaplanan Soru</span>
+                            <span class="fleet-stat-label">Toplam Soru Hacmi</span>
                             <span class="fleet-stat-val" id="stg1TotalQueries">40 Sorgu</span>
                         </div>
                         <div class="fleet-stat-box">
-                            <span class="fleet-stat-label">Sistem Sağlık Durumu</span>
+                            <span class="fleet-stat-label">Filo Sağlık Durumu</span>
                             <span class="fleet-stat-val" style="color:#4ade80; display:inline-flex; align-items:center; gap:6px; font-size:1.05rem;">
                                 <span class="green-pulse-dot" style="margin:0;"></span> 7/24 Canlı
                             </span>
                         </div>
                     </div>
 
-                    <div style="font-size:0.82rem; font-weight:600; color:var(--subtitle); text-transform:uppercase; letter-spacing:0.05em; margin-bottom:12px;">Kurumsal Yapay Zeka Ajanları</div>
-                    
-                    <!-- Fleet Grid -->
-                    <div class="agent-fleet-grid" id="adminFleetCardsContainer">
+                    <!-- Featured Active Agent Card Container (Nirene) -->
+                    <div id="featuredAgentContainer">
                         <!-- Dynamic rendered by JS -->
+                    </div>
+
+                    <!-- Upcoming Agents Section -->
+                    <div style="margin-top:20px;">
+                        <div style="font-size:0.75rem; font-weight:700; color:var(--subtitle); text-transform:uppercase; letter-spacing:0.06em; margin-bottom:12px;">
+                            Geliştirilen ve Planlanan Uzman Ajanlar (Yakında)
+                        </div>
+                        <div class="compact-agents-grid" id="compactFleetContainer">
+                            <!-- Dynamic rendered by JS -->
+                        </div>
                     </div>
                 </div>
 
                 <!-- ════════════════════════════════════
-                     AŞAMA 2: AGENT-1 DEDICATED WORKSPACE
+                     AŞAMA 2: NIRENE (ONBOARDING) DEDICATED WORKSPACE
                 ════════════════════════════════════ -->
                 <div id="adminStage2View" style="display:none;">
                     <!-- Stage 2 Navigation Topbar -->
@@ -1596,32 +1745,32 @@
                                 <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="15 18 9 12 15 6"/></svg>
                                 <span>← Filoya Dön</span>
                             </button>
-                            <div style="display:inline-flex; align-items:center; gap:6px; background:rgba(74,222,128,0.1); color:#4ade80; border:1px solid rgba(74,222,128,0.25); padding:4px 10px; border-radius:8px; font-size:0.78rem; font-weight:600;">
+                            <div style="display:inline-flex; align-items:center; gap:6px; background:rgba(74,222,128,0.1); color:#4ade80; border:1px solid rgba(74,222,128,0.25); padding:6px 12px; border-radius:8px; font-size:0.8rem; font-weight:600;">
                                 <span class="green-pulse-dot" style="margin:0;"></span>
-                                <span id="stg2AgentBadge">Agent-1: Kurumsal Onboarding & Politika</span>
+                                <span id="stg2AgentBadge">Nirene: Kurumsal Onboarding & Politika (Canlı MVP)</span>
                             </div>
                         </div>
 
                         <!-- Sub-Tabs Navigation -->
                         <div class="admin-nav-tabs">
                             <button type="button" class="admin-tab-btn active" id="tabBtn_overview" onclick="switchAdminTab('overview')">
-                                <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="7" height="7"/><rect x="14" y="3" width="7" height="7"/><rect x="14" y="14" width="7" height="7"/><rect x="3" y="14" width="7" height="7"/></svg>
+                                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="7" height="7"/><rect x="14" y="3" width="7" height="7"/><rect x="14" y="14" width="7" height="7"/><rect x="3" y="14" width="7" height="7"/></svg>
                                 <span>Genel Bakış</span>
                             </button>
                             <button type="button" class="admin-tab-btn" id="tabBtn_users" onclick="switchAdminTab('users')">
-                                <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg>
+                                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg>
                                 <span>Kullanıcılar</span>
                             </button>
                             <button type="button" class="admin-tab-btn" id="tabBtn_docs" onclick="switchAdminTab('docs')">
-                                <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/></svg>
+                                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/></svg>
                                 <span>Dokümanlar & Vektörler</span>
                             </button>
                             <button type="button" class="admin-tab-btn" id="tabBtn_curation" onclick="switchAdminTab('curation')">
-                                <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="20 6 9 17 4 12"/></svg>
+                                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="20 6 9 17 4 12"/></svg>
                                 <span>Kürasyon Havuzu</span>
                             </button>
                             <button type="button" class="admin-tab-btn" id="tabBtn_audit" onclick="switchAdminTab('audit')">
-                                <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>
+                                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>
                                 <span>Denetim İzi (Audit)</span>
                             </button>
                         </div>
@@ -1629,43 +1778,77 @@
 
                     <!-- TAB 1: OVERVIEW PANE -->
                     <div id="pane_overview" class="admin-tab-pane">
+                        <!-- Top 6 KPI Cards -->
                         <div class="kpi-grid">
-                            <div class="kpi-card">
+                            <div class="kpi-card accent-cyan">
                                 <div class="kpi-title">Toplam Kayıtlı Kullanıcı</div>
                                 <div class="kpi-num" id="kpiTotalUsers">-</div>
+                                <div class="kpi-subtext">Sistem genelinde tanımlı</div>
                             </div>
-                            <div class="kpi-card">
+                            <div class="kpi-card accent-green">
                                 <div class="kpi-title">Son 24 Saat Aktif Personel</div>
                                 <div class="kpi-num" id="kpiActive24h" style="color:#78d0cd;">-</div>
+                                <div class="kpi-subtext">Benzersiz kullanıcı oturumu</div>
                             </div>
                             <div class="kpi-card">
-                                <div class="kpi-title">Toplam İndeksli Parça (Chunk)</div>
+                                <div class="kpi-title">Toplam Vektör Parçası (Chunk)</div>
                                 <div class="kpi-num" id="kpiTotalChunks">-</div>
+                                <div class="kpi-subtext">pgvector HNSW indeksli</div>
                             </div>
                             <div class="kpi-card">
                                 <div class="kpi-title">Toplam Soru Hacmi</div>
                                 <div class="kpi-num" id="kpiTotalQueries">-</div>
+                                <div class="kpi-subtext">Nirene tarafından yanıtlanan</div>
                             </div>
                             <div class="kpi-card">
                                 <div class="kpi-title">Ortalama Yanıt Süresi</div>
                                 <div class="kpi-num" id="kpiAvgLatency">-</div>
+                                <div class="kpi-subtext">Yerel GPU çıkarım hızı</div>
                             </div>
-                            <div class="kpi-card">
+                            <div class="kpi-card accent-gold">
                                 <div class="kpi-title">Kullanıcı Memnuniyet Oranı</div>
                                 <div class="kpi-num" id="kpiSatisfaction" style="color:#4ade80;">-</div>
+                                <div class="kpi-subtext">Pozitif geri bildirim oranı</div>
+                            </div>
+                        </div>
+
+                        <!-- Modern Analytics Charts (Pie & Bar) -->
+                        <div class="analytics-charts-grid">
+                            <div class="chart-card">
+                                <div class="chart-header">
+                                    <div>
+                                        <div class="chart-title">Departman Dağılımı (Personel)</div>
+                                        <div class="chart-subtitle">Genel, İK, Hukuk ve Finans personel oranları</div>
+                                    </div>
+                                </div>
+                                <div class="chart-canvas-wrap">
+                                    <canvas id="chartDeptUsers"></canvas>
+                                </div>
+                            </div>
+
+                            <div class="chart-card">
+                                <div class="chart-header">
+                                    <div>
+                                        <div class="chart-title">Departman Bazlı Soru Hacmi</div>
+                                        <div class="chart-subtitle">Departmanlara göre yönlendirilen toplam soru sayıları</div>
+                                    </div>
+                                </div>
+                                <div class="chart-canvas-wrap">
+                                    <canvas id="chartDeptQueries"></canvas>
+                                </div>
                             </div>
                         </div>
 
                         <!-- System Telemetry & Model Specs Card -->
-                        <div style="background:rgba(255,255,255,0.02); border:1px solid rgba(255,255,255,0.06); border-radius:12px; padding:18px;">
-                            <div style="font-weight:600; font-size:0.9rem; color:#fff; margin-bottom:12px; display:flex; align-items:center; gap:8px;">
+                        <div style="background:rgba(255,255,255,0.02); border:1px solid rgba(255,255,255,0.06); border-radius:12px; padding:18px; margin-top:14px;">
+                            <div style="font-weight:600; font-size:0.88rem; color:#fff; margin-bottom:12px; display:flex; align-items:center; gap:8px;">
                                 <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect width="20" height="14" x="2" y="3" rx="2"/><line x1="8" x2="16" y1="21" y2="21"/><line x1="12" x2="12" y1="17" y2="21"/></svg>
-                                <span>Agent-1 Donanım & Çıkarım (Inference) Parametreleri</span>
+                                <span>Nirene Donanım & Çıkarım (Inference) Parametreleri</span>
                             </div>
                             <div style="display:grid; grid-template-columns:repeat(auto-fit, minmax(220px, 1fr)); gap:12px; font-size:0.82rem;">
                                 <div><span style="color:var(--subtitle);">LLM Modeli:</span> <strong id="specLlmModel" style="color:#efefef;">qwen2.5:7b</strong></div>
                                 <div><span style="color:var(--subtitle);">Embedding Modeli:</span> <strong id="specEmbModel" style="color:#efefef;">nomic-embed-text (768-Dim)</strong></div>
-                                <div><span style="color:var(--subtitle);">Arama Motoru:</span> <strong style="color:#78d0cd;">pgvector HNSW + FTS BM25 (Hibrit)</strong></div>
+                                <div><span style="color:var(--subtitle);">Vektör Arama:</span> <strong style="color:#78d0cd;">pgvector HNSW + FTS BM25 (Hibrit)</strong></div>
                                 <div><span style="color:var(--subtitle);">Donanım Hızlandırma:</span> <strong style="color:#4ade80;">Apple Silicon M2 (Metal GPU)</strong></div>
                             </div>
                         </div>
@@ -1673,9 +1856,9 @@
 
                     <!-- TAB 2: USERS PANE -->
                     <div id="pane_users" class="admin-tab-pane" style="display:none;">
-                        <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:12px;">
+                        <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:14px;">
                             <div style="font-size:0.84rem; color:var(--subtitle);">Kayıtlı kullanıcı hesapları ve güvenlik yetki matrisi:</div>
-                            <button type="button" class="btn-agent-launch" onclick="openCreateUserModal()" style="display:inline-flex; align-items:center; gap:6px;">
+                            <button type="button" class="btn-launch-primary" onclick="openCreateUserModal()" style="padding:7px 16px; font-size:0.8rem;">
                                 <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
                                 <span>Yeni Kullanıcı Ekle</span>
                             </button>
@@ -1684,7 +1867,7 @@
                             <table class="admin-data-table">
                                 <thead>
                                     <tr>
-                                        <th>Kullanıcı Adı</th>
+                                        <th>Kullanıcı</th>
                                         <th>Rol</th>
                                         <th>Departman</th>
                                         <th>Yetki Seviyesi</th>
@@ -1701,9 +1884,9 @@
 
                     <!-- TAB 3: DOCUMENTS PANE -->
                     <div id="pane_docs" class="admin-tab-pane" style="display:none;">
-                        <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:12px;">
-                            <div style="font-size:0.84rem; color:var(--subtitle);">Agent-1 bilgi tabanındaki aktif PDF dokümanları ve parçaları:</div>
-                            <button type="button" class="btn-agent-launch" onclick="showUploadModal()" style="display:inline-flex; align-items:center; gap:6px;">
+                        <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:14px;">
+                            <div style="font-size:0.84rem; color:var(--subtitle);">Nirene bilgi tabanındaki aktif PDF dokümanları ve vektör parçaları:</div>
+                            <button type="button" class="btn-launch-primary" onclick="showUploadModal()" style="padding:7px 16px; font-size:0.8rem;">
                                 <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="17 8 12 3 7 8"/><line x1="12" y1="3" x2="12" y2="15"/></svg>
                                 <span>Yeni PDF İndeksle</span>
                             </button>
@@ -1729,7 +1912,7 @@
 
                     <!-- TAB 4: CURATION PANE -->
                     <div id="pane_curation" class="admin-tab-pane" style="display:none;">
-                        <div style="font-size:0.84rem; color:var(--subtitle); margin-bottom:12px;">Kullanıcıların geri bildirimde bulunduğu ve onay bekleyen soru-cevap havuzu:</div>
+                        <div style="font-size:0.84rem; color:var(--subtitle); margin-bottom:14px;">Kullanıcıların geri bildirimde bulunduğu ve onay bekleyen soru-cevap havuzu:</div>
                         <div id="adminCurationCardsContainer" style="display:flex; flex-direction:column; gap:10px;">
                             <!-- Rendered dynamically -->
                         </div>
@@ -1737,7 +1920,7 @@
 
                     <!-- TAB 5: AUDIT LOGS PANE -->
                     <div id="pane_audit" class="admin-tab-pane" style="display:none;">
-                        <div style="font-size:0.84rem; color:var(--subtitle); margin-bottom:12px;">Son 50 soru-cevap denetim izi ve yanıt süreleri:</div>
+                        <div style="font-size:0.84rem; color:var(--subtitle); margin-bottom:14px;">Son 50 soru-cevap denetim izi ve yanıt süreleri:</div>
                         <div class="admin-table-container">
                             <table class="admin-data-table">
                                 <thead>
@@ -2615,7 +2798,9 @@
         // 2-STAGE SUPER ADMIN MULTI-AGENT DASHBOARD
         // ══════════════════════════════════════════
         let currentAdminStage = 1;
-        let selectedAgentId = 'agent-1-onboarding';
+        let selectedAgentId = 'onboarding-nirene';
+        let chartDeptUsersInstance = null;
+        let chartDeptQueriesInstance = null;
 
         function openAdminFleetModal() {
             document.getElementById('adminFleetModal').classList.add('active');
@@ -2626,7 +2811,7 @@
             document.getElementById('adminFleetModal').classList.remove('active');
         }
 
-        function switchToAdminStage(stageNum, agentId = 'agent-1-onboarding') {
+        function switchToAdminStage(stageNum, agentId = 'onboarding-nirene') {
             currentAdminStage = stageNum;
             selectedAgentId = agentId;
 
@@ -2638,22 +2823,24 @@
             if (stageNum === 1) {
                 stg1.style.display = 'block';
                 stg2.style.display = 'none';
-                breadcrumb.innerText = 'Aşama 1: Kurumsal Ajan Filosu (Agent Fleet Hub)';
-                modalTitle.innerText = 'Nirene Çoklu Ajan Filosu & Komuta Merkezi';
+                breadcrumb.innerText = 'Aşama 1: Kurumsal Ajan Filosu (Fleet Hub)';
+                modalTitle.innerText = 'Nirene Ajan Filosu & Komuta Merkezi';
                 loadFleetOverview();
             } else {
                 stg1.style.display = 'none';
                 stg2.style.display = 'block';
-                breadcrumb.innerText = 'Aşama 2: Agent-1 (Onboarding & Kurumsal Politika) Derin Yönetim Konsolu';
-                modalTitle.innerText = 'Agent-1 Özel Yönetim Konsolu';
+                breadcrumb.innerText = 'Aşama 2: Nirene (Onboarding Agent) Yönetim Konsolu';
+                modalTitle.innerText = 'Nirene Yönetim Konsolu';
                 switchAdminTab('overview');
             }
         }
 
         async function loadFleetOverview() {
             if (!authToken) return;
-            const container = document.getElementById('adminFleetCardsContainer');
-            container.innerHTML = '<p style="color:var(--subtitle); font-size:0.85rem; text-align:center; grid-column:span 2;">Ajan filosu yükleniyor...</p>';
+            const featContainer = document.getElementById('featuredAgentContainer');
+            const compContainer = document.getElementById('compactFleetContainer');
+            featContainer.innerHTML = '<p style="color:var(--subtitle); font-size:0.85rem; text-align:center;">Ajan filosu yükleniyor...</p>';
+            compContainer.innerHTML = '';
 
             try {
                 const res = await fetch('/api/admin/fleet-overview', {
@@ -2662,72 +2849,80 @@
                 if (!res.ok) throw new Error('Filo bilgileri alınamadı.');
                 const data = await res.json();
 
-                document.getElementById('stg1TotalFleet').innerText = `${data.total_fleet_count} Ajan (${data.active_count} Aktif)`;
+                document.getElementById('stg1TotalFleet').innerText = `${data.total_fleet_count} Ajan (${data.active_count} Aktif MVP)`;
                 
-                const agent1 = data.fleet.find(f => f.is_active || f.code === 'agent_onboarding' || f.code === 'agent_1_onboarding');
-                if (agent1) {
-                    document.getElementById('stg1TotalDocs').innerText = `${agent1.stats.total_docs} PDF`;
-                    document.getElementById('stg1TotalQueries').innerText = `${agent1.stats.total_queries} Sorgu`;
-                }
-
-                container.innerHTML = '';
-                data.fleet.forEach(agent => {
-                    const card = document.createElement('div');
-                    const isActive = agent.is_active;
-                    card.className = `agent-card ${isActive ? 'active-agent' : 'disabled-agent'}`;
-
-                    let badgeClass = 'badge-active';
-                    let badgeIcon = `<svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3"><polyline points="20 6 9 17 4 12"/></svg>`;
-                    if (agent.status === 'soon' || agent.status === 'in_development') {
-                        badgeClass = 'badge-dev';
-                        badgeIcon = `<svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>`;
-                    } else if (agent.status === 'planned') {
-                        badgeClass = 'badge-planned';
-                        badgeIcon = `<svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>`;
-                    }
-
-                    let actionBtnHtml = '';
-                    if (isActive) {
-                        actionBtnHtml = `<button type="button" class="btn-agent-launch" onclick="switchToAdminStage(2, '${agent.agent_id}')">Ajanı Yönet →</button>`;
-                    } else {
-                        actionBtnHtml = `<button type="button" class="btn-agent-launch" style="background:rgba(255,255,255,0.06); color:var(--subtitle); cursor:not-allowed;" disabled>Yakında Gelecek (Soon)</button>`;
-                    }
-
-                    card.innerHTML = `
-                        <div>
-                            <div style="display:flex; justify-content:space-between; align-items:center;">
-                                <span class="agent-tech-pill">${escapeHtml(agent.model)}</span>
-                                <span class="agent-badge ${badgeClass}">${badgeIcon} ${escapeHtml(agent.status_label)}</span>
+                const nirene = data.fleet.find(f => f.is_active || f.code === 'agent_onboarding' || f.code === 'agent_1_onboarding');
+                if (nirene) {
+                    document.getElementById('stg1TotalDocs').innerText = `${nirene.stats.total_docs} Doküman`;
+                    document.getElementById('stg1TotalQueries').innerText = `${nirene.stats.total_queries} Sorgu`;
+                    
+                    // Render Featured Active Hero Card
+                    featContainer.innerHTML = `
+                        <div class="featured-agent-card">
+                            <div class="featured-agent-header">
+                                <div class="featured-title-wrap">
+                                    <div class="featured-icon-box">
+                                        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>
+                                    </div>
+                                    <div>
+                                        <div class="featured-agent-title">${escapeHtml(nirene.agent_name)}</div>
+                                        <div style="font-size:0.75rem; color:#78d0cd; font-weight:600; margin-top:2px;">Canlı Kurumsal Model · ${escapeHtml(nirene.model)}</div>
+                                    </div>
+                                </div>
+                                <span class="badge-soon-pill" style="background:rgba(74,222,128,0.15); color:#4ade80; border-color:rgba(74,222,128,0.3); font-size:0.75rem; padding:5px 12px;">
+                                    🟢 ${escapeHtml(nirene.status_label)}
+                                </span>
                             </div>
-                            <div class="agent-title">${escapeHtml(agent.agent_name)}</div>
-                            <div class="agent-desc">${escapeHtml(agent.description)}</div>
-                        </div>
 
-                        <div>
-                            <div style="display:grid; grid-template-columns:1fr 1fr 1fr; gap:6px; margin-top:14px; background:rgba(255,255,255,0.025); padding:8px; border-radius:8px; text-align:center;">
-                                <div>
-                                    <div style="font-size:0.7rem; color:var(--subtitle);">Doküman</div>
-                                    <div style="font-weight:600; font-size:0.85rem; color:#fff;">${agent.stats.total_docs}</div>
-                                </div>
-                                <div>
-                                    <div style="font-size:0.7rem; color:var(--subtitle);">Sorgu</div>
-                                    <div style="font-weight:600; font-size:0.85rem; color:#fff;">${agent.stats.total_queries}</div>
-                                </div>
-                                <div>
-                                    <div style="font-size:0.7rem; color:var(--subtitle);">Kullanıcı</div>
-                                    <div style="font-weight:600; font-size:0.85rem; color:#fff;">${agent.stats.authorized_users}</div>
-                                </div>
+                            <div class="featured-agent-desc">
+                                ${escapeHtml(nirene.description || 'Yeni işe başlayan personelin şirket kültürüne, izin ve çalışma prosedürlerine, donanım ve departman onay süreçlerine adaptasyonunu sağlayan ana kurumsal onboarding asistanı.')}
                             </div>
-                            <div class="agent-footer">
-                                <span style="font-size:0.72rem; color:var(--subtitle);">${escapeHtml(agent.code)}</span>
-                                ${actionBtnHtml}
+
+                            <div class="featured-stats-row">
+                                <div class="featured-pill-group">
+                                    <div class="featured-stat-pill">Doküman: <strong>${nirene.stats.total_docs} PDF</strong></div>
+                                    <div class="featured-stat-pill">Sorgu: <strong>${nirene.stats.total_queries} Yanıt</strong></div>
+                                    <div class="featured-stat-pill">Yetkili Kullanıcı: <strong>${nirene.stats.authorized_users} Personel</strong></div>
+                                    <div class="featured-stat-pill">Embedding: <strong>${escapeHtml(nirene.embedding_model)}</strong></div>
+                                </div>
+
+                                <button type="button" class="btn-launch-primary" onclick="switchToAdminStage(2, '${nirene.agent_id}')">
+                                    <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M5 12h14M12 5l7 7-7 7"/></svg>
+                                    <span>Ajanı Yönet (Dashboard) →</span>
+                                </button>
                             </div>
                         </div>
                     `;
-                    container.appendChild(card);
+                }
+
+                // Render Compact Cards for Upcoming Agents (No descriptions, clean & sleek)
+                compContainer.innerHTML = '';
+                const upcomingAgents = data.fleet.filter(f => !f.is_active && f.agent_id !== (nirene ? nirene.agent_id : ''));
+                
+                upcomingAgents.forEach(agent => {
+                    const card = document.createElement('div');
+                    card.className = 'compact-agent-card';
+
+                    let iconSvg = '<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg>';
+                    if (agent.icon === 'heart') iconSvg = '<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M19 14c1.49-1.46 3-3.21 3-5.5A5.5 5.5 0 0 0 16.5 3c-1.76 0-3 .5-4.5 2-1.5-1.5-2.74-2-4.5-2A5.5 5.5 0 0 0 2 8.5c0 2.3 1.5 4.05 3 5.5l7 7Z"/></svg>';
+                    else if (agent.icon === 'brain') iconSvg = '<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9.5 2A2.5 2.5 0 0 1 12 4.5v15a2.5 2.5 0 0 1-4.96.44 2.5 2.5 0 0 1-2.96-3.08 3 3 0 0 1-.34-5.58 2.5 2.5 0 0 1 1.32-4.24 2.5 2.5 0 0 1 4.44-2.04z"/></svg>';
+                    else if (agent.icon === 'user-check') iconSvg = '<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><polyline points="16 11 18 13 22 9"/></svg>';
+                    else if (agent.icon === 'sparkles') iconSvg = '<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="m12 3-1.912 5.813a2 2 0 0 1-1.275 1.275L3 12l5.813 1.912a2 2 0 0 1 1.275 1.275L12 21l1.912-5.813a2 2 0 0 1 1.275-1.275L21 12l-5.813-1.912a2 2 0 0 1-1.275-1.275L12 3Z"/></svg>';
+                    else if (agent.icon === 'book-open') iconSvg = '<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M2 3h6a4 4 0 0 1 4 4v14a3 3 0 0 0-3-3H2z"/><path d="M22 3h-6a4 4 0 0 0-4 4v14a3 3 0 0 1 3-3h7z"/></svg>';
+                    else if (agent.icon === 'alert-triangle') iconSvg = '<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="m21.73 18-8-14a2 2 0 0 0-3.48 0l-8 14A2 2 0 0 0 4 21h16a2 2 0 0 0 1.73-3Z"/><line x1="12" y1="9" x2="12" y2="13"/><line x1="12" y1="17" x2="12.01" y2="17"/></svg>';
+                    else if (agent.icon === 'shield-check') iconSvg = '<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/><path d="m9 12 2 2 4-4"/></svg>';
+
+                    card.innerHTML = `
+                        <div class="compact-card-left">
+                            <div class="compact-icon">${iconSvg}</div>
+                            <span class="compact-name">${escapeHtml(agent.agent_name)}</span>
+                        </div>
+                        <span class="badge-soon-pill">Yakında Gelecek</span>
+                    `;
+                    compContainer.appendChild(card);
                 });
             } catch (err) {
-                container.innerHTML = `<p style="color:#f87171; font-size:0.85rem;">Hata: ${err.message}</p>`;
+                featContainer.innerHTML = `<p style="color:#f87171; font-size:0.85rem;">Hata: ${err.message}</p>`;
             }
         }
 
@@ -2762,8 +2957,108 @@
                 document.getElementById('kpiSatisfaction').innerText = `%${m.satisfaction_rate}`;
                 document.getElementById('specLlmModel').innerText = m.model_name;
                 document.getElementById('specEmbModel').innerText = `${m.embedding_model} (768-Boyut)`;
+
+                renderAdminCharts(m);
             } catch (e) {
                 console.error("Metrikler yüklenemedi:", e);
+            }
+        }
+
+        function renderAdminCharts(metrics) {
+            if (typeof Chart === 'undefined') return;
+
+            const deptDist = metrics.dept_distribution || {};
+            const deptQueryDist = metrics.dept_query_distribution || {};
+
+            const labels = ['Genel', 'İnsan Kaynakları', 'Hukuk', 'Finans'];
+            const userCounts = [
+                deptDist['genel'] || 0,
+                deptDist['ik'] || 0,
+                deptDist['hukuk'] || 0,
+                deptDist['finans'] || 0
+            ];
+            const queryCounts = [
+                deptQueryDist['genel'] || 0,
+                deptQueryDist['ik'] || 0,
+                deptQueryDist['hukuk'] || 0,
+                deptQueryDist['finans'] || 0
+            ];
+
+            // 1. Donut Chart (User Distribution)
+            const ctxUsers = document.getElementById('chartDeptUsers');
+            if (ctxUsers) {
+                if (chartDeptUsersInstance) chartDeptUsersInstance.destroy();
+                chartDeptUsersInstance = new Chart(ctxUsers, {
+                    type: 'doughnut',
+                    data: {
+                        labels: labels,
+                        datasets: [{
+                            data: userCounts,
+                            backgroundColor: ['#78d0cd', '#4ade80', '#fbbf24', '#a5b4fc'],
+                            borderColor: '#141414',
+                            borderWidth: 3,
+                            hoverOffset: 6
+                        }]
+                    },
+                    options: {
+                        responsive: true,
+                        maintainAspectRatio: false,
+                        cutout: '72%',
+                        plugins: {
+                            legend: {
+                                position: 'bottom',
+                                labels: {
+                                    boxWidth: 12,
+                                    padding: 14,
+                                    color: '#bcbcbc',
+                                    font: { size: 11, family: 'Inter' }
+                                }
+                            }
+                        }
+                    }
+                });
+            }
+
+            // 2. Bar Chart (Query Distribution)
+            const ctxQueries = document.getElementById('chartDeptQueries');
+            if (ctxQueries) {
+                if (chartDeptQueriesInstance) chartDeptQueriesInstance.destroy();
+                chartDeptQueriesInstance = new Chart(ctxQueries, {
+                    type: 'bar',
+                    data: {
+                        labels: labels,
+                        datasets: [{
+                            label: 'Soru Sayısı',
+                            data: queryCounts,
+                            backgroundColor: 'rgba(120, 208, 205, 0.75)',
+                            borderColor: '#78d0cd',
+                            borderWidth: 1.5,
+                            borderRadius: 6
+                        }]
+                    },
+                    options: {
+                        responsive: true,
+                        maintainAspectRatio: false,
+                        scales: {
+                            x: {
+                                grid: { display: false },
+                                ticks: { color: '#9e9e9e', font: { size: 11, family: 'Inter' } }
+                            },
+                            y: {
+                                beginAtZero: true,
+                                grid: { color: 'rgba(255, 255, 255, 0.05)' },
+                                ticks: {
+                                    stepSize: 5,
+                                    color: '#9e9e9e',
+                                    font: { size: 11, family: 'Inter' }
+                                }
+                            }
+                        },
+                        plugins: {
+                            legend: { display: false }
+                        }
+                    }
+                });
             }
         }
 
@@ -2778,16 +3073,32 @@
                 const users = await res.json();
                 tbody.innerHTML = '';
                 users.forEach(u => {
+                    const initials = (u.username || 'U').substring(0, 2).toUpperCase();
+                    let roleBadgeBg = 'rgba(255,255,255,0.06)';
+                    let roleColor = '#efefef';
+                    if (u.role_name.includes('super_admin') || u.clearance_level >= 100) {
+                        roleBadgeBg = 'rgba(251, 191, 36, 0.15)';
+                        roleColor = '#fbbf24';
+                    } else if (u.role_name.includes('admin') || u.clearance_level >= 50) {
+                        roleBadgeBg = 'rgba(120, 208, 205, 0.15)';
+                        roleColor = '#78d0cd';
+                    }
+
                     const tr = document.createElement('tr');
                     tr.innerHTML = `
-                        <td><strong>${escapeHtml(u.username)}</strong></td>
-                        <td><span style="background:rgba(255,255,255,0.06); padding:2px 8px; border-radius:4px; font-size:0.75rem;">${escapeHtml(u.role_name)}</span></td>
-                        <td>${escapeHtml(u.department.toUpperCase())}</td>
-                        <td><span style="color:#78d0cd; font-weight:600;">Lv${u.clearance_level}</span></td>
-                        <td>${u.total_queries}</td>
                         <td>
-                            <button type="button" onclick="openEditUserModal('${u.user_id}', '${escapeHtml(u.username)}', '${escapeHtml(u.role_name)}', '${escapeHtml(u.department)}', ${u.clearance_level})" style="background:rgba(255,255,255,0.08); border:none; color:#fff; padding:4px 8px; border-radius:4px; font-size:0.75rem; cursor:pointer; margin-right:4px;">Düzenle</button>
-                            ${u.username !== 'admin' ? `<button type="button" onclick="deleteAdminUser('${u.user_id}', '${escapeHtml(u.username)}')" style="background:#ef4444; border:none; color:#fff; padding:4px 8px; border-radius:4px; font-size:0.75rem; cursor:pointer;">Sil</button>` : ''}
+                            <div style="display:flex; align-items:center;">
+                                <span class="user-avatar-pill">${initials}</span>
+                                <strong>${escapeHtml(u.username)}</strong>
+                            </div>
+                        </td>
+                        <td><span style="background:${roleBadgeBg}; color:${roleColor}; padding:3px 10px; border-radius:6px; font-size:0.75rem; font-weight:600;">${escapeHtml(u.role_name)}</span></td>
+                        <td><span style="background:rgba(255,255,255,0.04); padding:3px 8px; border-radius:4px;">${escapeHtml(u.department.toUpperCase())}</span></td>
+                        <td><span style="color:#78d0cd; font-weight:700;">Lv${u.clearance_level}</span></td>
+                        <td><strong>${u.total_queries}</strong> soru</td>
+                        <td>
+                            <button type="button" onclick="openEditUserModal('${u.user_id}', '${escapeHtml(u.username)}', '${escapeHtml(u.role_name)}', '${escapeHtml(u.department)}', ${u.clearance_level})" style="background:rgba(255,255,255,0.08); border:1px solid rgba(255,255,255,0.12); color:#fff; padding:5px 10px; border-radius:6px; font-size:0.75rem; cursor:pointer; margin-right:4px;">Düzenle</button>
+                            ${u.username !== 'admin' ? `<button type="button" onclick="deleteAdminUser('${u.user_id}', '${escapeHtml(u.username)}')" style="background:rgba(239,68,68,0.15); border:1px solid rgba(239,68,68,0.3); color:#f87171; padding:5px 10px; border-radius:6px; font-size:0.75rem; cursor:pointer;">Sil</button>` : ''}
                         </td>
                     `;
                     tbody.appendChild(tr);
