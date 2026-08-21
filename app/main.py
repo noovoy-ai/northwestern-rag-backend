@@ -441,15 +441,15 @@ async def get_fleet_overview(user: UserContext = Depends(require_super_admin), p
     fleet = [
         {
             "agent_id": "agent-1-onboarding",
-            "agent_name": "Agent-1: Kurumsal Onboarding & Politika",
-            "code": "agent_1_onboarding",
+            "agent_name": "Onboarding Agent (İşe Alım & Kurumsal Politika)",
+            "code": "agent_onboarding",
             "icon": "onboarding",
             "is_active": True,
             "status": "active",
-            "status_label": "Aktif & Canlı",
+            "status_label": "Aktif & Canlı (MVP)",
             "model": settings.LLM_MODEL,
             "embedding_model": settings.EMBEDDING_MODEL,
-            "description": "Şirket içi çalışma kuralları, İK izin politikaları, finans harcama onayları ve hukuk standartları konusunda personeli asiste eden ana kurumsal rehber.",
+            "description": "İlk MVP'nin odak noktası: Yeni işe başlayan personelin şirket kültürüne, izin ve çalışma prosedürlerine, donanım ve departman onay süreçlerine adaptasyonunu sağlayan ana onboarding rehberi.",
             "stats": {
                 "total_docs": doc_count,
                 "total_queries": query_count,
@@ -457,50 +457,118 @@ async def get_fleet_overview(user: UserContext = Depends(require_super_admin), p
             }
         },
         {
-            "agent_id": "agent-2-legal",
-            "agent_name": "Agent-2: Hukuk & Sözleşme Analiz Ajanı",
-            "code": "agent_2_legal",
-            "icon": "scale",
+            "agent_id": "agent-2-wellness",
+            "agent_name": "Wellness Agent (Esenlik & Çalışan Sağlığı)",
+            "code": "agent_wellness",
+            "icon": "heart",
             "is_active": False,
-            "status": "in_development",
-            "status_label": "Geliştirme Aşamasında",
-            "model": "qwen2.5:14b (Planlanan)",
-            "embedding_model": settings.EMBEDDING_MODEL,
-            "description": "Tedarikçi sözleşmeleri, gizlilik anlaşmaları (NDA), fikri mülkiyet ve hukuki risk analizleri için özelleştirilmiş derin analiz motoru.",
-            "stats": {
-                "total_docs": 0,
-                "total_queries": 0,
-                "authorized_users": 0
-            }
-        },
-        {
-            "agent_id": "agent-3-finance",
-            "agent_name": "Agent-3: Finans & Bütçe Onay Ajanı",
-            "code": "agent_3_finance",
-            "icon": "wallet",
-            "is_active": False,
-            "status": "in_development",
-            "status_label": "Geliştirme Aşamasında",
-            "model": "qwen2.5:7b-math (Planlanan)",
-            "embedding_model": settings.EMBEDDING_MODEL,
-            "description": "Şirket harcama onay matrisleri, fatura denetimi, bütçe aşım alarmları ve SAP entegrasyonu yönetim ajanı.",
-            "stats": {
-                "total_docs": 0,
-                "total_queries": 0,
-                "authorized_users": 0
-            }
-        },
-        {
-            "agent_id": "agent-4-support",
-            "agent_name": "Agent-4: Müşteri Destek & Saha Ajanı",
-            "code": "agent_4_support",
-            "icon": "headset",
-            "is_active": False,
-            "status": "planned",
-            "status_label": "Planlama Aşamasında",
+            "status": "soon",
+            "status_label": "Yakında Gelecek (Soon)",
             "model": "qwen2.5:7b (Planlanan)",
             "embedding_model": settings.EMBEDDING_MODEL,
-            "description": "Müşteri talep yönetimi, saha servis rehberleri ve SLA çözüm sürelerini optimize eden otonom destek motoru.",
+            "description": "Çalışanların fiziksel ve zihinsel esenlik, ergonomi standartları, özel sağlık sigortası kapsamı ve iş-yaşam dengesi destek asistanı.",
+            "stats": {
+                "total_docs": 0,
+                "total_queries": 0,
+                "authorized_users": 0
+            }
+        },
+        {
+            "agent_id": "agent-3-hr-intelligence",
+            "agent_name": "HR Intelligence Agent (İK İstihbarat & Analitik)",
+            "code": "agent_hr_intelligence",
+            "icon": "brain",
+            "is_active": False,
+            "status": "soon",
+            "status_label": "Yakında Gelecek (Soon)",
+            "model": "qwen2.5:14b (Planlanan)",
+            "embedding_model": settings.EMBEDDING_MODEL,
+            "description": "Departman bazlı turnover analizleri, yetenek açığı tespiti, çalışan duygu durumu ve organizasyonel veri içgörü motoru.",
+            "stats": {
+                "total_docs": 0,
+                "total_queries": 0,
+                "authorized_users": 0
+            }
+        },
+        {
+            "agent_id": "agent-4-manager",
+            "agent_name": "Manager Agent (Yönetici Destek & Liderlik)",
+            "code": "agent_manager",
+            "icon": "user-check",
+            "is_active": False,
+            "status": "soon",
+            "status_label": "Yakında Gelecek (Soon)",
+            "model": "qwen2.5:14b (Planlanan)",
+            "embedding_model": settings.EMBEDDING_MODEL,
+            "description": "Takım liderleri için 1-on-1 görüşme rehberleri, performans değerlendirme kriterleri, terfi matrisleri ve geri bildirim asistanı.",
+            "stats": {
+                "total_docs": 0,
+                "total_queries": 0,
+                "authorized_users": 0
+            }
+        },
+        {
+            "agent_id": "agent-5-culture",
+            "agent_name": "Culture Agent (Kurumsal Kültür & Değerler)",
+            "code": "agent_culture",
+            "icon": "sparkles",
+            "is_active": False,
+            "status": "soon",
+            "status_label": "Yakında Gelecek (Soon)",
+            "model": "qwen2.5:7b (Planlanan)",
+            "embedding_model": settings.EMBEDDING_MODEL,
+            "description": "Şirket vizyonu, etik değerler, kapsayıcılık ilkeleri, sosyal kulüpler ve kurum içi topluluk aktiviteleri rehberi.",
+            "stats": {
+                "total_docs": 0,
+                "total_queries": 0,
+                "authorized_users": 0
+            }
+        },
+        {
+            "agent_id": "agent-6-learning",
+            "agent_name": "Learning Agent (Eğitim & Kariyer Gelişimi)",
+            "code": "agent_learning",
+            "icon": "book-open",
+            "is_active": False,
+            "status": "soon",
+            "status_label": "Yakında Gelecek (Soon)",
+            "model": "qwen2.5:7b (Planlanan)",
+            "embedding_model": settings.EMBEDDING_MODEL,
+            "description": "Kişiselleştirilmiş eğitim patikaları, sertifikasyon programları, iç mentorluk eşleşmeleri ve yetkinlik geliştirme motoru.",
+            "stats": {
+                "total_docs": 0,
+                "total_queries": 0,
+                "authorized_users": 0
+            }
+        },
+        {
+            "agent_id": "agent-7-crisis",
+            "agent_name": "Crisis Agent (Kriz & Acil Durum Yönetimi)",
+            "code": "agent_crisis",
+            "icon": "alert-triangle",
+            "is_active": False,
+            "status": "soon",
+            "status_label": "Yakında Gelecek (Soon)",
+            "model": "qwen2.5:14b (Planlanan)",
+            "embedding_model": settings.EMBEDDING_MODEL,
+            "description": "İş sürekliliği, siber güvenlik alarmları, afet koordinasyonu, acil durum tahliye protokolleri ve kriz iletişim yönergeleri.",
+            "stats": {
+                "total_docs": 0,
+                "total_queries": 0,
+                "authorized_users": 0
+            }
+        },
+        {
+            "agent_id": "agent-8-retention",
+            "agent_name": "Retention Agent (Bağlılık & Elde Tutma)",
+            "code": "agent_retention",
+            "icon": "shield-check",
+            "is_active": False,
+            "status": "soon",
+            "status_label": "Yakında Gelecek (Soon)",
+            "model": "qwen2.5:7b (Planlanan)",
+            "embedding_model": settings.EMBEDDING_MODEL,
+            "description": "Çalışan memnuniyeti ve tükenmişlik erken uyarı sinyalleri, ödüllendirme önerileri ve yetenek kaybını önleme stratejileri.",
             "stats": {
                 "total_docs": 0,
                 "total_queries": 0,

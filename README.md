@@ -412,14 +412,18 @@ Sisteme gelecekte eklenecek farklı uzmanlık alanlarındaki yapay zeka ajanlar�
 
 ```mermaid
 graph TD
-    A[Super Admin - Lv100 Girişi] --> B[Aşama 1: Kurumsal Ajan Filosu - Fleet Hub]
+    A[Super Admin - Lv100 Girişi] --> B[Aşama 1: Kurumsal Ajan Filosu - 8 Ajanlı Fleet Hub]
     
-    B --> C1[🟢 Agent-1: Onboarding & Kurumsal Politika - AKTİF]
-    B --> C2[🟡 Agent-2: Hukuk & Sözleşme Analiz Ajanı - GELİŞTİRME]
-    B --> C3[🟡 Agent-3: Finans & Bütçe Onay Ajanı - GELİŞTİRME]
-    B --> C4[🔵 Agent-4: Müşteri Destek & Saha Ajanı - PLANLAMA]
+    B --> C1[🟢 1. Onboarding Agent - AKTİF & CANLI MVP]
+    B --> C2[🟡 2. Wellness Agent - SOON]
+    B --> C3[🟡 3. HR Intelligence Agent - SOON]
+    B --> C4[🟡 4. Manager Agent - SOON]
+    B --> C5[🟡 5. Culture Agent - SOON]
+    B --> C6[🟡 6. Learning Agent - SOON]
+    B --> C7[🟡 7. Crisis Agent - SOON]
+    B --> C8[🟡 8. Retention Agent - SOON]
     
-    C1 --> D[Aşama 2: Agent-1 Özel Yönetim Konsolu]
+    C1 --> D[Aşama 2: Onboarding Agent Özel Yönetim Konsolu]
     D --> E1[📊 Sekme 1: Genel Bakış & Canlı KPI'lar]
     D --> E2[👥 Sekme 2: Kullanıcı & PBKDF2 Parola/Yetki Yönetimi]
     D --> E3[📁 Sekme 3: Doküman & Vektör Parça Denetimi]
@@ -427,19 +431,23 @@ graph TD
     D --> E5[📜 Sekme 5: Denetim İzi & Canlı Audit Logs]
 ```
 
-### 🎛️ 13.1 Aşama 1: Kurumsal Ajan Filosu (Agent Fleet Hub)
+### 🎛️ 13.1 Aşama 1: Kurumsal Ajan Filosu (8 Ajanlı Fleet Hub)
 - **Erişim:** Üst navigasyon çubuğundaki **"Admin Filosu & Panel"** butonuna basıldığında açılır.
-- **Filo Özet Çubuğu:** Toplam Ajan Sayısı (4 Ajan, 1 Aktif), Toplam İndeksli PDF, Toplam Cevaplanan Soru Sayısı ve 7/24 Sistem Sağlık Durumu (`Healthy`).
-- **Ajan Kartları:**
-  1. **Agent-1 (Kurumsal Onboarding & Politika):** 🟢 Canlı ve aktif. Model: `qwen2.5:7b`, Embedding: `nomic-embed-text`. Üzerindeki **"Ajanı Yönet →"** butonuna basılarak 2. Aşamaya geçilir.
-  2. **Agent-2 (Hukuk & Sözleşme Analiz Ajanı):** 🟡 Geliştirme Aşamasında (Planlanan Model: `qwen2.5:14b`).
-  3. **Agent-3 (Finans & Bütçe Onay Ajanı):** 🟡 Geliştirme Aşamasında (Planlanan Model: `qwen2.5:7b-math`).
-  4. **Agent-4 (Müşteri Destek & Saha Ajanı):** 🔵 Planlama Aşamasında (Planlanan Model: `qwen2.5:7b`).
+- **Filo Özet Çubuğu:** Toplam Ajan Sayısı (8 Ajan, 1 Aktif), Toplam İndeksli PDF, Toplam Cevaplanan Soru Sayısı ve 7/24 Sistem Sağlık Durumu (`Healthy`).
+- **Kurumsal Ajan Kartları:**
+  1. 🟢 **Onboarding Agent (İşe Alım & Kurumsal Politika):** **[AKTİF & CANLI MVP]** Yeni işe başlayan personelin şirket kültürüne, izin haklarına, çalışma prosedürlerine ve departman onay matrislerine adaptasyonunu sağlayan ana onboarding rehberi. Model: `qwen2.5:7b`, Embedding: `nomic-embed-text`. **"Ajanı Yönet →"** butonu ile 2. Aşamaya geçilir.
+  2. 🟡 **Wellness Agent (Esenlik/Sağlık Ajanı):** **[Yakında Gelecek (Soon)]** Çalışanların fiziksel/zihinsel esenlik, ergonomi ve sağlık sigortası destek asistanı.
+  3. 🟡 **HR Intelligence Agent (İK İstihbarat/Veri Ajanı):** **[Yakında Gelecek (Soon)]** Turnover tahminleri, yetenek açığı ve organizasyonel analitik motoru.
+  4. 🟡 **Manager Agent (Yönetici Destek Ajanı):** **[Yakında Gelecek (Soon)]** 1-on-1 görüşme rehberleri, performans değerlendirme ve liderlik asistanı.
+  5. 🟡 **Culture Agent (Kurumsal Kültür Ajanı):** **[Yakında Gelecek (Soon)]** Şirket değerleri, iç topluluklar ve sosyal kulüpler rehberi.
+  6. 🟡 **Learning Agent (Öğrenme & Eğitim Ajanı):** **[Yakında Gelecek (Soon)]** Kişisel eğitim patikaları ve yetkinlik geliştirme motoru.
+  7. 🟡 **Crisis Agent (Kriz & Acil Durum Ajanı):** **[Yakında Gelecek (Soon)]** İş sürekliliği, acil durum protokolleri ve kriz iletişim yönergeleri.
+  8. 🟡 **Retention Agent (Çalışan Bağlılığı/Elde Tutma Ajanı):** **[Yakında Gelecek (Soon)]** Memnuniyet ölçümü, tükenmişlik erken uyarı sinyalleri ve bağlılık stratejileri.
 
 ---
 
-### 🔬 13.2 Aşama 2: Agent-1 Derin Yönetim Konsolu (5 Alt Sekme)
-Agent-1 kartına tıklandığında açılan ve sol üstteki **"← Filoya Dön"** butonuyla her an 1. Aşamaya geri dönülebilen tam kapsamlı yönetim alanıdır:
+### 🔬 13.2 Aşama 2: Onboarding Agent Derin Yönetim Konsolu (5 Alt Sekme)
+Onboarding Agent kartına tıklandığında açılan ve sol üstteki **"← Filoya Dön"** butonuyla her an 1. Aşamaya geri dönülebilen tam kapsamlı yönetim alanıdır:
 
 1. **📊 1. Sekme: Genel Bakış & Canlı KPI'lar (`Overview`):**
    - Toplam Kayıtlı Kullanıcı Sayısı
