@@ -25,16 +25,16 @@ Proje, tek kullanıcılı ve statik prototipten çok kullanıcılı, kurumsal g�
 1. [Arayüz ve API Erişim Linkleri (Gidilen Her Adres)](#1-arayüz-ve-api-erişim-linkleri-gidilen-her-adres)
 2. [Sohbet ve Dokümantasyon Arayüzündeki Her Tuşun ve Bileşenin İşlevi](#2-sohbet-ve-dokümantasyon-arayüzündeki-her-tuşun-ve-bileşenin-işlevi)
 3. [Hibrit Arama, Vektör Uzaklık Hesaplaması ve Veritabanı Mimarisi](#3-hibrit-arama-vektör-uzaklık-hesaplaması-ve-veritabanı-mimarisi)
-4. [Güvenli Kimlik Doğrulama ve Parola Hashleme Mimarisi](#4-güvenli-kimlik-doğrulama-ve-parola-hashleme-mimarisi)
-5. [Donanım Limitleri ve Performans Optimizasyonları (Mac Mini M2 8GB & `k` Parametresi)](#5-donanım-limitleri-ve-performans-optimizasyonları-mac-mini-m2-8gb--k-parametresi)
-6. [Eklenen Departman Mockup Politikaları ve Demo Veri Seti](#6-eklenen-departman-mockup-politikaları-ve-demo-veri-seti)
-7. [Hata Kodları ve Logları Nerede Bulabiliriz?](#7-hata-kodları-ve-logları-nerede-bulabiliriz)
-8. [Sistemi Sıfırdan Tekrar Kurma ve Çalıştırma Rehberi](#8-sistemi-sıfırdan-tekrar-kurma-ve-çalıştırma-rehberi)
-9. [Sistemin İşleyiş Mantığı ve Mimari Şemalar (Grafikler)](#9-sistemin-işleyiş-mantığı-ve-mimari-şemalar-grafikler)
-10. [Giriş Bilgileri, Rol Matrisi ve Güvenlik Mimarisi](#10-giriş-bilgileri-rol-matrisi-ve-güvenlik-mimarisi)
-11. [Ekip Çalışması, Git İş Akışı ve GitHub CI/CD Otomasyonu](#11-ekip-çalışması-git-iş-akışı-ve-github-cicd-otomasyonu)
-12. [Yapay Zeka Ajanları Yönetimi ve AGENTS.md Rehberi](#12-yapay-zeka-ajanları-yönetimi-ve-agentsmd-rehberi)
-13. [Dış Erişim Tüneli ve 7/24 Çökme / Sağlık İzleme Servisi (`tunnel_watcher.py`)](#13-dış-erişim-tüneli-ve-724-çökme--sağlık-izleme-servisi-tunnel_watcherpy)
+4. [Donanım Limitleri ve Performans Optimizasyonları (Mac Mini M2 8GB & `k` Parametresi)](#4-donanım-limitleri-ve-performans-optimizasyonları-mac-mini-m2-8gb--k-parametresi)
+5. [Eklenen Departman Mockup Politikaları ve Demo Veri Seti](#5-eklenen-departman-mockup-politikaları-ve-demo-veri-seti)
+6. [Hata Kodları ve Logları Nerede Bulabiliriz?](#6-hata-kodları-ve-logları-nerede-bulabiliriz)
+7. [Sistemi Sıfırdan Tekrar Kurma ve Çalıştırma Rehberi](#7-sistemi-sıfırdan-tekrar-kurma-ve-çalıştırma-rehberi)
+8. [Sistemin İşleyiş Mantığı ve Mimari Şemalar (Grafikler)](#8-sistemin-işleyiş-mantığı-ve-mimari-şemalar-grafikler)
+9. [Giriş Bilgileri, Rol Matrisi ve Güvenlik Mimarisi](#9-giriş-bilgileri-rol-matrisi-ve-güvenlik-mimarisi)
+10. [Ekip Çalışması, Git İş Akışı ve GitHub CI/CD Otomasyonu](#10-ekip-çalışması-git-iş-akışı-ve-github-cicd-otomasyonu)
+11. [Yapay Zeka Ajanları Yönetimi ve AGENTS.md Rehberi](#11-yapay-zeka-ajanları-yönetimi-ve-agentsmd-rehberi)
+12. [Dış Erişim Tüneli ve 7/24 Çökme / Sağlık İzleme Servisi (`tunnel_watcher.py`)](#12-dış-erişim-tüneli-ve-724-çökme--sağlık-izleme-servisi-tunnel_watcherpy)
+13. [2 Aşamalı Çoklu Ajan Filosu ve Super Admin Komuta Merkezi (Agent Fleet Hub & Governance Console)](#13-2-aşamalı-çoklu-ajan-filosu-ve-super-admin-komuta-merkezi-agent-fleet-hub--governance-console)
 
 ---
 
@@ -403,3 +403,80 @@ Köklü bir değişiklik gerektiğinde izlenecek adımlar:
 - **Dış Erişim (Cloudflare Tunnel):** Cloudflare tüneli otomatik olarak `http://localhost:8005` portunu internete güvenli HTTPS bağlantısıyla açar (`https://*.trycloudflare.com`).
 - **Otomatik E-Posta Bildirimi:** Tünel adresi her yenilendiğinde Apple Mail üzerinden `yunusemrec103@gmail.com` adresine canlı erişim linki iletilir.
 - **Sağlık & Çökme İzleme:** macOS LaunchAgent (`com.nirene.tunnel-watcher.plist`) arka planda 7/24 çalışır ve her 10 saniyede bir `http://localhost:8005/health` adresini denetler. Arka arkaya 3 başarısızlık tespit edilirse yöneticiye anında acil durum çökme e-postası (`🚨 [ACİL UYARI] Nirene AI Sistemi Çöktü`) gönderilir; sistem toparlandığında ise kurtarma bildirimi (`✅ [SİSTEM KURTARILDI]`) iletilir.
+
+---
+
+## 13. 2 Aşamalı Çoklu Ajan Filosu ve Super Admin Komuta Merkezi (Agent Fleet Hub & Governance Console)
+
+Sisteme gelecekte eklenecek farklı uzmanlık alanlarındaki yapay zeka ajanlarını (Hukuk, Finans, Saha Destek vb.) tek merkezden yönetmek ve mevcut **Agent-1 (Onboarding & Kurumsal Politika)** ajanının tam denetimini sağlamak için **2 Aşamalı Çoklu Ajan Komuta Merkezi** geliştirilmiştir.
+
+```mermaid
+graph TD
+    A[Super Admin - Lv100 Girişi] --> B[Aşama 1: Kurumsal Ajan Filosu - Fleet Hub]
+    
+    B --> C1[🟢 Agent-1: Onboarding & Kurumsal Politika - AKTİF]
+    B --> C2[🟡 Agent-2: Hukuk & Sözleşme Analiz Ajanı - GELİŞTİRME]
+    B --> C3[🟡 Agent-3: Finans & Bütçe Onay Ajanı - GELİŞTİRME]
+    B --> C4[🔵 Agent-4: Müşteri Destek & Saha Ajanı - PLANLAMA]
+    
+    C1 --> D[Aşama 2: Agent-1 Özel Yönetim Konsolu]
+    D --> E1[📊 Sekme 1: Genel Bakış & Canlı KPI'lar]
+    D --> E2[👥 Sekme 2: Kullanıcı & PBKDF2 Parola/Yetki Yönetimi]
+    D --> E3[📁 Sekme 3: Doküman & Vektör Parça Denetimi]
+    D --> E4[✅ Sekme 4: Kürasyon Havuzu & Flywheel]
+    D --> E5[📜 Sekme 5: Denetim İzi & Canlı Audit Logs]
+```
+
+### 🎛️ 13.1 Aşama 1: Kurumsal Ajan Filosu (Agent Fleet Hub)
+- **Erişim:** Üst navigasyon çubuğundaki **"Admin Filosu & Panel"** butonuna basıldığında açılır.
+- **Filo Özet Çubuğu:** Toplam Ajan Sayısı (4 Ajan, 1 Aktif), Toplam İndeksli PDF, Toplam Cevaplanan Soru Sayısı ve 7/24 Sistem Sağlık Durumu (`Healthy`).
+- **Ajan Kartları:**
+  1. **Agent-1 (Kurumsal Onboarding & Politika):** 🟢 Canlı ve aktif. Model: `qwen2.5:7b`, Embedding: `nomic-embed-text`. Üzerindeki **"Ajanı Yönet →"** butonuna basılarak 2. Aşamaya geçilir.
+  2. **Agent-2 (Hukuk & Sözleşme Analiz Ajanı):** 🟡 Geliştirme Aşamasında (Planlanan Model: `qwen2.5:14b`).
+  3. **Agent-3 (Finans & Bütçe Onay Ajanı):** 🟡 Geliştirme Aşamasında (Planlanan Model: `qwen2.5:7b-math`).
+  4. **Agent-4 (Müşteri Destek & Saha Ajanı):** 🔵 Planlama Aşamasında (Planlanan Model: `qwen2.5:7b`).
+
+---
+
+### 🔬 13.2 Aşama 2: Agent-1 Derin Yönetim Konsolu (5 Alt Sekme)
+Agent-1 kartına tıklandığında açılan ve sol üstteki **"← Filoya Dön"** butonuyla her an 1. Aşamaya geri dönülebilen tam kapsamlı yönetim alanıdır:
+
+1. **📊 1. Sekme: Genel Bakış & Canlı KPI'lar (`Overview`):**
+   - Toplam Kayıtlı Kullanıcı Sayısı
+   - Son 24 Saat İçinde Aktif Personel Sayısı
+   - Toplam İndeksli Vektör Parçası (Chunk) Sayısı
+   - Toplam Yanıtlanan Soru Hacmi
+   - Ortalama Çıkarım / Yanıt Süresi (ms)
+   - Kullanıcı Memnuniyet Oranı (%100)
+   - Donanım (Apple Silicon GPU), LLM (`qwen2.5:7b`) ve Embedding (`nomic-embed-text`) parametreleri.
+2. **👥 2. Sekme: Kullanıcılar & Güvenlik Yetki Yönetimi (`Users`):**
+   - Sistemdeki tüm kayıtlı kullanıcıların rolleri, departmanları, yetki seviyeleri ve soru sayıları tablo halinde listelenir.
+   - **Yeni Kullanıcı Ekle Modalı:** Super Admin istediği kullanıcı adıyla yeni hesap tanımlayabilir; parola veritabanına salted PBKDF2 (SHA-256 + 100.000 iterasyon) ile hash'lenerek kaydedilir.
+   - **Kullanıcı Düzenleme / Parola Sıfırlama:** Personelin departmanı, rolü, güvenlik seviyesi güncellenebilir veya yeni parola atanabilir.
+   - **Kullanıcı Silme:** Tek tıkla hesap sistemden kaldırılır (`admin` hesabı silinmeye karşı kilitlidir).
+3. **📁 3. Sekme: Dokümanlar & Vektör Havuzu (`Documents`):**
+   - Yüklü PDF'ler, belge kodları (`POL-IK-2026-01` vb.), departmanları, minimum yetki seviyeleri ve parça sayıları listelenir.
+   - **Parçaları İncele Modalı:** Dokümanın bellekteki her bir semantik vektör parçasını (chunk), chunk indeksini ve ham metin kesitini açıp okuma imkânı sunar.
+   - **Yeni PDF İndeksleme ve Silme:** Sisteme yeni PDF yükleme veya eski dokümanları arşivleme/silme işlemleri yürütülür.
+4. **✅ 4. Sekme: Kürasyon Havuzu (`Knowledge Flywheel`):**
+   - Kullanıcıların soru-cevaplara verdiği geri bildirimlerin listelendiği, onaylandığında tekilleştirilerek kalıcı vektör tabanına eklendiği havuzdur.
+5. **📜 5. Sekme: Denetim İzi & Canlı Audit Logs (`Audit Logs`):**
+   - Son 50 soru-cevap kaydı, kullanıcı adı, soru metni, yürütme süresi (ms) ve kullanıcının verdiği geri bildirim (`Faydalı / Hatalı`) anlık olarak izlenir.
+
+---
+
+### 🛡️ 13.3 Super Admin Güvenlik Kısıtlamaları & REST API
+- Çoklu Ajan Paneli ve `/api/admin/*` endpoint'leri yalnızca `clearance_level: 100` (`super_admin`) olan `admin` kullanıcısına açıktır.
+- Diğer roller (`ik_admin`, `hukuk_admin`, `finans_admin`, `staff`) bu butonu arayüzde göremez ve API'ye doğrudan erişmek istediklerinde `403 Forbidden` yanıtı alırlar.
+
+| HTTP Metodu | Endpoint | Açıklama |
+| :--- | :--- | :--- |
+| `GET` | `/api/admin/fleet-overview` | Tüm ajan filosunu, durumlarını ve özet istatistiklerini döner. |
+| `GET` | `/api/admin/metrics` | Kullanıcı, doküman, chunk, soru hacmi, yanıt süresi ve memnuniyet KPI'larını döner. |
+| `GET` | `/api/admin/users` | Kayıtlı tüm kullanıcıları ve kullanım sayaçlarını listeler. |
+| `POST` | `/api/admin/users` | Yeni kullanıcı tanımlar ve parolasını PBKDF2 ile hash'ler. |
+| `PUT` | `/api/admin/users/{uid}` | Kullanıcının rolünü, departmanını, yetkisini günceller veya şifresini sıfırlar. |
+| `DELETE` | `/api/admin/users/{uid}` | Kullanıcı hesabını siler. |
+| `GET` | `/api/admin/audit-logs` | Son 50 denetim izi kaydını listeler. |
+| `GET` | `/api/admin/documents/{id}/chunks` | Bir PDF'in tüm vektör parçalarını (chunk'larını) metinleriyle listeler. |
+
