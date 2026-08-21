@@ -1,6 +1,6 @@
 # Nirene AI Workspace & Enterprise RAG - Kapsamlı Proje ve Mimari Rehberi (`README.md`)
 
-Bu doküman, **Nirene AI Workspace & Enterprise RAG** projesinin mimarisini, sistemin çalışma akışını, kurumsal RBAC/ABAC yetkilendirme modelini, veritabanı şemasını, arayüzdeki her tuşun ve rozetin işlevini, donanım optimizasyonlarını, hata loglarının yerlerini, ekip çalışma kurallarını, yapay zeka ajanları yönetimini ve sistemi sıfırdan kurma adımlarını eksiksiz olarak içermektedir.
+Bu doküman, **Nirene AI Workspace & Enterprise RAG** projesinin mimarisini, sistemin çalışma akışını, kurumsal RBAC/ABAC yetkilendirme modelini, Hibrit Arama (pgvector + Full-Text BM25) motorunu, parola güvenlik mimarisini, arayüzdeki her tuşun ve rozetin işlevini, sohbet geçmişi yönetimini, donanım optimizasyonlarını, hata loglarının yerlerini, ekip çalışma kurallarını, yapay zeka ajanları yönetimini ve sistemi sıfırdan kurma adımlarını eksiksiz olarak içermektedir.
 
 ---
 
@@ -10,12 +10,13 @@ Proje, tek kullanıcılı ve statik prototipten çok kullanıcılı, kurumsal g�
 
 | Bileşen | Önceki Durum (Legacy) | Yeni Mimari (Enterprise) | Geçiş / Tercih Gerekçesi |
 | :--- | :--- | :--- | :--- |
-| **Proje İsmi & Arayüz** | Noovoy AI / Statik Tek Sayfa | **Nirene AI Workspace (İki Aşamalı Lüks Arayüz)** | Minimalist koyu tema (`#0c0c0c`), tam ekran yetkilendirme kapısı ve ChatGPT/Claude benzeri iki aşamalı (Hero -> Chat) akıcı çalışma alanına geçildi. |
-| **Vektör Veritabanı** | `ChromaDB` (SQLite3 dosya tabanlı) | **PostgreSQL 15+ & `pgvector`** (HNSW Cosine İndeksi) | ChromaDB dosya kilitlenme sorunları yaratıyordu ve satır düzeyinde güvenlik (RLS) desteği yoktu. PostgreSQL pgvector ile veritabanı seviyesinde veri güvenliği ve eşzamanlı çoklu kullanıcı sağlandı. |
-| **Yetkilendirme & Güvenlik** | Sabit Python sözlüğü (`USERS_DB`) + Temel JWT | **Supabase GoTrue (Auth) + PostgreSQL RLS & ABAC** | Önceden uygulama katmanında basit if-else ile yapılan yetkilendirme yerine, veritabanı seviyesinde `department` ve `min_clearance_level` filtreli RLS politikaları ile Sıfır Bağlam Sızıntısı (Zero Leakage) garanti altına alındı. |
-| **Veri Yükleme (Ingestion)** | Statik `ingest.py` + `handbook_vectordb_ready.md` | **Dinamik PDF Ingestion API (`PyMuPDF` + `pdfplumber`)** | Sabit dosya bağımlılığı kaldırıldı; SHA-256 hash çakışma kontrolü, tablo korumalı Markdown dönüşümü, versiyonlama ve soft-delete destekli dinamik API'ye geçildi. |
-| **Denetim & Loglama** | Yok (Sadece konsol logları) | **`audit_logs` ve `user_profiles` Metrik Sistemi** | Hangi kullanıcının hangi soruyu sorduğu, harcanan token'lar, kullanılan chunk ID'leri ve yanıt süreleri asenkron olarak kaydedilerek tam denetim izi sağlandı. |
-| **Bilgi Kürasyonu** | Manuel müdahale | **Kurumsal Bilgi Havuzu (`Knowledge Flywheel`)** | Kullanıcı geri bildirimleri (`+1/-1`) ve admin onayıyla (`knowledge_staging`) model yanıtlarının kurumsal hafızaya otomatik eklenmesi sağlandı. |
+| **Proje İsmi & Arayüz** | Noovoy AI / Statik Tek Sayfa | **Nirene AI Workspace (100% SVG, İki Aşamalı Lüks Arayüz)** | Minimalist koyu tema (`#0c0c0c`), tam ekran yetkilendirme kapısı, emojilerden arındırılmış 100% saf SVG vektör ikonları ve akıcı iki aşamalı (Hero -> Chat) çalışma alanına geçildi. |
+| **Arama Motoru** | `ChromaDB` / Saf Vektör Araması | **Hibrit Arama (`pgvector` HNSW + PostgreSQL `tsvector` FTS)** | Saf vektör aramasının madde ve kural numaralarındaki (örn. *Madde 14/B*, *POL-IK-01*) körlüğü giderildi; Dense Cosine ($0.65$) + Sparse Keyword ($0.35$) hibrit skorlama kuruldu. |
+| **Yetkilendirme & Güvenlik** | Sabit Python sözlüğü (`USERS_DB`) + Düz Metin Şifreler | **Tuzlu PBKDF2/Bcrypt Hash + PostgreSQL RLS & ABAC** | Kod içindeki sabit şifreler temizlendi; `user_profiles` tablosuna 200k iterasyonlu tuzlu parola hashleme ve veritabanı seviyesinde RLS politikaları entegre edildi. |
+| **Kaynak Gösterimi & Alıntı** | Düz metin alıntı | **Tıklanabilir Kaynak Rozeti & Sıfır Yük (Zero-Overhead) Paragraf Modalı** | Alıntılanan belge kodu ve sayfa numarası tıklanabilir butona dönüştürüldü; tıklandığında sunucuya ek yük bindirmeden istemcide anında kaynak paragraf kesiti açılır. |
+| **Sohbet & Oturum Yönetimi** | Sayfa yenilenince kaybolan DOM hafızası | **Sohbet Geçmişi Çekmecesi (Chat History Drawer) & F5 Koruması** | Kullanıcının önceki oturumları `audit_logs` üzerinden sol paneldeki açılır çekmecede listelenir; tarayıcı yenilendiğinde oturum otomatik sürdürülür. |
+| **Veri Yükleme (Ingestion)** | Düz 750 Karakter Kesme | **Hiyerarşik Markdown Bölücü (`PyMuPDF` + `pdfplumber` + Header Splitter)** | Metinlerin cümle ortasından bölünmesi engellendi; Markdown başlıklarına (`#`, `##`, `###`), tablolara ve madde listelerine duyarlı akıllı parçalamaya geçildi. |
+| **Denetim & Bilgi Kürasyonu** | Manuel müdahale | **Semantik Tekilleştirme Destekli Kürasyon Havuzu (`Knowledge Flywheel`)** | Kullanıcı geri bildirimleri (`+1/-1`) admin havuzuna düşer; onay anında `%88+` benzerlikteki sorular tespit edilerek mükerrer vektör kirliliği engellenir. |
 | **LLM & Embedding Köprüsü** | Konteyner içi LangChain Community | **Host Seviyesinde Doğrudan Ollama API Köprüsü (`httpx`)** | Mac Mini M2 Metal GPU hızlandırmasını kaybetmemek için konteynerden host Ollama'ya (`host.docker.internal:11434`) bağlanan hafif, asenkron istemciye geçildi. |
 
 ---
@@ -23,16 +24,17 @@ Proje, tek kullanıcılı ve statik prototipten çok kullanıcılı, kurumsal g�
 ## 📌 İÇİNDEKİLER
 1. [Arayüz ve API Erişim Linkleri (Gidilen Her Adres)](#1-arayüz-ve-api-erişim-linkleri-gidilen-her-adres)
 2. [Sohbet ve Dokümantasyon Arayüzündeki Her Tuşun ve Bileşenin İşlevi](#2-sohbet-ve-dokümantasyon-arayüzündeki-her-tuşun-ve-bileşenin-işlevi)
-3. [Vektör Uzaklık Hesaplaması, Benzerlik Skorları ve Veritabanı Mimarisi](#3-vektör-uzaklık-hesaplaması-benzerlik-skorları-ve-veritabanı-mimarisi)
-4. [Donanım Limitleri ve Performans Optimizasyonları (Mac Mini M2 8GB & `k` Parametresi)](#4-donanım-limitleri-ve-performans-optimizasyonları-mac-mini-m2-8gb--k-parametresi)
-5. [Eklenen Departman Mockup Politikaları ve Demo Veri Seti](#5-eklenen-departman-mockup-politikaları-ve-demo-veri-seti)
-6. [Hata Kodları ve Logları Nerede Bulabiliriz?](#6-hata-kodları-ve-logları-nerede-bulabiliriz)
-7. [Sistemi Sıfırdan Tekrar Kurma ve Çalıştırma Rehberi](#7-sistemi-sıfırdan-tekrar-kurma-ve-çalıştırma-rehberi)
-8. [Sistemin İşleyiş Mantığı ve Mimari Şemalar (Grafikler)](#8-sistemin-işleyiş-mantığı-ve-mimari-şemalar-grafikler)
-9. [Giriş Bilgileri, Rol Matrisi ve Güvenlik Mimarisi](#9-giriş-bilgileri-rol-matrisi-ve-güvenlik-mimarisi)
-10. [Ekip Çalışması, Git İş Akışı ve GitHub CI/CD Otomasyonu](#10-ekip-çalışması-git-iş-akışı-ve-github-cicd-otomasyonu)
-11. [Yapay Zeka Ajanları Yönetimi ve AGENTS.md Rehberi](#11-yapay-zeka-ajanları-yönetimi-ve-agentsmd-rehberi)
-12. [Dış Erişim Tüneli ve 7/24 Çökme / Sağlık İzleme Servisi (`tunnel_watcher.py`)](#12-dış-erişim-tüneli-ve-724-çökme--sağlık-izleme-servisi-tunnel_watcherpy)
+3. [Hibrit Arama, Vektör Uzaklık Hesaplaması ve Veritabanı Mimarisi](#3-hibrit-arama-vektör-uzaklık-hesaplaması-ve-veritabanı-mimarisi)
+4. [Güvenli Kimlik Doğrulama ve Parola Hashleme Mimarisi](#4-güvenli-kimlik-doğrulama-ve-parola-hashleme-mimarisi)
+5. [Donanım Limitleri ve Performans Optimizasyonları (Mac Mini M2 8GB & `k` Parametresi)](#5-donanım-limitleri-ve-performans-optimizasyonları-mac-mini-m2-8gb--k-parametresi)
+6. [Eklenen Departman Mockup Politikaları ve Demo Veri Seti](#6-eklenen-departman-mockup-politikaları-ve-demo-veri-seti)
+7. [Hata Kodları ve Logları Nerede Bulabiliriz?](#7-hata-kodları-ve-logları-nerede-bulabiliriz)
+8. [Sistemi Sıfırdan Tekrar Kurma ve Çalıştırma Rehberi](#8-sistemi-sıfırdan-tekrar-kurma-ve-çalıştırma-rehberi)
+9. [Sistemin İşleyiş Mantığı ve Mimari Şemalar (Grafikler)](#9-sistemin-işleyiş-mantığı-ve-mimari-şemalar-grafikler)
+10. [Giriş Bilgileri, Rol Matrisi ve Güvenlik Mimarisi](#10-giriş-bilgileri-rol-matrisi-ve-güvenlik-mimarisi)
+11. [Ekip Çalışması, Git İş Akışı ve GitHub CI/CD Otomasyonu](#11-ekip-çalışması-git-iş-akışı-ve-github-cicd-otomasyonu)
+12. [Yapay Zeka Ajanları Yönetimi ve AGENTS.md Rehberi](#12-yapay-zeka-ajanları-yönetimi-ve-agentsmd-rehberi)
+13. [Dış Erişim Tüneli ve 7/24 Çökme / Sağlık İzleme Servisi (`tunnel_watcher.py`)](#13-dış-erişim-tüneli-ve-724-çökme--sağlık-izleme-servisi-tunnel_watcherpy)
 
 ---
 
@@ -43,7 +45,7 @@ Soru-Cevap servisi ve yönetim arayüzü yerel ve tünel ortamında şu portlar 
 ### 🔗 Doğrudan Tıklanabilir Linkler ve İşlevleri:
 
 1. 💬 **[Görsel Yapay Zeka Sohbet & Yönetim Arayüzü](http://localhost:8005/)** (`http://localhost:8005/`)
-   - **Ne İşe Yarar?** Kullanıcıların giriş yapıp personel politikalarıyla ilgili soru sorabildiği, Admin'lerin PDF yükleyip onay bekleyen kürasyonları yönettiği modern web arayüzüdür.
+   - **Ne İşe Yarar?** Kullanıcıların giriş yapıp personel politikalarıyla ilgili soru sorabildiği, geçmiş oturumlarını inceleyebildiği, Super Admin'lerin PDF yükleyip onay bekleyen kürasyonları yönettiği modern web arayüzüdür.
 2. 🌐 **[Yerel Swagger UI Test Arayüzü](http://localhost:8005/docs)** (`http://localhost:8005/docs`)
    - **Ne İşe Yarar?** FastAPI'nin otomatik oluşturduğu OpenAPI 3.1 test ekranıdır. `/api/auth/*`, `/api/documents/*`, `/api/chat/*` ve `/api/curation/*` endpoint'lerini test etmeyi sağlar.
 3. 📑 **[Yerel ReDoc Dokümantasyonu](http://localhost:8005/redoc)** (`http://localhost:8005/redoc`)
@@ -53,7 +55,7 @@ Soru-Cevap servisi ve yönetim arayüzü yerel ve tünel ortamında şu portlar 
 5. 🔐 **[GoTrue Auth Servisi](http://localhost:9999/)** (`http://localhost:9999/`)
    - **Ne İşe Yarar?** Supabase GoTrue kimlik doğrulama, kullanıcı oluşturma ve JWT token dağıtım mikroservisidir.
 6. 🗄️ **[PostgreSQL & pgvector Veritabanı](http://localhost:5432/)** (`localhost:5432`)
-   - **Ne İşe Yarar?** RLS politikaları, vektör indeksleri (HNSW) ve denetim loglarını barındıran ana ilişkisel veritabanıdır.
+   - **Ne İşe Yarar?** RLS politikaları, vektör indeksleri (HNSW), full-text arama indeksleri (GIN) ve denetim loglarını barındıran ana ilişkisel veritabanıdır.
 
 ---
 
@@ -61,62 +63,50 @@ Soru-Cevap servisi ve yönetim arayüzü yerel ve tünel ortamında şu portlar 
 
 ### 💬 Web Sohbet ve Yönetim Arayüzü (`index.html`) Tuşları & Rozetleri:
 
-- **🏷️ Kaynak Atıf Rozeti (`GENEL · Lv10 (%94 Eşleşme)`):**
-  - **Departman ve Seviye (`GENEL · Lv10`, `FINANS · Lv50`, `HUKUK · Lv50` vb.):** Cevabın üretilmesinde kullanılan kaynak bilginin hangi departmana ait olduğunu ve bu bilgiye erişmek için kullanıcının sahip olması gereken asgari yetki/güvenlik derecesini (*Clearance Level*) gösterir.
-  - **Yüzde İfadesi (`%94 Eşleşme`, `%88 Eşleşme`):** Vektör veritabanındaki (*pgvector*) **Kosinüs Benzerlik Skorudur** (*Vector Cosine Similarity*). Sorulan cümlenin semantik/anlamsal vektörü ile ilgili politika metninin anlamsal örtüşme oranını gösterir (%90+ çok yüksek kesinlik ve örtüşmeyi temsil eder).
-- **👍 / 👎 Geri Bildirim Butonları (Faydalı / Faydasız):**
+- **🕒 Sohbet Geçmişi Butonu (`Geçmiş`):**
+  - Sol üst köşedeki bu butona tıklandığında sol taraftan açılan şık bir çekmece (Drawer) ile kullanıcının önceki soru-cevap oturumları listelenir. Tıklanan oturumun tüm mesaj akışı ekrana anında geri yüklenir.
+- **🏷️ Tıklanabilir Kaynak Atıf Butonları (`[POL-IK-01] Personel El Kitabı · S.1 (%94)`):**
+  - **İnteraktif Önizleme:** Her kaynak atfı tıklanabilir bir buton olarak üretilir. Tıklandığında sunucuya hiçbir ek yük bindirmeden ilgili sayfa numarası, yetki seviyesi ve tam kaynak paragrafı modalda açılır.
+- **👍 / 👎 Geri Bildirim Butonları (Faydalı / Hatalı):**
   - **1. Denetim İzi (Audit Log):** Kullanıcı bir cevabı beğendiğinde veya yetersiz bulduğunda, `audit_logs` tablosundaki ilgili kayda `user_feedback: 1` veya `-1` olarak anında işlenir.
-  - **2. Kurumsal Bilgi Havuzu ve Kürasyon (`Knowledge Flywheel`):** Geri bildirim alan soru-cevaplar `knowledge_staging` tablosuna aktarılır. Departman yöneticileri veya Super Admin **Curation Pool** ekranından bu soru-cevapları inceleyip onaylayarak (*Approve*) kalıcı vektör belleğine dahil edebilir. Böylece sistem kurumsal hafızasını insan onayıyla sürekli zenginleştirir.
+  - **2. Kurumsal Bilgi Havuzu ve Kürasyon (`Knowledge Flywheel`):** Geri bildirim alan soru-cevaplar `knowledge_staging` tablosuna aktarılır. Semantik tekilleştirme algoritması (%88+ benzerlik) ile mükerrer kayıtlar birleştirilerek admin onayına sunulur.
 - **⚡ Fast Role Fill (Tek Tıkla Rol Doldurucu):**
   - Giriş ekranında Super Admin, İK Admin, Hukuk Admin, Finans Admin ve Genel Personel hesapları arasında tek tıkla geçiş yapmayı sağlar.
 - **✨ Dinamik Soru Öneri Çipleri (Smart Chips):**
-  - Giriş yapan kullanıcının departmanına ve yetki seviyesine göre ana ekrandaki öneri sorularını dinamik olarak değiştirir (Örn: Finans Admin için bütçe onayları, Hukuk Admin için NDA/Dava limitleri, Personel için izin hakları).
+  - Giriş yapan kullanıcının departmanına ve yetki seviyesine göre ana ekrandaki öneri sorularını dinamik olarak değiştirir.
 - **➕ New Chat (+ Yeni Sohbet) Butonu:**
-  - Mevcut sohbet ekranını sıfırlar ve kullanıcıyı temiz ana karşılama ekranına (Hero Composer) geri döndürür.
+  - Mevcut oturumu tamamlar, benzersiz yeni bir `session_id` üreterek kullanıcıyı temiz ana karşılama ekranına (Hero Composer) geri döndürür.
 - **🌐 Dil Değiştirme Butonu (TR / EN):**
-  - Arayüz metinlerini, sistem istemlerini ve öneri çiplerini tek tıkla Türkçe ve İngilizce arasında dönüştürür.
+  - Arayüz metinlerini, sistem istemlerini, geçmiş başlıklarını ve öneri çiplerini tek tıkla Türkçe ve İngilizce arasında dönüştürür.
 - **📤 Upload PDF (Doküman Yükle):**
-  - *Kim Görebilir?* Sadece `super_admin` rolüne sahip kullanıcılar.
-  - *Ne Yapar?* Departman ve minimum güvenlik seviyesi belirterek sisteme yeni PDF yükler, SHA-256 özetini çıkarır, tabloları Markdown formatına dönüştürür ve parçaları vektörleştirir.
+  - *Kim Görebilir?* Sadece `super_admin` rolüne sahip kullanıcılar (diğer kullanıcılarda buton tamamen gizlenir).
+  - *Ne Yapar?* Belge kodu, başlık, departman ve güvenlik seviyesi belirterek sisteme yeni PDF yükler, Hiyerarşik Markdown parçalayıcı ile indeksler.
 - **✅ Curation Pool (Kürasyon Onay Havuzu):**
   - *Kim Görebilir?* Departman Adminleri ve Super Admin.
-  - *Ne Yapar?* Kullanıcılar tarafından oylanan soru-cevap çiftlerini inceler, onaylandığında kalıcı doküman parçası olarak vektör veritabanına ekler.
 - **📁 Documents (Dokümanlar Listesi):**
-  - Kullanıcının yetkisi dahilindeki aktif politika dokümanlarını, departmanlarını, güvenlik seviyelerini ve parça sayılarını listeler; Super Admin'e doküman arşivleme/silme imkanı sunar.
+  - Kullanıcının yetkisi dahilindeki aktif politika dokümanlarını belge kodlarıyla birlikte listeler.
 - **🚪 Sign Out (Çıkış Yap) Butonu:**
-  - Tarayıcının `localStorage` alanındaki JWT token ve rol bilgilerini temizler, tam ekran login kapısına döner.
-- **➔ Send (Gönder) Butonu / Enter:**
-  - Soruyu asenkron olarak `/api/chat/query` endpoint'ine iletir ve Server-Sent Events (SSE) ile yanıtı kelime kelime ekrana basar.
+  - Tarayıcının `localStorage` alanındaki JWT token, rol ve oturum bilgilerini temizler, tam ekran login kapısına döner.
 
 ---
 
-## 3. Vektör Uzaklık Hesaplaması, Benzerlik Skorları ve Veritabanı Mimarisi
+## 3. Hibrit Arama, Vektör Uzaklık Hesaplaması ve Veritabanı Mimarisi
 
-Sistemdeki doküman arama mekanizması **PostgreSQL pgvector** ve **Ollama `nomic-embed-text`** modellerini kullanır:
+Sistemdeki doküman arama mekanizması **PostgreSQL pgvector** ve **PostgreSQL Full-Text Search (tsvector)** hibrit mimarisini kullanır:
 
-### 3.1 Uzaklık Metriği ve Benzerlik Formülü (`vector_cosine_ops`):
-- Vektör veritabanı tablosu Cosine Distance metriği ile yapılandırılmıştır (`embedding vector(768)`).
-- İki vektör arasındaki Cosine Distance $D = 1 - CosineSimilarity$ formülüyle hesaplanır.
-- **Kosinüs Benzerliği (Similarity):** $1 - (dc.embedding \Leftrightarrow query\_embedding)$
-- **Skor Değerleri:**
-  - $1.0$ (%100): Birebir aynı anlamsal içerik.
-  - $0.80 - 0.95$ (%80 - %95): Yüksek derecede alakalı içerik.
-  - $0.40$ altı: İlgisiz veya zayıf eşleşen içerik.
+### 3.1 Hibrit Arama RPC Fonksiyonu (`match_documents_hybrid`):
+- **Vektör Arama Ağırlığı ($0.65$):** `1 - (dc.embedding <=> query_embedding)` ile anlamsal kosinüs benzerliği.
+- **Kelime Arama Ağırlığı ($0.35$):** `ts_rank_cd(dc.tsv, plainto_tsquery('simple', query_text))` ile tam kelime, madde ve kod eşleşmesi.
+- **Birleşik Hibrit Skor:**
+  $$Score_{Hybrid} = (Score_{Vector} \times 0.65) + (Score_{FTS} \times 0.35)$$
+- Bu sayede *"Madde 14/B"*, *"POL-IK-01"* veya *"HR-402"* gibi spesifik terimler aranırken tam isabet sağlanır.
 
-### 3.2 Skor Filtreleme Eşiği (`SIMILARITY_THRESHOLD = 0.40`):
-- Kullanıcı soru sorduğunda `match_documents` fonksiyonu en yakın $k=5$ doküman parçasını getirir.
-- Benzerliği $0.40$'tan büyük veya eşit ($Similarity \ge 0.40$) olan dokümanlar LLM'e bağlam (Context) olarak iletilir.
-- Eğer kullanıcının yetkisi dahilinde bu eşiği aşan hiçbir doküman bulunamazsa, sistem LLM'e halüsinasyon ürettirmeden anında `"Bu bilgi şirket politikalarında veya yetkiniz dahilindeki belgelerde bulunmamaktadır."` yanıtını döner.
-
-### 3.3 Veritabanı Tablo Yapısı ve Şema (`db/schema.sql`):
-1. `documents`: Başlık, SHA-256 hash, departman (`hukuk`, `finans`, `ik`, `genel`), `min_clearance_level`, versiyon ve aktiflik durumunu tutar.
-2. `document_chunks`: Parçalanmış metinleri, metadata etiketlerini ve 768 boyutlu `vector(768)` embedding dizilerini HNSW Cosine indeksiyle (`vector_cosine_ops`) barındırır.
-3. `user_profiles`: Kullanıcının departmanı, güvenlik seviyesi, toplam sorgu sayısı ve aktivite/güven skorlarını takip eder.
-4. `audit_logs`: Kullanıcının sorgusu, kullanılan chunk ID'leri, LLM çıktısı, yürütme süresi (ms) ve harcanan token'ları arşivler.
+### 3.2 Veritabanı Tablo Yapısı ve Şema (`db/schema.sql`):
+1. `documents`: Başlık, `document_code`, SHA-256 hash, departman (`hukuk`, `finans`, `ik`, `genel`), `min_clearance_level`, versiyon ve aktiflik durumunu tutar.
+2. `document_chunks`: Parçalanmış metinleri, `tsv` (stored tsvector), metadata etiketlerini ve 768 boyutlu `vector(768)` embedding dizilerini HNSW ve GIN indeksleriyle barındırır.
+3. `user_profiles`: `username`, `password_hash`, kullanıcının departmanı, güvenlik seviyesi, toplam sorgu sayısı ve aktivite/güven skorlarını takip eder.
+4. `audit_logs`: Kullanıcının sorgusu, `session_id`, kullanılan chunk ID'leri, LLM çıktısı, yürütme süresi (ms) ve harcanan token'ları arşivler.
 5. `knowledge_staging`: Onay bekleyen kullanıcı geri bildirimlerini (`pending`, `approved`, `rejected`) tutar.
-
-### 3.4 Satır Düzeyinde Güvenlik (Row-Level Security - RLS & ABAC):
-Tüm tablolarda `FORCE ROW LEVEL SECURITY` aktiftir. Bir kullanıcı sorgu attığında, kullanıcının JWT claims içeriğindeki `department` ve `clearance_level` değerleri veritabanı oturumuna `SET LOCAL ROLE authenticated;` ve `SET LOCAL request.jwt.claims` ile enjekte edilir. `SECURITY INVOKER` yetkisine sahip `match_documents` fonksiyonu yalnızca kullanıcının görmeye yetkili olduğu chunk'ları vektör benzerliğine göre sıralar.
 
 ---
 

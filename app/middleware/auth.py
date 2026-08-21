@@ -7,6 +7,33 @@ from jose import jwt, JWTError
 from app.config import settings
 from app.schemas.models import UserContext
 
+import hashlib
+import hmac
+import secrets
+
+def get_password_hash(password: str) -> str:
+    """PBKDF2-SHA256 ile tuzlu ve güvenli parola hash'i üretir."""
+    salt = secrets.token_hex(16)
+    iterations = 200000
+    key = hashlib.pbkdf2_hmac('sha256', password.encode('utf-8'), salt.encode('utf-8'), iterations)
+    return f"pbkdf2_sha256${iterations}${salt}${key.hex()}"
+
+def verify_password(plain_password: str, hashed_password: str) -> bool:
+    """Verilen düz parolanın hash ile eşleştiğini sabit sürede (timing-attack korumalı) doğrular."""
+    if not hashed_password or not plain_password:
+        return False
+    try:
+        parts = hashed_password.split('$')
+        if len(parts) != 4 or parts[0] != 'pbkdf2_sha256':
+            return False
+        iterations = int(parts[1])
+        salt = parts[2]
+        expected_hex = parts[3]
+        key = hashlib.pbkdf2_hmac('sha256', plain_password.encode('utf-8'), salt.encode('utf-8'), iterations)
+        return hmac.compare_digest(key.hex(), expected_hex)
+    except Exception:
+        return False
+
 security = HTTPBearer()
 
 # Yerel Hızlı Kullanıcı Rol Haritası (Fallback & Local Auth)

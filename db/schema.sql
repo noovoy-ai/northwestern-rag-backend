@@ -28,6 +28,7 @@ CREATE EXTENSION IF NOT EXISTS "vector";
 CREATE TABLE IF NOT EXISTS documents (
     id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
     title TEXT NOT NULL,
+    document_code VARCHAR(50),             -- örn: 'POL-IK-2026-01', 'SOP-IT-004'
     file_hash VARCHAR(64) NOT NULL,
     department VARCHAR(50) NOT NULL,       -- 'hukuk', 'finans', 'ik', 'genel'
     min_clearance_level INT NOT NULL,       -- 10: User, 50: Admin, 100: Super Admin
@@ -40,6 +41,7 @@ CREATE TABLE IF NOT EXISTS documents (
 );
 
 CREATE INDEX IF NOT EXISTS idx_docs_hash ON documents(file_hash);
+CREATE INDEX IF NOT EXISTS idx_docs_code ON documents(document_code);
 CREATE INDEX IF NOT EXISTS idx_docs_active ON documents(is_active);
 
 -- 2. Doküman Vektör Parçaları (Chunks) Tablosu
@@ -53,17 +55,21 @@ CREATE TABLE IF NOT EXISTS document_chunks (
     is_active BOOLEAN DEFAULT TRUE,
     source_type VARCHAR(30) DEFAULT 'pdf', -- 'pdf', 'curated_qa', 'api'
     metadata JSONB DEFAULT '{}'::jsonb,
-    embedding vector(768)                 -- nomic-embed-text boyutu 768
+    embedding vector(768),                -- nomic-embed-text boyutu 768
+    tsv tsvector GENERATED ALWAYS AS (to_tsvector('simple', content)) STORED
 );
 
 CREATE INDEX IF NOT EXISTS idx_chunks_hnsw ON document_chunks 
 USING hnsw (embedding vector_cosine_ops);
+CREATE INDEX IF NOT EXISTS idx_chunks_tsv ON document_chunks USING gin (tsv);
 CREATE INDEX IF NOT EXISTS idx_chunks_dept_level ON document_chunks(department, min_clearance_level);
 
 -- 3. Kullanıcı Profil ve Skor Tablosu
 CREATE TABLE IF NOT EXISTS user_profiles (
     user_id UUID PRIMARY KEY,
+    username VARCHAR(50) UNIQUE,
     email TEXT NOT NULL,
+    password_hash VARCHAR(255),
     role_name VARCHAR(50) NOT NULL,        -- 'user-hukuk', 'admin-finans', 'super_admin'
     department VARCHAR(50) NOT NULL,
     clearance_level INT NOT NULL DEFAULT 10,
@@ -168,7 +174,10 @@ RETURNS TABLE (
     content TEXT,
     department VARCHAR,
     min_clearance_level INT,
-    similarity FLOAT
+    similarity FLOAT,
+    document_title TEXT,
+    document_code VARCHAR,
+    metadata JSONB
 )
 LANGUAGE plpgsql
 SECURITY INVOKER
@@ -181,10 +190,72 @@ BEGIN
         dc.content,
         dc.department,
         dc.min_clearance_level,
-        (1 - (dc.embedding <=> query_embedding))::FLOAT AS similarity
+        (1 - (dc.embedding <=> query_embedding))::FLOAT AS similarity,
+        COALESCE(d.title, 'Kurumsal Belge') AS document_title,
+        COALESCE(d.document_code, '') AS document_code,
+        dc.metadata AS metadata
     FROM document_chunks dc
+    LEFT JOIN documents d ON dc.document_id = d.id
     WHERE (1 - (dc.embedding <=> query_embedding)) >= similarity_threshold
     ORDER BY dc.embedding <=> query_embedding
+    LIMIT match_count;
+END;
+$$;
+
+-- -------------------------------------------------------------
+-- HİBRİT ARAMA RPC FONKSİYONU (Vektör + Full-Text BM25/tsvector)
+-- -------------------------------------------------------------
+CREATE OR REPLACE FUNCTION match_documents_hybrid(
+    query_embedding vector(768),
+    query_text TEXT,
+    match_count INT DEFAULT 5,
+    similarity_threshold FLOAT DEFAULT 0.35,
+    vector_weight FLOAT DEFAULT 0.65,
+    keyword_weight FLOAT DEFAULT 0.35
+)
+RETURNS TABLE (
+    id UUID,
+    document_id UUID,
+    content TEXT,
+    department VARCHAR,
+    min_clearance_level INT,
+    similarity FLOAT,
+    document_title TEXT,
+    document_code VARCHAR,
+    metadata JSONB
+)
+LANGUAGE plpgsql
+SECURITY INVOKER
+AS $$
+DECLARE
+    clean_query TEXT := TRIM(query_text);
+BEGIN
+    RETURN QUERY
+    SELECT
+        dc.id,
+        dc.document_id,
+        dc.content,
+        dc.department,
+        dc.min_clearance_level,
+        (
+            ((1 - (dc.embedding <=> query_embedding)) * vector_weight) +
+            (CASE WHEN clean_query <> '' AND dc.tsv @@ plainto_tsquery('simple', clean_query)
+                  THEN (ts_rank_cd(dc.tsv, plainto_tsquery('simple', clean_query)) / (ts_rank_cd(dc.tsv, plainto_tsquery('simple', clean_query)) + 1.0)) * keyword_weight
+                  ELSE 0.0 END)
+        )::FLOAT AS similarity,
+        COALESCE(d.title, 'Kurumsal Belge') AS document_title,
+        COALESCE(d.document_code, '') AS document_code,
+        dc.metadata AS metadata
+    FROM document_chunks dc
+    LEFT JOIN documents d ON dc.document_id = d.id
+    WHERE (1 - (dc.embedding <=> query_embedding)) >= similarity_threshold
+       OR (clean_query <> '' AND dc.tsv @@ plainto_tsquery('simple', clean_query))
+    ORDER BY (
+        ((1 - (dc.embedding <=> query_embedding)) * vector_weight) +
+        (CASE WHEN clean_query <> '' AND dc.tsv @@ plainto_tsquery('simple', clean_query)
+              THEN (ts_rank_cd(dc.tsv, plainto_tsquery('simple', clean_query)) / (ts_rank_cd(dc.tsv, plainto_tsquery('simple', clean_query)) + 1.0)) * keyword_weight
+              ELSE 0.0 END)
+    ) DESC
     LIMIT match_count;
 END;
 $$;

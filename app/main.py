@@ -16,7 +16,7 @@ from app.schemas.models import (
 )
 from app.middleware.auth import (
     get_current_user, require_super_admin, require_admin,
-    create_jwt_token, LOCAL_USER_METADATA
+    create_jwt_token, get_password_hash, verify_password, LOCAL_USER_METADATA
 )
 from app.services.ingestion import process_and_ingest_pdf
 from app.services.rag_engine import execute_rag_query, stream_rag_query
@@ -39,6 +39,32 @@ async def lifespan(app: FastAPI):
             command_timeout=60
         )
         print("[BAŞARILI] Veritabanı bağlantı havuzu aktif.")
+        
+        # Default kullanıcıları güvenli parola hash'leriyle user_profiles tablosuna tohumla (seed)
+        async with db_pool.acquire() as conn:
+            default_users = [
+                ("admin", settings.ADMIN_PASSWORD, "super_admin", "genel", 100, "admin@northwestern.edu"),
+                ("staff", settings.STAFF_PASSWORD, "user-genel", "genel", 10, "staff@northwestern.edu"),
+                ("ik_admin", "ik*2026!", "admin-ik", "ik", 50, "ik_admin@northwestern.edu"),
+                ("hukuk_admin", "hukuk*2026!", "admin-hukuk", "hukuk", 50, "hukuk_admin@northwestern.edu"),
+                ("finans_admin", "finans*2026!", "admin-finans", "finans", 50, "finans_admin@northwestern.edu"),
+            ]
+            for uname, plain_pw, role, dept, clearance, email in default_users:
+                uid = uuid.uuid5(uuid.NAMESPACE_DNS, uname)
+                pw_hash = get_password_hash(plain_pw)
+                await conn.execute(
+                    """
+                    INSERT INTO user_profiles (user_id, username, email, password_hash, role_name, department, clearance_level)
+                    VALUES ($1, $2, $3, $4, $5, $6, $7)
+                    ON CONFLICT (user_id) DO UPDATE 
+                    SET username = EXCLUDED.username,
+                        password_hash = EXCLUDED.password_hash,
+                        role_name = EXCLUDED.role_name,
+                        department = EXCLUDED.department,
+                        clearance_level = EXCLUDED.clearance_level;
+                    """,
+                    uid, uname, email, pw_hash, role, dept, clearance
+                )
     except Exception as e:
         print(f"[UYARI] Veritabanı havuzu başlatılamadı: {e}")
         db_pool = None
@@ -99,27 +125,28 @@ async def healthcheck():
 # -------------------------------------------------------------
 @app.post("/api/auth/login", response_model=TokenResponse)
 @app.post("/api/login", response_model=TokenResponse) # Geriye dönük uyumluluk
-def login(request: LoginRequest):
-    """Kullanıcı adı ve şifre ile GoTrue uyumlu JWT Token üretir."""
-    # Yerel kullanıcı ve şifre kontrolü
-    passwords = {
-        "admin": settings.ADMIN_PASSWORD,
-        "staff": settings.STAFF_PASSWORD,
-        "ik_admin": "ik*2026!",
-        "hukuk_admin": "hukuk*2026!",
-        "finans_admin": "finans*2026!"
-    }
-    expected_pass = passwords.get(request.username)
-    if not expected_pass or expected_pass != request.password:
-        raise HTTPException(status_code=401, detail="Kullanıcı adı veya şifre hatalı.")
-
-    meta = LOCAL_USER_METADATA.get(request.username, {
-        "role": "user-genel",
-        "department": "genel",
-        "clearance_level": 10
-    })
-    token = create_jwt_token(request.username, meta)
+async def login(request: LoginRequest, pool = Depends(get_db)):
+    """Kullanıcı adı ve şifre ile veritabanından güvenli PBKDF2 hash doğrulaması yaparak JWT üretir."""
+    uname = request.username.strip()
+    async with pool.acquire() as conn:
+        row = await conn.fetchrow(
+            "SELECT user_id, username, email, password_hash, role_name, department, clearance_level FROM user_profiles WHERE username = $1",
+            uname
+        )
     
+    if not row or not row["password_hash"]:
+        raise HTTPException(status_code=401, detail="Kullanıcı adı veya şifre hatalı.")
+        
+    if not verify_password(request.password, row["password_hash"]):
+        raise HTTPException(status_code=401, detail="Kullanıcı adı veya şifre hatalı.")
+        
+    meta = {
+        "role": row["role_name"],
+        "department": row["department"],
+        "clearance_level": row["clearance_level"],
+        "email": row["email"]
+    }
+    token = create_jwt_token(row["username"], meta)
     return TokenResponse(
         access_token=token,
         role=meta["role"],
@@ -139,6 +166,7 @@ def get_current_user_profile(user: UserContext = Depends(get_current_user)):
 async def upload_pdf_document(
     file: UploadFile = File(...),
     title: str = Form(...),
+    document_code: Optional[str] = Form(None),
     department: str = Form("genel"),
     min_clearance_level: int = Form(10),
     user: UserContext = Depends(require_super_admin),
@@ -158,7 +186,8 @@ async def upload_pdf_document(
         department=department.lower().strip(),
         min_clearance_level=min_clearance_level,
         uploaded_by=user.user_id,
-        db_pool=pool
+        db_pool=pool,
+        document_code=document_code.strip() if document_code else None
     )
     return DocumentResponse(**result)
 
@@ -168,7 +197,7 @@ async def list_documents(user: UserContext = Depends(get_current_user), pool = D
     async with pool.acquire() as conn:
         rows = await conn.fetch(
             """
-            SELECT d.id, d.title, d.file_hash, d.department, d.min_clearance_level, d.version, d.is_active,
+            SELECT d.id, d.title, d.document_code, d.file_hash, d.department, d.min_clearance_level, d.version, d.is_active,
                    COUNT(c.id) as total_chunks
             FROM documents d
             LEFT JOIN document_chunks c ON d.id = c.document_id AND c.is_active = TRUE
@@ -183,6 +212,7 @@ async def list_documents(user: UserContext = Depends(get_current_user), pool = D
             DocumentResponse(
                 id=str(r["id"]),
                 title=r["title"],
+                document_code=r["document_code"],
                 file_hash=r["file_hash"],
                 department=r["department"],
                 min_clearance_level=r["min_clearance_level"],
@@ -325,3 +355,72 @@ async def approve_curation(
         db_pool=pool
     )
     return {"status": "success", "data": result}
+
+# -------------------------------------------------------------
+# SOHBET GEÇMİŞİ VE OTURUM YÖNETİMİ ROTALARI
+# -------------------------------------------------------------
+@app.get("/api/chat/sessions")
+async def get_user_chat_sessions(
+    user: UserContext = Depends(get_current_user),
+    pool = Depends(get_db)
+):
+    """Kullanıcının geçmiş sohbet oturumlarını listeler."""
+    clean_uid = uuid.UUID(user.user_id) if isinstance(user.user_id, str) else user.user_id
+    async with pool.acquire() as conn:
+        rows = await conn.fetch(
+            """
+            SELECT session_id,
+                   MIN(query_text) as first_query,
+                   MAX(created_at) as last_activity,
+                   COUNT(id) as total_messages
+            FROM audit_logs
+            WHERE user_id = $1 AND session_id IS NOT NULL
+            GROUP BY session_id
+            ORDER BY last_activity DESC
+            LIMIT 30;
+            """,
+            clean_uid
+        )
+        return [
+            {
+                "session_id": str(r["session_id"]),
+                "title": r["first_query"][:50] + ("..." if len(r["first_query"]) > 50 else ""),
+                "last_activity": str(r["last_activity"]),
+                "total_messages": r["total_messages"]
+            }
+            for r in rows
+        ]
+
+@app.get("/api/chat/history/{session_id}")
+async def get_chat_session_history(
+    session_id: str,
+    user: UserContext = Depends(get_current_user),
+    pool = Depends(get_db)
+):
+    """Belirli bir oturuma ait geçmiş mesajları ve cevapları getirir."""
+    try:
+        clean_sid = uuid.UUID(session_id)
+        clean_uid = uuid.UUID(user.user_id) if isinstance(user.user_id, str) else user.user_id
+    except ValueError:
+        raise HTTPException(status_code=400, detail="Geçersiz session_id formatı.")
+        
+    async with pool.acquire() as conn:
+        rows = await conn.fetch(
+            """
+            SELECT id, query_text, response_text, user_feedback, created_at
+            FROM audit_logs
+            WHERE session_id = $1 AND user_id = $2
+            ORDER BY created_at ASC
+            """,
+            clean_sid, clean_uid
+        )
+        return [
+            {
+                "id": str(r["id"]),
+                "query_text": r["query_text"],
+                "response_text": r["response_text"],
+                "feedback": r["user_feedback"],
+                "created_at": str(r["created_at"])
+            }
+            for r in rows
+        ]

@@ -90,16 +90,38 @@ async def save_feedback_and_curation(
                 target_answer = corrected_answer.strip() if corrected_answer else response_text.strip()
                 if feedback == 1 or corrected_answer:
                     clean_audit_id = uuid.UUID(audit_log_id) if audit_log_id and len(audit_log_id) == 36 else None
-                    staging_id = await conn.fetchval(
+                    
+                    # Önceden aynı veya çok yakın bekleyen kayıt var mı kontrol et
+                    existing_pending = await conn.fetchrow(
                         """
-                        INSERT INTO knowledge_staging (
-                            audit_log_id, original_query, verified_answer,
-                            department, min_clearance_level, status
-                        ) VALUES ($1, $2, $3, $4, $5, 'pending')
-                        RETURNING id
+                        SELECT id FROM knowledge_staging
+                        WHERE status = 'pending' AND original_query = $1 AND department = $2
+                        LIMIT 1
                         """,
-                        clean_audit_id, query_text, target_answer, department, min_clearance_level
+                        query_text, department
                     )
+                    
+                    if existing_pending:
+                        staging_id = existing_pending["id"]
+                        await conn.execute(
+                            """
+                            UPDATE knowledge_staging
+                            SET verified_answer = $1, min_clearance_level = $2, created_at = NOW()
+                            WHERE id = $3
+                            """,
+                            target_answer, min_clearance_level, staging_id
+                        )
+                    else:
+                        staging_id = await conn.fetchval(
+                            """
+                            INSERT INTO knowledge_staging (
+                                audit_log_id, original_query, verified_answer,
+                                department, min_clearance_level, status
+                            ) VALUES ($1, $2, $3, $4, $5, 'pending')
+                            RETURNING id
+                            """,
+                            clean_audit_id, query_text, target_answer, department, min_clearance_level
+                        )
         return str(staging_id) if staging_id else None
     except Exception as e:
         print(f"[ERROR] Feedback/Curation kayıt hatası: {e}")
@@ -111,7 +133,7 @@ async def approve_curation_item(
     approved_by: str,
     db_pool
 ) -> Dict[str, Any]:
-    """Kürasyon havuzundaki öğeyi onaylar ve document_chunks tablosuna kalıcı vektör olarak ekler."""
+    """Kürasyon havuzundaki öğeyi onaylar, semantik tekilleştirme yapar ve document_chunks tablosuna kalıcı vektör olarak ekler/günceller."""
     clean_staging_id = uuid.UUID(staging_id)
     clean_approved_by = uuid.UUID(approved_by) if len(approved_by) == 36 else uuid.uuid5(uuid.NAMESPACE_DNS, approved_by)
 
@@ -141,8 +163,8 @@ async def approve_curation_item(
             # 3. Genel kürasyon doküman kaydı oluştur/bul
             doc_id = await conn.fetchval(
                 """
-                INSERT INTO documents (title, file_hash, department, min_clearance_level, version, is_active, uploaded_by)
-                VALUES ('Curated Q&A Knowledge Base', 'curated_hash_master', $1, $2, 1, TRUE, $3)
+                INSERT INTO documents (title, document_code, file_hash, department, min_clearance_level, version, is_active, uploaded_by)
+                VALUES ('Curated Q&A Knowledge Base', 'KB-CURATED-QA', 'curated_hash_master', $1, $2, 1, TRUE, $3)
                 ON CONFLICT (id) DO NOTHING
                 RETURNING id
                 """,
@@ -153,29 +175,77 @@ async def approve_curation_item(
                     "SELECT id FROM documents WHERE title = 'Curated Q&A Knowledge Base' LIMIT 1"
                 )
 
-            # 4. Embedding üret ve document_chunks tablosuna ekle
+            # 4. Embedding üret
             embedding = await ollama_service.get_embedding(curated_content)
             emb_str = "[" + ",".join(map(str, embedding)) + "]"
 
-            chunk_id = await conn.fetchval(
+            # 5. Semantik Tekilleştirme Kontrolü (Deduplication Check)
+            # Mevcut kürasyon chunk'ları arasında %88+ kosinüs benzerliği olan var mı?
+            existing_chunk = await conn.fetchrow(
                 """
-                INSERT INTO document_chunks (
-                    document_id, content, chunk_index, department,
-                    min_clearance_level, is_active, source_type, metadata, embedding
-                ) VALUES ($1, $2, 0, $3, $4, TRUE, 'curated_qa', $5::jsonb, $6::vector)
-                RETURNING id
+                SELECT id, content, (1 - (embedding <=> $1::vector)) as similarity
+                FROM document_chunks
+                WHERE source_type = 'curated_qa' 
+                  AND department = $2
+                  AND is_active = TRUE
+                  AND (1 - (embedding <=> $1::vector)) >= 0.88
+                ORDER BY embedding <=> $1::vector
+                LIMIT 1
                 """,
-                doc_id or clean_staging_id,
-                curated_content,
-                item["department"],
-                item["min_clearance_level"],
-                f'{{"staging_id": "{staging_id}", "source": "knowledge_flywheel"}}',
-                emb_str
+                emb_str, item["department"]
             )
+
+            if existing_chunk:
+                # Mevcut benzer kaydı güncelle (Mükerrer vektör oluşumunu engelle)
+                chunk_id = existing_chunk["id"]
+                import json
+                chunk_meta = json.dumps({
+                    "staging_id": str(staging_id),
+                    "source": "knowledge_flywheel",
+                    "action": "merged_updated",
+                    "title": "Curated Q&A Knowledge Base",
+                    "document_code": "KB-CURATED-QA"
+                })
+                await conn.execute(
+                    """
+                    UPDATE document_chunks
+                    SET content = $1, min_clearance_level = $2, metadata = $3::jsonb, embedding = $4::vector
+                    WHERE id = $5
+                    """,
+                    curated_content, item["min_clearance_level"], chunk_meta, emb_str, chunk_id
+                )
+                action_type = "merged_updated"
+            else:
+                # Yeni tekil kayıt oluştur
+                import json
+                chunk_meta = json.dumps({
+                    "staging_id": str(staging_id),
+                    "source": "knowledge_flywheel",
+                    "action": "inserted",
+                    "title": "Curated Q&A Knowledge Base",
+                    "document_code": "KB-CURATED-QA"
+                })
+                chunk_id = await conn.fetchval(
+                    """
+                    INSERT INTO document_chunks (
+                        document_id, content, chunk_index, department,
+                        min_clearance_level, is_active, source_type, metadata, embedding
+                    ) VALUES ($1, $2, 0, $3, $4, TRUE, 'curated_qa', $5::jsonb, $6::vector)
+                    RETURNING id
+                    """,
+                    doc_id or clean_staging_id,
+                    curated_content,
+                    item["department"],
+                    item["min_clearance_level"],
+                    chunk_meta,
+                    emb_str
+                )
+                action_type = "inserted"
 
             return {
                 "staging_id": staging_id,
                 "chunk_id": str(chunk_id),
+                "action": action_type,
                 "status": "approved",
                 "department": item["department"]
             }

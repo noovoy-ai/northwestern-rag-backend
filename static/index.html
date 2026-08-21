@@ -699,15 +699,33 @@
             margin-top: 12px;
             display: flex;
             flex-wrap: wrap;
-            gap: 6px;
+            gap: 8px;
         }
-        .citation-tag {
-            font-size: 0.73rem;
-            background: rgba(255,255,255,0.06);
-            border: 1px solid rgba(255,255,255,0.12);
-            color: #a5b4fc;
-            padding: 4px 9px;
-            border-radius: 6px;
+        .citation-tag-btn {
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            font-size: 0.74rem;
+            font-weight: 500;
+            background: rgba(120, 208, 205, 0.08);
+            border: 1px solid rgba(120, 208, 205, 0.25);
+            color: #78d0cd;
+            padding: 5px 12px;
+            border-radius: 8px;
+            cursor: pointer;
+            transition: all 0.2s cubic-bezier(0.16, 1, 0.3, 1);
+            font-family: inherit;
+        }
+        .citation-tag-btn:hover {
+            background: rgba(120, 208, 205, 0.18);
+            border-color: rgba(120, 208, 205, 0.5);
+            transform: translateY(-1px);
+            box-shadow: 0 2px 10px rgba(120, 208, 205, 0.15);
+            color: #ffffff;
+        }
+        .citation-tag-btn svg {
+            stroke: currentColor;
+            flex-shrink: 0;
         }
 
         .feedback-actions {
@@ -717,6 +735,9 @@
             align-items: center;
         }
         .btn-feedback {
+            display: inline-flex;
+            align-items: center;
+            gap: 5px;
             background: rgba(255,255,255,0.05);
             border: 1px solid var(--hairline);
             color: #d1d5db;
@@ -725,6 +746,7 @@
             border-radius: 6px;
             cursor: pointer;
             transition: all 0.15s ease;
+            font-family: inherit;
         }
         .btn-feedback:hover {
             background: rgba(255,255,255,0.12);
@@ -853,6 +875,93 @@
             display: none;
         }
 
+        /* ══════════════════════════════════════════
+           CHAT HISTORY DRAWER
+        ══════════════════════════════════════════ */
+        .drawer-backdrop {
+            position: fixed;
+            inset: 0;
+            background: rgba(0, 0, 0, 0.65);
+            backdrop-filter: blur(8px);
+            z-index: 150;
+            opacity: 0;
+            pointer-events: none;
+            transition: opacity 0.25s ease;
+        }
+        .drawer-backdrop.active {
+            opacity: 1;
+            pointer-events: auto;
+        }
+        .history-drawer {
+            position: fixed;
+            top: 0;
+            left: 0;
+            bottom: 0;
+            width: 320px;
+            max-width: 85vw;
+            background: #111111;
+            border-right: 1px solid rgba(255, 255, 255, 0.08);
+            z-index: 160;
+            transform: translateX(-100%);
+            transition: transform 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+            display: flex;
+            flex-direction: column;
+            box-shadow: 10px 0 40px rgba(0,0,0,0.8);
+        }
+        .history-drawer.active {
+            transform: translateX(0);
+        }
+        .history-drawer-header {
+            padding: 16px 18px;
+            border-bottom: 1px solid rgba(255,255,255,0.06);
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+        }
+        .history-drawer-body {
+            flex: 1;
+            overflow-y: auto;
+            padding: 12px;
+            display: flex;
+            flex-direction: column;
+            gap: 6px;
+        }
+        .history-session-item {
+            padding: 10px 12px;
+            border-radius: 8px;
+            background: rgba(255,255,255,0.025);
+            border: 1px solid rgba(255,255,255,0.05);
+            cursor: pointer;
+            text-align: left;
+            transition: all 0.15s ease;
+            display: flex;
+            flex-direction: column;
+            gap: 4px;
+            color: #efefef;
+        }
+        .history-session-item:hover {
+            background: rgba(255,255,255,0.07);
+            border-color: rgba(255,255,255,0.12);
+        }
+        .history-session-item.active {
+            background: rgba(255,255,255,0.1);
+            border-color: rgba(255,255,255,0.2);
+        }
+        .history-session-title {
+            font-size: 0.84rem;
+            font-weight: 500;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            color: #fff;
+        }
+        .history-session-meta {
+            font-size: 0.72rem;
+            color: var(--subtitle);
+            display: flex;
+            justify-content: space-between;
+        }
+
         /* Responsive */
         @media (max-width: 1024px) {
             .nav-center-links { display: none; }
@@ -893,16 +1002,26 @@
                         <input type="password" id="loginPassword" class="auth-input" placeholder="••••••••" required>
                     </div>
 
-                    <div class="quick-roles-title" id="txtQuickFillTitle">Fast Role Fill (One-Click)</div>
+                    <div class="quick-roles-title" id="txtQuickFillTitle">Hızlı Rol Seçimi (Tek Tık)</div>
                     <div class="quick-roles-grid">
-                        <button type="button" class="btn-quick-role" onclick="quickFillAuth('admin', 'admin*123!')">⚡ Super Admin (Lv100)</button>
-                        <button type="button" class="btn-quick-role" onclick="quickFillAuth('ik_admin', 'ik*2026!')">👥 İK Admin (Lv50)</button>
-                        <button type="button" class="btn-quick-role" onclick="quickFillAuth('hukuk_admin', 'hukuk*2026!')">⚖️ Hukuk Admin (Lv50)</button>
-                        <button type="button" class="btn-quick-role" onclick="quickFillAuth('finans_admin', 'finans*2026!')">💰 Finans Admin (Lv50)</button>
-                        <button type="button" class="btn-quick-role" onclick="quickFillAuth('staff', 'nu2026pass')" style="grid-column: span 2;">👤 Genel Personel (Staff Lv10)</button>
+                        <button type="button" class="btn-quick-role" onclick="quickFillAuth('admin', 'admin*123!')">
+                            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="vertical-align:-2px; margin-right:4px;"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg> Super Admin (Lv100)
+                        </button>
+                        <button type="button" class="btn-quick-role" onclick="quickFillAuth('ik_admin', 'ik*2026!')">
+                            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="vertical-align:-2px; margin-right:4px;"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg> İK Admin (Lv50)
+                        </button>
+                        <button type="button" class="btn-quick-role" onclick="quickFillAuth('hukuk_admin', 'hukuk*2026!')">
+                            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="vertical-align:-2px; margin-right:4px;"><path d="m16 16 3-8 3 8c-.87.65-1.92 1-3 1s-2.13-.35-3-1Z"/><path d="m2 16 3-8 3 8c-.87.65-1.92 1-3 1s-2.13-.35-3-1Z"/><path d="M7 21h10"/><path d="M12 3v18"/><path d="M3 7h2c2 0 5-1 7-2 2 1 5 2 7 2h2"/></svg> Hukuk Admin (Lv50)
+                        </button>
+                        <button type="button" class="btn-quick-role" onclick="quickFillAuth('finans_admin', 'finans*2026!')">
+                            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="vertical-align:-2px; margin-right:4px;"><rect width="20" height="14" x="2" y="5" rx="2"/><line x1="2" x2="22" y1="10" y2="10"/></svg> Finans Admin (Lv50)
+                        </button>
+                        <button type="button" class="btn-quick-role" onclick="quickFillAuth('staff', 'nu2026pass')" style="grid-column: span 2;">
+                            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="vertical-align:-2px; margin-right:4px;"><path d="M19 21v-2a4 4 0 0 0-4-4H9a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg> Genel Personel (Staff Lv10)
+                        </button>
                     </div>
 
-                    <button type="submit" class="btn-auth-submit" id="btnAuthSubmit">Continue to Workspace →</button>
+                    <button type="submit" class="btn-auth-submit" id="btnAuthSubmit">Çalışma Alanına Giriş Yap →</button>
                     <div class="auth-error" id="authErrorMsg"></div>
                 </form>
             </div>
@@ -914,12 +1033,32 @@
     ══════════════════════════════════════════ -->
     <div id="workspaceScreen">
         
+        <!-- Chat History Drawer & Backdrop -->
+        <div id="historyDrawerBackdrop" class="drawer-backdrop" onclick="toggleHistoryDrawer(false)"></div>
+        <div id="historyDrawer" class="history-drawer">
+            <div class="history-drawer-header">
+                <div style="display:flex; align-items:center; gap:8px; font-weight:600; font-size:0.92rem; color:#fff;">
+                    <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>
+                    <span>Sohbet Geçmişi</span>
+                </div>
+                <button type="button" class="modal-close" onclick="toggleHistoryDrawer(false)" style="background:transparent; border:none; color:var(--subtitle); cursor:pointer;">
+                    <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
+                </button>
+            </div>
+            <div class="history-drawer-body" id="historySessionsList">
+                <p style="color:var(--subtitle); font-size:0.8rem; text-align:center; margin-top:20px;">Yükleniyor...</p>
+            </div>
+        </div>
+
         <!-- Topbar Navigation -->
         <header class="nav-topbar">
             <div class="nav-left">
-                <span class="brand-text-logo" onclick="resetToHeroView()" title="Nirene Home">Nirene</span>
-                <button type="button" class="btn-new-chat" onclick="resetToHeroView()">
-                    <span>+</span> <span id="txtNewChat">New Chat</span>
+                <button type="button" class="btn-new-chat" onclick="toggleHistoryDrawer(true)" title="Sohbet Geçmişi">
+                    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg> <span id="txtHistoryBtn">Geçmiş</span>
+                </button>
+                <span class="brand-text-logo" onclick="resetToHeroView(true)" title="Nirene Home">Nirene</span>
+                <button type="button" class="btn-new-chat" onclick="resetToHeroView(true)">
+                    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M12 5v14M5 12h14"/></svg> <span id="txtNewChat">New Chat</span>
                 </button>
             </div>
 
@@ -961,7 +1100,7 @@
                         <div class="suggestions-row" id="heroChipsContainer"></div>
 
                         <div class="controls-row">
-                            <button type="button" class="btn-attach-round" onclick="showUploadModal()" aria-label="Add attachment" title="Upload Document" data-enter="ctrl-0">
+                            <button type="button" class="btn-attach-round" id="heroAttachBtn" onclick="showUploadModal()" aria-label="Add attachment" title="Upload Document" data-enter="ctrl-0">
                                 <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M12 5v14M5 12h14"/></svg>
                             </button>
 
@@ -1009,7 +1148,7 @@
 
                 <div class="chat-composer-bar">
                     <form class="chat-composer-card" onsubmit="handleChatSubmit(event)">
-                        <button type="button" class="btn-attach-round" style="width:36px; height:36px;" onclick="showUploadModal()" title="Upload Document">
+                        <button type="button" class="btn-attach-round" id="chatAttachBtn" style="width:36px; height:36px;" onclick="showUploadModal()" title="Upload Document">
                             <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M12 5v14M5 12h14"/></svg>
                         </button>
                         
@@ -1037,8 +1176,12 @@
 
             <form onsubmit="handleUpload(event)">
                 <div class="form-group">
-                    <label>Document Title</label>
-                    <input type="text" id="uploadTitle" class="auth-input" placeholder="e.g. 2026 Financial Policies" required>
+                    <label>Document Code (Belge Kodu)</label>
+                    <input type="text" id="uploadDocCode" class="auth-input" placeholder="örn: POL-IK-2026-01, SOP-IT-004">
+                </div>
+                <div class="form-group">
+                    <label>Document Title (Belge Adı)</label>
+                    <input type="text" id="uploadTitle" class="auth-input" placeholder="örn: 2026 Personel El Kitabı" required>
                 </div>
                 <div class="form-group">
                     <label>Department</label>
@@ -1100,6 +1243,38 @@
     </div>
 
     <!-- ══════════════════════════════════════════
+         CITATION & SNIPPET PREVIEW MODAL
+    ══════════════════════════════════════════ -->
+    <div class="modal-overlay" id="citationModal">
+        <div class="modal-card" style="max-width: 620px;">
+            <div style="display:flex; justify-content:space-between; align-items:flex-start; margin-bottom:14px;">
+                <div>
+                    <div style="display:inline-flex; align-items:center; gap:6px; background:rgba(120,208,205,0.12); color:#78d0cd; padding:3px 10px; border-radius:999px; font-size:0.75rem; font-weight:600;" id="citationBadgeCode">
+                        <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/></svg>
+                        <span id="txtCitDocCode">POL-IK-2026-01</span>
+                    </div>
+                    <h2 style="font-size:1.15rem; margin-top:8px; color:var(--heading);" id="txtCitTitle">Doküman Başlığı</h2>
+                </div>
+                <span style="font-size:0.75rem; background:rgba(255,255,255,0.06); color:#a5b4fc; padding:4px 10px; border-radius:8px; border:1px solid rgba(255,255,255,0.1);" id="txtCitSimilarity">%95 Benzerlik</span>
+            </div>
+
+            <div style="display:flex; flex-wrap:wrap; gap:12px; margin-bottom:16px; font-size:0.78rem; color:var(--subtitle);">
+                <span id="txtCitDept">Departman: GENEL</span>
+                <span>•</span>
+                <span id="txtCitPage">Sayfa: 1</span>
+                <span>•</span>
+                <span id="txtCitClearance">Yetki: Seviye 10</span>
+            </div>
+
+            <div style="font-size:0.75rem; font-weight:600; color:var(--subtitle); text-transform:uppercase; letter-spacing:0.05em; margin-bottom:6px;">Kaynak Paragraf & Metin Kesiti:</div>
+            <div style="background:rgba(255,255,255,0.03); border:1px solid rgba(255,255,255,0.08); border-radius:12px; padding:16px; font-size:0.88rem; line-height:1.6; color:#efefef; max-height:280px; overflow-y:auto; white-space:pre-wrap;" id="txtCitSnippet">
+            </div>
+
+            <button type="button" class="btn-modal-close" onclick="hideCitationModal()" style="margin-top:16px;">Kapat</button>
+        </div>
+    </div>
+
+    <!-- ══════════════════════════════════════════
          CLIENT LOGIC & API INTEGRATION
     ══════════════════════════════════════════ -->
     <script>
@@ -1109,6 +1284,9 @@
         let userRole = localStorage.getItem('nirene_role') || null;
         let userDept = localStorage.getItem('nirene_dept') || 'genel';
         let userClearance = parseInt(localStorage.getItem('nirene_clearance') || '10');
+        let currentSessionId = localStorage.getItem('nirene_session_id') || crypto.randomUUID();
+        localStorage.setItem('nirene_session_id', currentSessionId);
+        let currentCitationsMap = {};
 
         const i18n = {
             tr: {
@@ -1116,15 +1294,11 @@
                 lblUser: "Kullanıcı Adı",
                 lblPass: "Şifre",
                 btnAuthSubmit: "Çalışma Alanına Giriş Yap →",
-                quickFillTitle: "Hızlı Rol Doldurucu (Tek Tık)",
-                newChat: "+ Yeni Sohbet",
+                quickFillTitle: "Hızlı Rol Seçimi (Tek Tık)",
+                newChat: "Yeni Sohbet",
                 signOut: "Çıkış Yap",
-                chips: [
-                    { label: "🏖️ İzin Politikası", query: "Yıllık izin hakları ve devir kuralları nelerdir?" },
-                    { label: "🏠 Uzaktan Çalışma", query: "Uzaktan çalışma şartları ve onay süreçleri nasıldır?" },
-                    { label: "🏥 Sağlık & Yan Haklar", query: "Sağlık sigortası kapsamı ve prim paylaşımı nedir?" },
-                    { label: "🎉 Resmi Tatiller", query: "Üniversite resmi tatil günleri hangileridir?" }
-                ],
+                txtHistoryBtn: "Geçmiş",
+                historyEmpty: "Henüz sohbet kaydı bulunmuyor.",
                 liveStatus: "Canlı RAG Muhakemesi Aktif",
                 placeholderHero: "Bir karar, politika veya problem hakkında soru sorun...",
                 placeholderChat: "Bir takip sorusu sorun veya başka bir konuyu inceleyin..."
@@ -1135,14 +1309,10 @@
                 lblPass: "Password",
                 btnAuthSubmit: "Continue to Workspace →",
                 quickFillTitle: "Fast Role Fill (One-Click)",
-                newChat: "+ New Chat",
+                newChat: "New Chat",
                 signOut: "Sign Out",
-                chips: [
-                    { label: "🏖️ Vacation Policy", query: "What is the vacation accrual rate and carryover rule?" },
-                    { label: "🏠 Remote Work", query: "What are the requirements for remote work approval?" },
-                    { label: "🏥 Health & Benefits", query: "What health insurance coverage is provided?" },
-                    { label: "🎉 Official Holidays", query: "What are the official university holidays?" }
-                ],
+                txtHistoryBtn: "History",
+                historyEmpty: "No chat history found.",
                 liveStatus: "Live Reasoning Active",
                 placeholderHero: "Break down a decision, policy, or problem...",
                 placeholderChat: "Ask a follow-up or explore another perspective..."
@@ -1173,21 +1343,33 @@
         function showWorkspaceScreen() {
             document.getElementById('authScreen').style.display = 'none';
             document.getElementById('workspaceScreen').style.display = 'flex';
-            resetToHeroView();
+            resetToHeroView(false);
             updateWorkspaceAuthUI();
+            loadHistorySessions();
         }
 
         function updateWorkspaceAuthUI() {
             const badge = document.getElementById('topUserBadge');
             const navUpload = document.getElementById('navUploadBtn');
             const navCuration = document.getElementById('navCurationBtn');
+            const heroAttach = document.getElementById('heroAttachBtn');
+            const chatAttach = document.getElementById('chatAttachBtn');
             const chatClearance = document.getElementById('chatClearanceBadge');
 
             if (authToken && userRole) {
-                badge.innerText = `👤 ${userRole} (${userDept.toUpperCase()} · Lv${userClearance})`;
+                const userIconSvg = `<svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="vertical-align:-2px; margin-right:5px;"><path d="M19 21v-2a4 4 0 0 0-4-4H9a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>`;
+                badge.innerHTML = `${userIconSvg}${escapeHtml(userRole)} (${escapeHtml(userDept.toUpperCase())} · Lv${userClearance})`;
                 chatClearance.innerText = `${userDept.toUpperCase()} (Clearance Lv${userClearance})`;
-                navUpload.style.display = (userRole === 'super_admin') ? 'inline-block' : 'none';
-                navCuration.style.display = (userRole === 'super_admin' || userRole.includes('admin')) ? 'inline-block' : 'none';
+
+                const isSuperAdmin = (userRole === 'super_admin');
+                const isAdmin = isSuperAdmin || userRole.includes('admin');
+
+                // Dosya yükleme butonu ve kontrolleri yalnızca super admine açıktır
+                if (navUpload) navUpload.style.display = isSuperAdmin ? 'inline-block' : 'none';
+                if (heroAttach) heroAttach.style.display = isSuperAdmin ? 'inline-flex' : 'none';
+                if (chatAttach) chatAttach.style.display = isSuperAdmin ? 'inline-flex' : 'none';
+
+                if (navCuration) navCuration.style.display = isAdmin ? 'inline-block' : 'none';
             }
         }
 
@@ -1197,6 +1379,8 @@
             userRole = null;
             userDept = 'genel';
             userClearance = 10;
+            currentCitationsMap = {};
+            currentSessionId = crypto.randomUUID();
             document.getElementById('loginUsername').value = '';
             document.getElementById('loginPassword').value = '';
             showAuthScreen();
@@ -1246,6 +1430,7 @@
             localStorage.setItem('nirene_lang', currentLang);
             applyLanguageTexts();
             renderChips();
+            loadHistorySessions();
         }
 
         function applyLanguageTexts() {
@@ -1257,6 +1442,8 @@
             document.getElementById('btnAuthSubmit').innerText = i18n[currentLang].btnAuthSubmit;
             document.getElementById('txtQuickFillTitle').innerText = i18n[currentLang].quickFillTitle;
             document.getElementById('txtNewChat').innerText = i18n[currentLang].newChat;
+            const histBtn = document.getElementById('txtHistoryBtn');
+            if (histBtn) histBtn.innerText = i18n[currentLang].txtHistoryBtn;
             document.getElementById('btnSignOut').innerText = i18n[currentLang].signOut;
             document.getElementById('heroQueryInput').placeholder = i18n[currentLang].placeholderHero;
             document.getElementById('chatInputField').placeholder = i18n[currentLang].placeholderChat;
@@ -1267,75 +1454,75 @@
             if (currentLang === 'en') {
                 if (userRole === 'admin-finans' || userDept === 'finans') {
                     return [
-                        { label: "💰 300k & 1M+ Spending Approvals", query: "Who must approve expenses of 300,000 TL and over 1,000,000 TL?" },
-                        { label: "💳 Corporate Credit Card Expenses", query: "What is the deadline for submitting corporate credit card expense forms?" },
-                        { label: "✈️ Foreign Per Diem & Advance", query: "What is the daily per diem for foreign travel and advance reconciliation period?" },
-                        { label: "🏠 Remote Work Policy", query: "How many days per week is remote work permitted?" }
+                        { label: "300k & 1M+ Spending Approvals", query: "Who must approve expenses of 300,000 TL and over 1,000,000 TL?" },
+                        { label: "Corporate Credit Card Expenses", query: "What is the deadline for submitting corporate credit card expense forms?" },
+                        { label: "Foreign Per Diem & Advance", query: "What is the daily per diem for foreign travel and advance reconciliation period?" },
+                        { label: "Remote Work Policy", query: "How many days per week is remote work permitted?" }
                     ];
                 } else if (userRole === 'admin-hukuk' || userDept === 'hukuk') {
                     return [
-                        { label: "⚖️ Standard NDA & IP Rights", query: "What is the standard NDA confidentiality duration and who owns IP rights?" },
-                        { label: "🏛️ Litigation Thresholds", query: "Who must approve lawsuits and claims over 500,000 TL?" },
-                        { label: "📑 200k+ Contract Termination", query: "What legal clearance is required to terminate contracts exceeding 200,000 TL?" },
-                        { label: "🏖️ Annual Leave Entitlement", query: "What is the annual paid leave entitlement for staff?" }
+                        { label: "Standard NDA & IP Rights", query: "What is the standard NDA confidentiality duration and who owns IP rights?" },
+                        { label: "Litigation Thresholds", query: "Who must approve lawsuits and claims over 500,000 TL?" },
+                        { label: "200k+ Contract Termination", query: "What legal clearance is required to terminate contracts exceeding 200,000 TL?" },
+                        { label: "Annual Leave Entitlement", query: "What is the annual paid leave entitlement for staff?" }
                     ];
                 } else if (userRole === 'admin-ik' || userDept === 'ik') {
                     return [
-                        { label: "🏆 Executive Performance Bonus", query: "What percentage bonus does an executive receive for Outstanding Performance?" },
-                        { label: "🔍 Ethics Investigation", query: "How many business days does an ethics investigation take to complete?" },
-                        { label: "🏖️ Leave Carryover Rule", query: "How many unused annual leave days can be carried over to next year?" },
-                        { label: "💍 Marriage & Paternity Leave", query: "How many days are granted for marriage and paternity leave?" }
+                        { label: "Executive Performance Bonus", query: "What percentage bonus does an executive receive for Outstanding Performance?" },
+                        { label: "Ethics Investigation", query: "How many business days does an ethics investigation take to complete?" },
+                        { label: "Leave Carryover Rule", query: "How many unused annual leave days can be carried over to next year?" },
+                        { label: "Marriage & Paternity Leave", query: "How many days are granted for marriage and paternity leave?" }
                     ];
                 } else if (userRole === 'super_admin' || userClearance === 100) {
                     return [
-                        { label: "💰 Finance Spending Matrix", query: "Who must approve expenses of 300,000 TL and over 1,000,000 TL?" },
-                        { label: "⚖️ Legal NDA & Litigation", query: "What is the standard NDA confidentiality duration and who approves 500k+ lawsuits?" },
-                        { label: "🏆 HR Executive Bonus", query: "What bonus percentage is awarded for Outstanding Performance?" },
-                        { label: "🏠 General Hybrid Work", query: "How many days per week can staff work remotely and what is marriage leave?" }
+                        { label: "Finance Spending Matrix", query: "Who must approve expenses of 300,000 TL and over 1,000,000 TL?" },
+                        { label: "Legal NDA & Litigation", query: "What is the standard NDA confidentiality duration and who approves 500k+ lawsuits?" },
+                        { label: "HR Executive Bonus", query: "What bonus percentage is awarded for Outstanding Performance?" },
+                        { label: "General Hybrid Work", query: "How many days per week can staff work remotely and what is marriage leave?" }
                     ];
                 } else {
                     return [
-                        { label: "🏠 Working Hours & Remote", query: "What are the weekly working hours and remote work rules?" },
-                        { label: "🏖️ Annual Paid Leave", query: "How many days of paid vacation are granted for 1-5 years and 5+ years seniority?" },
-                        { label: "💍 Special Compassionate Leave", query: "How many days are granted for marriage, paternity, and bereavement leave?" },
-                        { label: "🍽️ Meal & Commute Card", query: "When are Ticket Restaurant meal allowances and transit cards loaded?" }
+                        { label: "Working Hours & Remote", query: "What are the weekly working hours and remote work rules?" },
+                        { label: "Annual Paid Leave", query: "How many days of paid vacation are granted for 1-5 years and 5+ years seniority?" },
+                        { label: "Special Compassionate Leave", query: "How many days are granted for marriage, paternity, and bereavement leave?" },
+                        { label: "Meal & Commute Card", query: "When are Ticket Restaurant meal allowances and transit cards loaded?" }
                     ];
                 }
             } else {
                 if (userRole === 'admin-finans' || userDept === 'finans') {
                     return [
-                        { label: "💰 300k & 1M+ Harcama Onayı", query: "300.000 TL ve 1.000.000 TL üzeri harcamalarda kimlerin onayı gereklidir?" },
-                        { label: "💳 Şirket Kredi Kartı Masrafı", query: "Şirket kredi kartı masraflarının sisteme girilme süresi kaç iş günüdür?" },
-                        { label: "✈️ Yurt Dışı Harcırah & Avans", query: "Yurt dışı seyahatlerinde günlük azami harcırah ve avans kapatma süresi nedir?" },
-                        { label: "🏠 Hibrit Çalışma Düzeni", query: "Haftada kaç gün uzaktan çalışılabilir?" }
+                        { label: "300k & 1M+ Harcama Onayı", query: "300.000 TL ve 1.000.000 TL üzeri harcamalarda kimlerin onayı gereklidir?" },
+                        { label: "Şirket Kredi Kartı Masrafı", query: "Şirket kredi kartı masraflarının sisteme girilme süresi kaç iş günüdür?" },
+                        { label: "Yurt Dışı Harcırah & Avans", query: "Yurt dışı seyahatlerinde günlük azami harcırah ve avans kapatma süresi nedir?" },
+                        { label: "Hibrit Çalışma Düzeni", query: "Haftada kaç gün uzaktan çalışılabilir?" }
                     ];
                 } else if (userRole === 'admin-hukuk' || userDept === 'hukuk') {
                     return [
-                        { label: "⚖️ Standart NDA & Gizlilik Süresi", query: "Standart NDA gizlilik süresi kaç yıldır ve fikri haklar kime aittir?" },
-                        { label: "🏛️ Dava Açma Yetki Limitleri", query: "500.000 TL üzeri davalarda kimin onayı şarttır?" },
-                        { label: "📑 200k+ Sözleşme Feshi", query: "200.000 TL üzeri sözleşmelerin tek taraflı feshinde hangi onay gereklidir?" },
-                        { label: "🏖️ Yıllık İzin Hakları", query: "1-5 yıl kıdemli ve 5 yıldan fazla kıdemli personelin yıllık izin hakları nedir?" }
+                        { label: "Standart NDA & Gizlilik Süresi", query: "Standart NDA gizlilik süresi kaç yıldır ve fikri haklar kime aittir?" },
+                        { label: "Dava Açma Yetki Limitleri", query: "500.000 TL üzeri davalarda kimin onayı şarttır?" },
+                        { label: "200k+ Sözleşme Feshi", query: "200.000 TL üzeri sözleşmelerin tek taraflı feshinde hangi onay gereklidir?" },
+                        { label: "Yıllık İzin Hakları", query: "1-5 yıl kıdemli ve 5 yıldan fazla kıdemli personelin yıllık izin hakları nedir?" }
                     ];
                 } else if (userRole === 'admin-ik' || userDept === 'ik') {
                     return [
-                        { label: "🏆 Yönetici Performans Primi", query: "Yönetici kadrosunda Üstün Başarı alan yönetici yıllık brüt maaşının yüzde kaçı oranında prim alır?" },
-                        { label: "🔍 Gizli Etik Soruşturma", query: "Şirket içi Seviye 3 etik ihlal soruşturması kaç iş gününde tamamlanır?" },
-                        { label: "🏖️ İzin & Devir Hakları", query: "Kullanılmayan yıllık izinlerden en fazla kaç gün devredilebilir?" },
-                        { label: "💍 Evlilik & Babalık İzni", query: "Evlilik ve babalık izinleri kaç iş günüdür?" }
+                        { label: "Yönetici Performans Primi", query: "Yönetici kadrosunda Üstün Başarı alan yönetici yıllık brüt maaşının yüzde kaçı oranında prim alır?" },
+                        { label: "Gizli Etik Soruşturma", query: "Şirket içi Seviye 3 etik ihlal soruşturması kaç iş gününde tamamlanır?" },
+                        { label: "İzin & Devir Hakları", query: "Kullanılmayan yıllık izinlerden en fazla kaç gün devredilebilir?" },
+                        { label: "Evlilik & Babalık İzni", query: "Evlilik ve babalık izinleri kaç iş günüdür?" }
                     ];
                 } else if (userRole === 'super_admin' || userClearance === 100) {
                     return [
-                        { label: "💰 Finans Harcama Onayları", query: "300.000 TL ve 1.000.000 TL üzeri harcamalarda kimlerin onayı gereklidir?" },
-                        { label: "⚖️ Hukuk Dava & NDA", query: "Standart NDA gizlilik süresi kaç yıldır ve 500.000 TL üzeri davalarda kimin onayı şarttır?" },
-                        { label: "🏆 İK Yönetici Primi", query: "Yönetici kadrosunda Üstün Başarı alan yönetici yıllık brüt maaşının yüzde kaçı oranında prim alır?" },
-                        { label: "🏠 Genel Çalışma Esasları", query: "Haftada kaç gün uzaktan çalışılabilir ve evlilik izni kaç gündür?" }
+                        { label: "Finans Harcama Onayları", query: "300.000 TL ve 1.000.000 TL üzeri harcamalarda kimlerin onayı gereklidir?" },
+                        { label: "Hukuk Dava & NDA", query: "Standart NDA gizlilik süresi kaç yıldır ve 500.000 TL üzeri davalarda kimin onayı şarttır?" },
+                        { label: "İK Yönetici Primi", query: "Yönetici kadrosunda Üstün Başarı alan yönetici yıllık brüt maaşının yüzde kaçı oranında prim alır?" },
+                        { label: "Genel Çalışma Esasları", query: "Haftada kaç gün uzaktan çalışılabilir ve evlilik izni kaç gündür?" }
                     ];
                 } else {
                     return [
-                        { label: "🏠 Çalışma Saatleri & Hibrit", query: "Haftalık çalışma saatleri ve uzaktan çalışma kuralları nelerdir?" },
-                        { label: "🏖️ Yıllık Ücretli İzin", query: "1-5 yıl ve 5 yıldan fazla kıdemli personelin yıllık izin hak edişleri nedir?" },
-                        { label: "💍 Özel Mazeret İzinleri", query: "Evlilik, babalık ve 1. derece yakın vefat izinleri kaç gündür?" },
-                        { label: "🍽️ Yemek & Ulaşım Desteği", query: "Ticket Restaurant yemek kartı ve ulaşım desteği ne zaman yüklenir?" }
+                        { label: "Çalışma Saatleri & Hibrit", query: "Haftalık çalışma saatleri ve uzaktan çalışma kuralları nelerdir?" },
+                        { label: "Yıllık Ücretli İzin", query: "1-5 yıl ve 5 yıldan fazla kıdemli personelin yıllık izin hak edişleri nedir?" },
+                        { label: "Özel Mazeret İzinleri", query: "Evlilik, babalık ve 1. derece yakın vefat izinleri kaç gündür?" },
+                        { label: "Yemek & Ulaşım Desteği", query: "Ticket Restaurant yemek kartı ve ulaşım desteği ne zaman yüklenir?" }
                     ];
                 }
             }
@@ -1350,7 +1537,7 @@
                 const btn = document.createElement('button');
                 btn.className = 'chip-sugg';
                 btn.type = 'button';
-                btn.innerText = c.label;
+                btn.innerHTML = `<svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="vertical-align:-1px; margin-right:5px; opacity:0.85;"><circle cx="12" cy="12" r="10"/><path d="m9 12 2 2 4-4"/></svg>${escapeHtml(c.label)}`;
                 btn.onclick = () => {
                     document.getElementById('heroQueryInput').value = c.query;
                     submitHeroQuery();
@@ -1420,12 +1607,100 @@
             document.getElementById('chatView').style.display = 'flex';
         }
 
-        function resetToHeroView() {
+        function resetToHeroView(forceNew = true) {
+            if (forceNew) {
+                currentSessionId = crypto.randomUUID();
+                localStorage.setItem('nirene_session_id', currentSessionId);
+            }
             document.getElementById('chatView').style.display = 'none';
             document.getElementById('heroView').style.display = 'flex';
             document.getElementById('chatStream').innerHTML = '';
             document.getElementById('heroQueryInput').value = '';
             document.getElementById('chatInputField').value = '';
+        }
+
+        // History Drawer Logic
+        function toggleHistoryDrawer(force) {
+            const drawer = document.getElementById('historyDrawer');
+            const backdrop = document.getElementById('historyDrawerBackdrop');
+            const shouldOpen = (typeof force === 'boolean') ? force : !drawer.classList.contains('active');
+            if (shouldOpen) {
+                drawer.classList.add('active');
+                backdrop.classList.add('active');
+                loadHistorySessions();
+            } else {
+                drawer.classList.remove('active');
+                backdrop.classList.remove('active');
+            }
+        }
+
+        async function loadHistorySessions() {
+            if (!authToken) return;
+            const list = document.getElementById('historySessionsList');
+            try {
+                const res = await fetch('/api/chat/sessions', {
+                    headers: { 'Authorization': `Bearer ${authToken}` }
+                });
+                if (!res.ok) return;
+                const sessions = await res.json();
+                if (!sessions || sessions.length === 0) {
+                    list.innerHTML = `<p style="color:var(--subtitle); font-size:0.8rem; text-align:center; margin-top:20px;">${i18n[currentLang].historyEmpty || 'Geçmiş sohbet bulunamadı.'}</p>`;
+                    return;
+                }
+                list.innerHTML = '';
+                sessions.forEach(s => {
+                    const btn = document.createElement('button');
+                    btn.className = `history-session-item ${s.session_id === currentSessionId ? 'active' : ''}`;
+                    btn.onclick = () => loadSessionHistory(s.session_id);
+                    
+                    const dateStr = new Date(s.last_activity).toLocaleDateString(currentLang === 'tr' ? 'tr-TR' : 'en-US', {
+                        month: 'short', day: 'numeric', hour: '2-digit', minute: '2-digit'
+                    });
+                    
+                    btn.innerHTML = `
+                        <div class="history-session-title">${escapeHtml(s.title)}</div>
+                        <div class="history-session-meta">
+                            <span>${s.total_messages} mesaj</span>
+                            <span>${dateStr}</span>
+                        </div>
+                    `;
+                    list.appendChild(btn);
+                });
+            } catch (e) {
+                console.error("Geçmiş oturumlar yüklenemedi:", e);
+            }
+        }
+
+        async function loadSessionHistory(sessionId) {
+            toggleHistoryDrawer(false);
+            currentSessionId = sessionId;
+            localStorage.setItem('nirene_session_id', currentSessionId);
+            
+            switchToChatView();
+            const stream = document.getElementById('chatStream');
+            stream.innerHTML = '<div style="color:var(--subtitle); text-align:center; padding:20px; font-size:0.85rem;">Konuşma geçmişi yükleniyor...</div>';
+            
+            try {
+                const res = await fetch(`/api/chat/history/${sessionId}`, {
+                    headers: { 'Authorization': `Bearer ${authToken}` }
+                });
+                if (!res.ok) throw new Error('Geçmiş mesajlar alınamadı.');
+                const messages = await res.json();
+                stream.innerHTML = '';
+                
+                if (!messages || messages.length === 0) {
+                    stream.innerHTML = '<div style="color:var(--subtitle); text-align:center; padding:20px; font-size:0.85rem;">Bu oturumda mesaj bulunamadı.</div>';
+                    return;
+                }
+                
+                messages.forEach(m => {
+                    appendUserBubble(m.query_text);
+                    appendAiBubble(m.response_text, [], m.query_text);
+                });
+                loadHistorySessions();
+            } catch (e) {
+                stream.innerHTML = `<div style="color:#f87171; text-align:center; padding:20px; font-size:0.85rem;">Hata: ${e.message}</div>`;
+            }
         }
 
         // Query Handling
@@ -1469,7 +1744,11 @@
                 const res = await fetch('/api/chat/query', {
                     method: 'POST',
                     headers: headers,
-                    body: JSON.stringify({ question: query, lang: currentLang })
+                    body: JSON.stringify({ 
+                        question: query, 
+                        lang: currentLang,
+                        session_id: currentSessionId 
+                    })
                 });
 
                 typingElem.remove();
@@ -1485,9 +1764,10 @@
 
                 const data = await res.json();
                 appendAiBubble(data.answer, data.citations, query);
+                loadHistorySessions();
             } catch (err) {
                 typingElem.remove();
-                appendAiBubble(`⚠️ Hata: ${err.message}`, [], query);
+                appendAiBubble(`Hata: ${err.message}`, [], query);
             }
         }
 
@@ -1497,7 +1777,7 @@
             div.className = 'chat-msg-row user';
             div.innerHTML = `
                 <div class="msg-avatar user-av">
-                    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#f2f2f2" stroke-width="1.8"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>
+                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#f2f2f2" stroke-width="2"><path d="M19 21v-2a4 4 0 0 0-4-4H9a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>
                 </div>
                 <div class="msg-bubble">${escapeHtml(text)}</div>
             `;
@@ -1512,23 +1792,44 @@
 
             let citationHtml = '';
             if (citations && citations.length > 0) {
-                const tags = citations.map(c => `<span class="citation-tag">📄 ${c.department.toUpperCase()} (Lv${c.min_clearance_level}) · %${(c.similarity * 100).toFixed(0)}</span>`).join('');
-                citationHtml = `<div class="citation-container">${tags}</div>`;
+                const buttons = citations.map((c, idx) => {
+                    const citKey = c.id || `cit_${Date.now()}_${idx}`;
+                    currentCitationsMap[citKey] = c;
+                    
+                    const codeLabel = c.document_code ? `${escapeHtml(c.document_code)} · ` : '';
+                    const titleLabel = escapeHtml(c.document_title || c.department.toUpperCase());
+                    const pageLabel = c.page_number ? ` · S.${c.page_number}` : '';
+                    const simLabel = `%${(c.similarity * 100).toFixed(0)}`;
+
+                    return `
+                        <button type="button" class="citation-tag-btn" onclick="openCitationModal('${citKey}')" title="Kaynak Paragrafını Görüntüle">
+                            <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/></svg>
+                            <span>${codeLabel}${titleLabel}${pageLabel} (${simLabel})</span>
+                        </button>
+                    `;
+                }).join('');
+                citationHtml = `<div class="citation-container">${buttons}</div>`;
             }
 
             let feedbackHtml = '';
             if (queryText) {
                 feedbackHtml = `
                     <div class="feedback-actions">
-                        <button class="btn-feedback" onclick="sendFeedback(1, '${escapeHtml(queryText)}', this)">👍 Faydalı</button>
-                        <button class="btn-feedback" onclick="sendFeedback(-1, '${escapeHtml(queryText)}', this)">👎 Hatalı</button>
+                        <button class="btn-feedback" onclick="sendFeedback(1, '${escapeHtml(queryText)}', this)">
+                            <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M7 10v12"/><path d="M15 5.88 14 10h5.83a2 2 0 0 1 1.92 2.56l-2.33 8A2 2 0 0 1 17.5 22H4a2 2 0 0 1-2-2v-8a2 2 0 0 1 2-2h3"/><path d="M9 10V4.5a2.5 2.5 0 0 1 5 0V10"/></svg>
+                            Faydalı
+                        </button>
+                        <button class="btn-feedback" onclick="sendFeedback(-1, '${escapeHtml(queryText)}', this)">
+                            <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M17 14V2"/><path d="M9 18.12 10 14H4.17a2 2 0 0 1-1.92-2.56l2.33-8A2 2 0 0 1 6.5 2H20a2 2 0 0 1 2 2v8a2 2 0 0 1-2 2h-3"/><path d="M15 14v5.5a2.5 2.5 0 0 1-5 0V14"/></svg>
+                            Hatalı
+                        </button>
                     </div>
                 `;
             }
 
             div.innerHTML = `
                 <div class="msg-avatar ai-av">
-                    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#000" stroke-width="2"><path d="M12 2L2 7l10 5 10-5-10-5zM2 17l10 5 10-5M2 12l10 5 10-5"/></svg>
+                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#000" stroke-width="2"><path d="M12 2L2 7l10 5 10-5-10-5zM2 17l10 5 10-5M2 12l10 5 10-5"/></svg>
                 </div>
                 <div class="msg-bubble">
                     ${formatMarkdownText(text)}
@@ -1546,7 +1847,7 @@
             div.className = 'chat-msg-row ai';
             div.innerHTML = `
                 <div class="msg-avatar ai-av">
-                    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#000" stroke-width="2"><path d="M12 2L2 7l10 5 10-5-10-5zM2 17l10 5 10-5M2 12l10 5 10-5"/></svg>
+                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#000" stroke-width="2"><path d="M12 2L2 7l10 5 10-5-10-5zM2 17l10 5 10-5M2 12l10 5 10-5"/></svg>
                 </div>
                 <div class="msg-bubble" style="color:var(--subtitle); font-style:italic;">
                     Nirene muhakeme yürütüyor...
@@ -1575,10 +1876,30 @@
                         min_clearance_level: userClearance
                     })
                 });
-                btn.parentElement.innerHTML = `<span style="font-size:0.75rem; color:#86ca8a;">✓ Geri bildirim kaydedildi</span>`;
+                btn.parentElement.innerHTML = `<span style="font-size:0.75rem; color:#86ca8a; display:inline-flex; align-items:center; gap:4px;"><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="20 6 9 17 4 12"/></svg> Geri bildirim kaydedildi</span>`;
             } catch (e) {
                 alert("Geri bildirim gönderilemedi.");
             }
+        }
+
+        // Citation Modal Preview
+        function openCitationModal(citKey) {
+            const cit = currentCitationsMap[citKey];
+            if (!cit) return;
+
+            document.getElementById('txtCitDocCode').innerText = cit.document_code || 'BELGE';
+            document.getElementById('txtCitTitle').innerText = cit.document_title || 'Kurumsal Belge';
+            document.getElementById('txtCitSimilarity').innerText = `%${(cit.similarity * 100).toFixed(0)} Benzerlik`;
+            document.getElementById('txtCitDept').innerText = `Departman: ${cit.department.toUpperCase()}`;
+            document.getElementById('txtCitPage').innerText = `Sayfa: ${cit.page_number || '1'}`;
+            document.getElementById('txtCitClearance').innerText = `Yetki Seviyesi: ${cit.min_clearance_level}`;
+            document.getElementById('txtCitSnippet').innerText = cit.snippet || cit.content;
+
+            document.getElementById('citationModal').classList.add('active');
+        }
+
+        function hideCitationModal() {
+            document.getElementById('citationModal').classList.remove('active');
         }
 
         // Modals
@@ -1591,6 +1912,7 @@
 
         async function handleUpload(e) {
             e.preventDefault();
+            const docCode = document.getElementById('uploadDocCode').value.trim();
             const title = document.getElementById('uploadTitle').value.trim();
             const dept = document.getElementById('uploadDept').value;
             const clearance = document.getElementById('uploadClearance').value;
@@ -1606,6 +1928,7 @@
             const fd = new FormData();
             fd.append('file', fileInput.files[0]);
             fd.append('title', title);
+            if (docCode) fd.append('document_code', docCode);
             fd.append('department', dept);
             fd.append('min_clearance_level', clearance);
 
@@ -1620,7 +1943,7 @@
                     throw new Error(err.detail || 'Yükleme başarısız.');
                 }
                 const data = await res.json();
-                alert(`Başarılı: "${data.title}" dokümanı ${data.total_chunks} parça olarak vektörleştirildi.`);
+                alert(`Başarılı: "${data.title}" dokümanı (${data.document_code || 'KODSUZ'}) ${data.total_chunks} parça olarak vektörleştirildi.`);
                 hideUploadModal();
             } catch (err) {
                 errDiv.innerText = err.message;
@@ -1647,10 +1970,11 @@
                 docs.forEach(d => {
                     const div = document.createElement('div');
                     div.style = "background:rgba(255,255,255,0.04); padding:10px 14px; border-radius:8px; border:1px solid rgba(255,255,255,0.06); display:flex; justify-content:space-between; align-items:center;";
+                    const codeDisplay = d.document_code ? `[${escapeHtml(d.document_code)}] ` : '';
                     div.innerHTML = `
                         <div>
-                            <div style="font-weight:600; font-size:0.88rem; color:#fff;">${d.title} (v${d.version})</div>
-                            <div style="font-size:0.75rem; color:var(--subtitle); margin-top:2px;">Departman: ${d.department.toUpperCase()} · Seviye: ${d.min_clearance_level} · Parça: ${d.total_chunks}</div>
+                            <div style="font-weight:600; font-size:0.88rem; color:#fff;">${codeDisplay}${escapeHtml(d.title)} (v${d.version})</div>
+                            <div style="font-size:0.75rem; color:var(--subtitle); margin-top:2px;">Departman: ${escapeHtml(d.department.toUpperCase())} · Seviye: ${d.min_clearance_level} · Parça: ${d.total_chunks}</div>
                         </div>
                         ${userRole === 'super_admin' ? `<button onclick="deleteDoc('${d.id}')" style="background:#ef4444; color:#fff; border:none; padding:4px 8px; border-radius:6px; font-size:0.75rem; cursor:pointer;">Sil</button>` : ''}
                     `;
@@ -1687,10 +2011,13 @@
                     const div = document.createElement('div');
                     div.style = "background:rgba(255,255,255,0.04); padding:10px 14px; border-radius:8px; border:1px solid rgba(255,255,255,0.06);";
                     div.innerHTML = `
-                        <div style="font-weight:600; font-size:0.84rem; color:#ffe776;">Soru: ${it.original_query}</div>
-                        <div style="font-size:0.8rem; margin-top:4px; color:#efefef;">Cevap: ${it.verified_answer}</div>
-                        <div style="font-size:0.72rem; color:var(--subtitle); margin-top:4px;">Departman: ${it.department.toUpperCase()} · Seviye: ${it.min_clearance_level}</div>
-                        <button onclick="approveCuration('${it.id}')" style="background:#86ca8a; color:#0c0c0c; border:none; padding:4px 10px; border-radius:6px; font-size:0.75rem; font-weight:600; cursor:pointer; margin-top:6px;">✓ Onayla & Vektörleştir</button>
+                        <div style="font-weight:600; font-size:0.84rem; color:#ffe776;">Soru: ${escapeHtml(it.original_query)}</div>
+                        <div style="font-size:0.8rem; margin-top:4px; color:#efefef;">Cevap: ${escapeHtml(it.verified_answer)}</div>
+                        <div style="font-size:0.72rem; color:var(--subtitle); margin-top:4px;">Departman: ${escapeHtml(it.department.toUpperCase())} · Seviye: ${it.min_clearance_level}</div>
+                        <button onclick="approveCuration('${it.id}')" style="background:#86ca8a; color:#0c0c0c; border:none; padding:4px 10px; border-radius:6px; font-size:0.75rem; font-weight:600; cursor:pointer; margin-top:6px; display:inline-flex; align-items:center; gap:4px;">
+                            <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3"><polyline points="20 6 9 17 4 12"/></svg>
+                            Onayla & Vektörleştir
+                        </button>
                     `;
                     list.appendChild(div);
                 });

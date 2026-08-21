@@ -25,6 +25,7 @@ class UserContext(BaseModel):
 class DocumentResponse(BaseModel):
     id: str
     title: str
+    document_code: Optional[str] = None
     file_hash: str
     department: str
     min_clearance_level: int
@@ -41,7 +42,11 @@ class QueryRequest(BaseModel):
 class ChunkCitation(BaseModel):
     id: str
     document_id: str
+    document_title: Optional[str] = None
+    document_code: Optional[str] = None
+    page_number: Optional[int] = None
     content: str
+    snippet: Optional[str] = None
     department: str
     min_clearance_level: int
     similarity: float

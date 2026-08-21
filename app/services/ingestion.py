@@ -1,6 +1,6 @@
 import io
 import hashlib
-from typing import List, Dict, Any
+from typing import List, Dict, Any, Optional
 import fitz  # PyMuPDF
 import pdfplumber
 from fastapi import HTTPException
@@ -59,21 +59,64 @@ def extract_text_and_tables_from_pdf(file_bytes: bytes) -> List[Dict[str, Any]]:
 
     return pages_data
 
-def chunk_text(text: str, chunk_size: int = 700, overlap: int = 100) -> List[str]:
-    """Basit ve güvenli metin parçalama (chunking)."""
-    if not text:
+import re
+
+def chunk_text(text: str, chunk_size: int = 750, overlap: int = 100) -> List[str]:
+    """
+    Markdown başlıklarına (#, ##, ###), listelere ve paragraf sınırlarına duyarlı 
+    akıllı hiyerarşik metin parçalayıcı (Semantic Markdown Splitter).
+    """
+    if not text or not text.strip():
         return []
+    
+    clean_text = text.strip()
+    
+    # 1. Başlıklara göre ana bölümlere ayır (#, ##, ###, ####, ---)
+    section_pattern = re.compile(r'(?=\n#{1,4}\s+|\n---+\n)')
+    raw_sections = section_pattern.split(clean_text)
+    
     chunks = []
-    start = 0
-    while start < len(text):
-        end = start + chunk_size
-        chunk = text[start:end]
-        if chunk.strip():
-            chunks.append(chunk.strip())
-        start += (chunk_size - overlap)
-        if start >= len(text):
-            break
-    return chunks
+    
+    for section in raw_sections:
+        section = section.strip()
+        if not section:
+            continue
+            
+        if len(section) <= chunk_size:
+            chunks.append(section)
+            continue
+            
+        # 2. Bölüm büyükse paragraflara göre böl (\n\n)
+        paragraphs = [p.strip() for p in section.split('\n\n') if p.strip()]
+        current_chunk = ""
+        
+        for para in paragraphs:
+            if not current_chunk:
+                current_chunk = para
+            elif len(current_chunk) + len(para) + 2 <= chunk_size:
+                current_chunk += "\n\n" + para
+            else:
+                chunks.append(current_chunk.strip())
+                overlap_prefix = current_chunk[-overlap:].strip() if len(current_chunk) > overlap else ""
+                current_chunk = (overlap_prefix + "\n\n" + para).strip() if overlap_prefix else para
+                
+        if current_chunk.strip():
+            if len(current_chunk) > chunk_size + 200:
+                sentences = re.split(r'(?<=[.?!])\s+', current_chunk)
+                sub_chunk = ""
+                for s in sentences:
+                    if len(sub_chunk) + len(s) + 1 <= chunk_size:
+                        sub_chunk += (" " if sub_chunk else "") + s
+                    else:
+                        if sub_chunk:
+                            chunks.append(sub_chunk.strip())
+                        sub_chunk = s
+                if sub_chunk:
+                    chunks.append(sub_chunk.strip())
+            else:
+                chunks.append(current_chunk.strip())
+                
+    return chunks if chunks else [clean_text[:chunk_size]]
 
 async def process_and_ingest_pdf(
     file_bytes: bytes,
@@ -81,10 +124,12 @@ async def process_and_ingest_pdf(
     department: str,
     min_clearance_level: int,
     uploaded_by: str,
-    db_pool
+    db_pool,
+    document_code: Optional[str] = None
 ) -> Dict[str, Any]:
     """PDF dosyasını ayrıştırır, hash kontrolü yapar, embedding üretir ve veritabanına kaydeder."""
     file_hash = compute_sha256(file_bytes)
+    doc_code_clean = document_code.strip() if document_code and document_code.strip() else None
     
     async with db_pool.acquire() as conn:
         async with conn.transaction():
@@ -116,11 +161,11 @@ async def process_and_ingest_pdf(
             # 3. Yeni Doküman Kaydını Oluştur
             doc_id = await conn.fetchval(
                 """
-                INSERT INTO documents (title, file_hash, department, min_clearance_level, version, is_active, uploaded_by)
-                VALUES ($1, $2, $3, $4, $5, TRUE, $6)
+                INSERT INTO documents (title, document_code, file_hash, department, min_clearance_level, version, is_active, uploaded_by)
+                VALUES ($1, $2, $3, $4, $5, $6, TRUE, $7)
                 RETURNING id
                 """,
-                title, file_hash, department, min_clearance_level, new_version, uploaded_by
+                title, doc_code_clean, file_hash, department, min_clearance_level, new_version, uploaded_by
             )
 
             # 4. Metin Çıkarma ve Chunking
@@ -134,10 +179,12 @@ async def process_and_ingest_pdf(
                     continue
                 p_chunks = chunk_text(p_text, chunk_size=750, overlap=100)
                 for chunk in p_chunks:
-                    prefix = f"Context: [{title} | Bölüm: {department.upper()} | Yetki: {min_clearance_level} | Sayfa: {page['page_number']}]\n"
+                    code_label = f" | Kod: {doc_code_clean}" if doc_code_clean else ""
+                    prefix = f"Context: [{title}{code_label} | Bölüm: {department.upper()} | Yetki: {min_clearance_level} | Sayfa: {page['page_number']}]\n"
                     enriched_content = f"{prefix}{chunk}"
                     all_chunks.append({
                         "content": enriched_content,
+                        "raw_snippet": chunk[:350],
                         "chunk_index": chunk_index,
                         "page_number": page["page_number"]
                     })
@@ -153,6 +200,13 @@ async def process_and_ingest_pdf(
             # 6. document_chunks Tablosuna Toplu Kayıt
             for chunk_data, emb in zip(all_chunks, embeddings):
                 emb_str = "[" + ",".join(map(str, emb)) + "]"
+                import json
+                chunk_meta = json.dumps({
+                    "page": chunk_data["page_number"],
+                    "title": title,
+                    "document_code": doc_code_clean or "",
+                    "snippet": chunk_data["raw_snippet"]
+                })
                 await conn.execute(
                     """
                     INSERT INTO document_chunks (
@@ -165,13 +219,14 @@ async def process_and_ingest_pdf(
                     chunk_data["chunk_index"],
                     department,
                     min_clearance_level,
-                    f'{{"page": {chunk_data["page_number"]}, "title": "{title}"}}',
+                    chunk_meta,
                     emb_str
                 )
 
     return {
         "id": str(doc_id),
         "title": title,
+        "document_code": doc_code_clean,
         "file_hash": file_hash,
         "department": department,
         "min_clearance_level": min_clearance_level,

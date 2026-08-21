@@ -34,21 +34,39 @@ async def search_relevant_chunks(
             await conn.execute("SET LOCAL ROLE authenticated;")
             await conn.execute(f"SET LOCAL request.jwt.claims = '{claims_escaped}';")
             
-            # match_documents RPC çağrısı
+            # match_documents_hybrid RPC çağrısı (Vektör + Full-Text Keyword/BM25)
             rows = await conn.fetch(
                 """
-                SELECT id, document_id, content, department, min_clearance_level, similarity
-                FROM match_documents($1::vector, $2, $3)
+                SELECT id, document_id, content, department, min_clearance_level, similarity,
+                       document_title, document_code, metadata
+                FROM match_documents_hybrid($1::vector, $2, $3, $4, $5, $6)
                 """,
-                emb_str, match_count, similarity_threshold
+                emb_str, query.strip(), match_count, similarity_threshold, 0.65, 0.35
             )
             
             for r in rows:
+                meta = r.get("metadata") or {}
+                if isinstance(meta, str):
+                    try:
+                        meta = json.loads(meta)
+                    except Exception:
+                        meta = {}
+                
+                doc_title = r.get("document_title") or meta.get("title") or "Kurumsal Belge"
+                doc_code = r.get("document_code") or meta.get("document_code") or ""
+                page_num = meta.get("page")
+                raw_content = r["content"]
+                snippet = meta.get("snippet") or (raw_content[:350] + "..." if len(raw_content) > 350 else raw_content)
+
                 citations.append(
                     ChunkCitation(
                         id=str(r["id"]),
                         document_id=str(r["document_id"]),
-                        content=r["content"],
+                        document_title=doc_title,
+                        document_code=doc_code if doc_code else None,
+                        page_number=page_num,
+                        content=raw_content,
+                        snippet=snippet,
                         department=r["department"],
                         min_clearance_level=r["min_clearance_level"],
                         similarity=float(r["similarity"])
@@ -68,7 +86,8 @@ KESİN VE TAVİZSİZ KURALLAR:
 1. Yalnızca ve sadece aşağıda verilen BAĞLAM METNİ içindeki bilgilere dayanarak TÜRKÇE yanıt ver.
 2. Bağlamda yer almayan veya doğrulanmamış şirket politikalarını asla uydurma.
 3. Eğer sorunun cevabı bağlam metninde kesin olarak bulunmuyorsa, sadece: "Bu bilgi şirket politikalarında veya yetkiniz dahilindeki belgelerde bulunmamaktadır." yanıtını ver.
-4. Yanıtı net, profesyonel, maddeli ve anlaşılır tut.
+4. Yanıtlarında aktardığın bilginin dayandığı **Belge Adı** ve **Belge Kodu**nu (varsa sayfa numarasını) net bir şekilde belirt (Örn: [POL-IK-01] Personel El Kitabı).
+5. Yanıtı net, profesyonel, maddeli ve anlaşılır tut.
 
 BAĞLAM METNİ:
 {context_text}
@@ -81,7 +100,8 @@ STRICT RULES TO FOLLOW:
 1. Answer the user's question accurately, concisely, and clearly based ONLY on the provided 'CONTEXT TEXT'.
 2. Do NOT use outside knowledge, assumptions, or unverified claims.
 3. If the answer is NOT present in the provided context text, respond strictly with: "This information is not available in the company policies or your authorized documents."
-4. Keep answers concise, structured, and direct.
+4. Clearly state the referenced **Document Name** and **Document Code** (e.g., [POL-HR-01] Staff Handbook) in your response.
+5. Keep answers concise, structured, and direct.
 
 CONTEXT TEXT:
 {context_text}
